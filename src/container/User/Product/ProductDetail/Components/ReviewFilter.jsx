@@ -3,7 +3,14 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Star } from "lucide-react";
 
-const ReviewFilter = () => {
+const ReviewFilter = ({ rating, setRating, withMedia, setWithMedia }) => {
+   const handleRatingChange = (star, checked) => {
+    setRating((prev) =>
+      checked
+        ? [...prev, star]
+        : prev.filter((r) => r !== star)
+    );
+  };
   return (
     <div className="space-y-6 pr-4">
       <div>
@@ -12,6 +19,8 @@ const ReviewFilter = () => {
           <Checkbox
             id="with-media"
             className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+            checked={withMedia}
+            onCheckedChange={(checked) => setWithMedia(checked)}
           />
           <label
             htmlFor="with-media"
@@ -32,6 +41,10 @@ const ReviewFilter = () => {
               <Checkbox
                 id={`star-${star}`}
                 className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                checked={rating.includes(star)}
+                onCheckedChange={(checked) =>
+                  handleRatingChange(star, checked === true)
+                }
               />
               <label
                 htmlFor={`star-${star}`}

@@ -1,37 +1,25 @@
-"use client";
-
 import Image from "next/image";
 import { Star, ThumbsUp, MoreVertical } from "lucide-react";
-import { useState, useMemo } from "react";
 import { CustomSelect } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CustomPagination } from "@/components/ui/pagination";
+import formatDate from "@/lib/dateFormat";
 
-
-const ReviewList = ({ reviews }) => {
-  const [page, setPage] = useState(1);
-  const [sort, setSort] = useState("helpful");
-  const per_page = 10;
-
-  const sort_config = [
-    { label: "Paling Membantu", value: "helpful" },
-    { label: "Terbaru", value: "newest" },
-    { label: "Rating Tertinggi", value: "highest" },
-    { label: "Rating Terendah", value: "lowest" },
-  ];
-
-  const reviewsToShow = useMemo(() => {
-    const start = (page - 1) * per_page;
-    return reviews.slice(start, start + per_page);
-  }, [page, reviews]);
-
+const ReviewList = ({
+  reviews,
+  page,
+  setPage,
+  sort,
+  setSort,
+  pagination,
+}) => {
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-6">
         <div className="text-sm">
           <span className="font-bold text-gray-900">ULASAN PILIHAN</span>
           <p className="text-gray-500 mt-1">
-            Menampilkan {reviewsToShow.length} dari {reviews.length} ulasan
+            Menampilkan {reviews.length} dari {pagination.total} ulasan
           </p>
         </div>
 
@@ -39,16 +27,23 @@ const ReviewList = ({ reviews }) => {
           <span className="text-sm font-bold text-gray-700">Urutkan</span>
           <CustomSelect
             value={sort}
-            onValueChange={setSort}
-            placeholder="Urutkan"
-            options={sort_config}
+            onValueChange={(val) => {
+              setPage(1);
+              setSort(val);
+            }}
+            options={[
+              { label: "Paling Membantu", value: "helpful" },
+              { label: "Terbaru", value: "newest" },
+              { label: "Rating Tertinggi", value: "highest" },
+              { label: "Rating Terendah", value: "lowest" },
+            ]}
             className="w-[180px] h-9 text-sm"
           />
         </div>
       </div>
 
       <div className="space-y-8">
-        {reviewsToShow.map((review) => (
+        {reviews.map((review) => (
           <div
             key={review.id}
             className="border-b border-gray-100 pb-8 last:border-0"
@@ -66,7 +61,9 @@ const ReviewList = ({ reviews }) => {
                   />
                 ))}
               </div>
-              <span className="text-xs text-gray-400">{review.date}</span>
+              <span className="text-xs text-gray-400">
+                {formatDate(review.date)}
+              </span>
             </div>
 
             <div className="flex items-center justify-between mb-2">
@@ -74,7 +71,7 @@ const ReviewList = ({ reviews }) => {
                 <Avatar className="w-8 h-8">
                   <AvatarImage src={review.avatar} />
                   <AvatarFallback className="bg-gray-100 text-xs font-bold text-gray-500">
-                    {review.user.substring(0, 1)}
+                    {review.user?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <span className="text-sm font-bold text-gray-900">
@@ -117,10 +114,10 @@ const ReviewList = ({ reviews }) => {
 
       <div className="mt-6 flex">
         <CustomPagination
-          page={page}
-          totalPages={10}
+          page={pagination.page}
+          totalPages={pagination.totalPages}
           onPageChange={setPage}
-          className={"justify-start!"}
+          className="justify-start!"
         />
       </div>
     </div>
