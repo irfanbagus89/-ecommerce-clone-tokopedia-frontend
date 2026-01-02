@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Minus, Plus, Heart, Share2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import formatRupiah from "@/lib/currencyHelper";
 
 const PurchaseCard = ({ product, selectedVariant }) => {

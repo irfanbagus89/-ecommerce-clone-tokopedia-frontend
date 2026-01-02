@@ -23,7 +23,7 @@ function ProductCard({ className, data, ...props }) {
   return (
     <Card
       className={cn(
-        "group flex h-full flex-col overflow-hidden border-none shadow-sm transition-all duration-300 hover:shadow-lg cursor-pointer pt-0!",
+        "group flex h-full flex-col overflow-hidden border-none shadow-sm transition-all duration-300 hover:shadow-lg cursor-pointer gap-0! pt-0!",
         className
       )}
       {...props}
@@ -48,13 +48,13 @@ function ProductCard({ className, data, ...props }) {
           </h3>
 
           {/* Harga */}
-          <div className="flex flex-col">
-            <span className="text-base font-bold text-gray-900">
-              {formatRupiah(price)}
-            </span>
+          {price !== null ? (
+            <div className="flex flex-col">
+              <span className="text-base font-bold text-gray-900">
+                {formatRupiah(price)}
+              </span>
 
-            {/* Harga Coret */}
-            {original_price && (
+              {/* Harga Coret */}
               <div className="mt-0.5 flex items-center gap-1">
                 {/* Diskon kecil sebelah harga (jika bukan flash sale) */}
                 {discount && !flashSale?.isActive && (
@@ -66,8 +66,14 @@ function ProductCard({ className, data, ...props }) {
                   {formatRupiah(original_price)}
                 </span>
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              <span className="text-base font-bold text-gray-900">
+                {formatRupiah(original_price)}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* --- Footer Card: Switch Tampilan --- */}

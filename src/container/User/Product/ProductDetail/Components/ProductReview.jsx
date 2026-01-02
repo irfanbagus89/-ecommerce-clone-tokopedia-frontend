@@ -16,7 +16,6 @@ const ProductReviews = ({ productId }) => {
     rating,
     withMedia,
   });
-  console.log(rating, "rating di product review");
   return (
     <section className="py-10 border-t mt-10" id="ulasan">
       {isLoading ? (

@@ -65,7 +65,7 @@ const ProductInfo = ({ product, setActiveVariant }) => {
               {product.discount}%
             </Badge>
             <span className="text-sm text-gray-400 line-through font-medium">
-              {formatRupiah(product.originalPrice)}
+              {formatRupiah(product.original_price + activeVariant.price)}
             </span>
           </div>
         ) : null}

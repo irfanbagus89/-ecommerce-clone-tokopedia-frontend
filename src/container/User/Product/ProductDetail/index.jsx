@@ -8,6 +8,7 @@ import PurchaseCard from "./Components/PurchaseCard";
 import ProductReviews from "./Components/ProductReview";
 import { useProductDetail } from "@/services/User/DetailProduct/getDetailProduct";
 import { useState } from "react";
+import ProductRekomendasiSection from "./Components/ProductRekomendasiSection";
 
 const ProductDetailPage = () => {
   const params = useParams();
@@ -19,7 +20,7 @@ const ProductDetailPage = () => {
     title: data?.name,
     description: data?.description,
     price: data?.price,
-    originalPrice: Number(data?.original_price),
+    original_price: Number(data?.original_price),
     discount: data?.discount_percent,
     rating: data?.rating.average,
     ratingCount: data?.rating.count,
@@ -36,7 +37,7 @@ const ProductDetailPage = () => {
     },
     { label: product.title },
   ];
-
+  console.log("Product Detail Data:", data);
   return (
     <div className="min-h-screen bg-white pb-20 font-sans">
       {isLoading ? (
@@ -71,6 +72,7 @@ const ProductDetailPage = () => {
           </div>
 
           <ProductReviews productId={product.id}/>
+          <ProductRekomendasiSection sellerId={data?.seller?.id} categoryId={data?.category?.id} id={data?.id}/>
         </>
       )}
     </div>
