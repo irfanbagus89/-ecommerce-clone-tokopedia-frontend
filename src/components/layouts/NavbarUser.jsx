@@ -56,7 +56,9 @@ const NavbarUser = () => {
           </span>
         ) : (
           <div className="flex gap-4">
-            <ShoppingCart className="text-gray-500" />
+            <Link href={'/cart'}>
+              <ShoppingCart className="text-gray-500" />
+            </Link>
             <Bell className="text-gray-500" />
             <Mail className="text-gray-500" />
           </div>
@@ -107,7 +109,6 @@ const NavbarUser = () => {
 
                 <DropdownMenuContent
                   align="start"
-
                   sideOffset={20}
                   className="w-44"
                 >

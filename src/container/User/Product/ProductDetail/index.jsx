@@ -37,7 +37,6 @@ const ProductDetailPage = () => {
     },
     { label: product.title },
   ];
-  console.log("Product Detail Data:", data);
   return (
     <div className="min-h-screen bg-white pb-20 font-sans">
       {isLoading ? (
@@ -65,7 +64,7 @@ const ProductDetailPage = () => {
 
               <div className="hidden lg:block lg:col-span-3">
                 <div className="sticky top-24">
-                  <PurchaseCard product={product} selectedVariant={activeVariant}/>
+                  <PurchaseCard product={product} selectedVariant={activeVariant} data={data}/>
                 </div>
               </div>
             </div>

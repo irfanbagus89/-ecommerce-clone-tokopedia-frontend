@@ -5,11 +5,14 @@ import { Minus, Plus, Heart, Share2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import formatRupiah from "@/lib/currencyHelper";
+import { useCreateCart } from "@/services/User/DetailProduct/createCart";
 
-const PurchaseCard = ({ product, selectedVariant }) => {
+const PurchaseCard = ({ product, selectedVariant, data }) => {
   const [qty, setQty] = useState(1);
   const activeVariant =
     product?.variants.find((v) => v.id === selectedVariant) ?? 0;
+
+  const { trigger, isMutating } = useCreateCart();
 
   const handleQtyChange = (val) => {
     let newQty = parseInt(val);
@@ -18,7 +21,22 @@ const PurchaseCard = ({ product, selectedVariant }) => {
     if (newQty > activeVariant.stock) newQty = activeVariant.stock;
     setQty(newQty);
   };
+  const handleAddToCart = async () => {
+    const payload = {
+      sellerId: data.seller.id,
+      productId: data.id,
+      variantId: activeVariant.id,
+      quantity: Number(qty),
+    };
+    console.log(payload, "tes");
 
+    try {
+      const res = await trigger(payload);
+      console.log("ADD TO CART SUCCESS:", res);
+    } catch (error) {
+      console.error("ADD TO CART ERROR:", error);
+    }
+  };
   return (
     <Card className="shadow-lg border-gray-200 rounded-xl overflow-hidden">
       <CardContent className="">
@@ -77,7 +95,11 @@ const PurchaseCard = ({ product, selectedVariant }) => {
         </div>
 
         <div className="space-y-3">
-          <Button className="w-full bg-green-600 hover:bg-green-700 font-bold h-11 text-md rounded-lg">
+          <Button
+            className="w-full bg-green-600 hover:bg-green-700 font-bold h-11 text-md rounded-lg"
+            onClick={handleAddToCart}
+            disabled={isMutating}
+          >
             + Keranjang
           </Button>
           <Button
