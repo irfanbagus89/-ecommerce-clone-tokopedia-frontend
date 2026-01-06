@@ -3,6 +3,7 @@ import ReviewFilter from "./ReviewFilter";
 import ReviewList from "./ReviewList";
 import ReviewStats from "./ReviewStats";
 import { useProductReviews } from "@/services/User/DetailProduct/getReviewsProduct";
+import ProductReviewsSkeleton from "@/components/ui/productReviewsSkeleton";
 
 const ProductReviews = ({ productId }) => {
   const [page, setPage] = useState(1);
@@ -19,7 +20,7 @@ const ProductReviews = ({ productId }) => {
   return (
     <section className="py-10 border-t mt-10" id="ulasan">
       {isLoading ? (
-        <p>Loading ulasan...</p>
+        <ProductReviewsSkeleton />
       ) : (
         <>
           <h2 className="text-lg font-bold text-gray-900 mb-6 uppercase">

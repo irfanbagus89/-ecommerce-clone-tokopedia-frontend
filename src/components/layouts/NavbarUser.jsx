@@ -36,12 +36,14 @@ const NavbarUser = () => {
       ${isScrolled ? "fixed top-0 left-0 shadow-md z-50" : "relative"} `}
     >
       <div className="flex items-center py-4 px-6 gap-4 w-full justify-center">
-        <Image
-          src="https://p16-assets-sg.tokopedia-static.net/tos-alisg-i-cqp9s0kcd0-sg/assets-tokopedia-lite/v2/zeus/production/e5b8438b.svg"
-          alt="Logo"
-          width={145}
-          height={32}
-        />
+        <Link href={'/'}>
+          <Image
+            src="https://p16-assets-sg.tokopedia-static.net/tos-alisg-i-cqp9s0kcd0-sg/assets-tokopedia-lite/v2/zeus/production/e5b8438b.svg"
+            alt="Logo"
+            width={145}
+            height={32}
+          />
+        </Link>
 
         <div className="w-[1253px]">
           <Input
@@ -56,7 +58,7 @@ const NavbarUser = () => {
           </span>
         ) : (
           <div className="flex gap-4">
-            <Link href={'/cart'}>
+            <Link href={"/cart"}>
               <ShoppingCart className="text-gray-500" />
             </Link>
             <Bell className="text-gray-500" />

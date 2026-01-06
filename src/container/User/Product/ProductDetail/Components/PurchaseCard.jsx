@@ -21,18 +21,18 @@ const PurchaseCard = ({ product, selectedVariant, data }) => {
     if (newQty > activeVariant.stock) newQty = activeVariant.stock;
     setQty(newQty);
   };
+
   const handleAddToCart = async () => {
     const payload = {
       sellerId: data.seller.id,
       productId: data.id,
       variantId: activeVariant.id,
       quantity: Number(qty),
+      type: "insert",
     };
-    console.log(payload, "tes");
 
     try {
       const res = await trigger(payload);
-      console.log("ADD TO CART SUCCESS:", res);
     } catch (error) {
       console.error("ADD TO CART ERROR:", error);
     }

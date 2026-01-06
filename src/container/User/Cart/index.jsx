@@ -1,119 +1,256 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import formatRupiah from "@/lib/currencyHelper";
+import { useMyCart } from "@/services/User/Cart/getMyCart";
+import { useCreateCart } from "@/services/User/DetailProduct/createCart";
+import ProductCartSkeleton from "@/components/ui/productCartSkeleton";
 
 const CartPage = () => {
-  const [checked, setChecked] = useState(true);
-  const price = 2584000;
+  const { data, isLoading, mutate } = useMyCart();
+  const [checkedItems, setCheckedItems] = useState({});
+  const { trigger, isMutating } = useCreateCart();
+
+  const sellers = data?.sellers || [];
+
+  const isChecked = (id) => checkedItems[id] ?? true;
+
+  const toggleItem = (id) => {
+    setCheckedItems((prev) => ({
+      ...prev,
+      [id]: !isChecked(id),
+    }));
+  };
+
+  const isSellerChecked = (seller) => {
+    return seller.items.every((item) => isChecked(item.cart_item_id));
+  };
+
+  const toggleSeller = (seller) => {
+    const checked = isSellerChecked(seller);
+
+    setCheckedItems((prev) => {
+      const next = { ...prev };
+      seller.items.forEach((item) => {
+        next[item.cart_item_id] = !checked;
+      });
+      return next;
+    });
+  };
+
+  const getItemPrice = (item) => {
+    return item.price !== null ? item.price : item.original_price;
+  };
+
+  const getOriginalPrice = (item) => {
+    if (!item.discount) return null;
+    return item.original_price;
+  };
+
+  const totalQty = sellers.reduce((sum, seller) => {
+    return (
+      sum +
+      seller.items.reduce((s, item) => {
+        if (!isChecked(item.cart_item_id)) return s;
+        return s + item.quantity;
+      }, 0)
+    );
+  }, 0);
+
+  const totalPrice = sellers.reduce((sum, seller) => {
+    return (
+      sum +
+      seller.items.reduce((s, item) => {
+        if (!isChecked(item.cart_item_id)) return s;
+        return s + getItemPrice(item) * item.quantity;
+      }, 0)
+    );
+  }, 0);
+
+  const handleActionCart = async (sellerId, productId, variantId, qty) => {
+    const payload = {
+      sellerId: sellerId,
+      productId: productId,
+      variantId: variantId,
+      quantity: Number(qty),
+    };
+    const res = await trigger(payload);
+    if (res.Message.statusCode == 201) {
+      mutate();
+    }
+  };
 
   return (
     <div className="container mx-auto py-2">
-      <h1 className="text-xl font-bold mb-4">Keranjang</h1>
+      {isLoading ? (
+        <ProductCartSkeleton/>
+      ) : (
+        <>
+          <h1 className="text-xl font-bold mb-4">Keranjang</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <Card>
-            <CardContent className="flex items-center gap-2 py-4">
-              <Checkbox
-                className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                checked={checked}
-                onCheckedChange={() => setChecked(!checked)}
-              />
-              <span className="text-sm font-medium">Pilih Semua (1)</span>
-              <Button variant="ghost" className="ml-auto text-green-600">
-                Hapus
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-4">
+              {sellers.map((seller) => (
+                <Card key={seller.seller_id}>
+                  <CardContent className="p-4 space-y-4 pt-0!">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                        checked={isSellerChecked(seller)}
+                        onCheckedChange={() => toggleSeller(seller)}
+                      />
+                      <span className="font-semibold">
+                        {seller.seller_name}
+                      </span>
+                    </div>
 
-          <Card>
-            <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                  checked={checked}
-                />
-                <span className="font-semibold">COC Komputer</span>
-              </div>
+                    <Separator />
 
-              <Separator />
+                    {seller.items.map((item) => (
+                      <div
+                        key={item.cart_item_id}
+                        className="flex items-center gap-4"
+                      >
+                        <Checkbox
+                          className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                          checked={isChecked(item.cart_item_id)}
+                          onCheckedChange={() => toggleItem(item.cart_item_id)}
+                        />
 
-              <div className="flex items-center gap-4">
-                <Checkbox
-                  className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                  checked={checked}
-                />
+                        <Image
+                          src={item.image_url}
+                          alt={item.product_name}
+                          width={64}
+                          height={64}
+                          className="rounded"
+                        />
 
-                <Image
-                  src="/cpu.png"
-                  alt="Ryzen 5"
-                  width={64}
-                  height={64}
-                  className="rounded"
-                />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">
+                            {item.product_name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.variant_name}
+                          </p>
 
-                <div className="flex-1">
-                  <p className="text-sm font-medium">AMD Ryzen 5 8500G</p>
-                  <p className="font-semibold mt-1">Rp2.584.000</p>
-                </div>
+                          <p className="font-bold mt-1">
+                            {formatRupiah(getItemPrice(item))}
+                          </p>
 
-                <div className="flex items-center gap-2">
-                  <Trash2 className="w-5 h-5 text-muted-foreground" />
+                          {item.discount && (
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="bg-red-100 text-red-600 text-xs font-bold px-1.5 rounded-sm">
+                                {item.discount}%
+                              </span>
+                              <span className="text-xs text-gray-400 line-through">
+                                {formatRupiah(getOriginalPrice(item))}
+                              </span>
+                            </div>
+                          )}
+                        </div>
 
-                  <div className="flex items-center border rounded-md">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-none text-gray-500 hover:text-green-600"
-                      onClick
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <span className="h-8 w-12 border-0 text-center focus-visible:ring-0 p-0 text-sm font-bold leading-8">
-                      {1}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-none text-green-600 hover:text-green-700"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                        <div className="flex items-center gap-2">
+                          {item.quantity > 1 ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="rounded-none text-green-600 hover:text-green-700"
+                              onClick={() =>
+                                handleActionCart(
+                                  seller.seller_id,
+                                  item.product_id,
+                                  item.variant_id,
+                                  0
+                                )
+                              }
+                            >
+                              <Trash2 className="w-5 h-5 text-muted-foreground" />
+                            </Button>
+                          ) : (
+                            <></>
+                          )}
+                          <div className="flex items-center border rounded-md">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="rounded-none text-green-600 hover:text-green-700"
+                              onClick={() =>
+                                handleActionCart(
+                                  seller.seller_id,
+                                  item.product_id,
+                                  item.variant_id,
+                                  item.quantity - 1
+                                )
+                              }
+                            >
+                              {item.quantity > 1 ? (
+                                <Minus className="h-4 w-4" />
+                              ) : (
+                                <Trash2 className="w-5 h-5 text-muted-foreground" />
+                              )}
+                            </Button>
 
-        <Card className="h-fit">
-          <CardHeader className="font-semibold">Ringkasan belanja</CardHeader>
+                            <span className="w-10 text-center font-bold">
+                              {item.quantity}
+                            </span>
 
-          <CardContent className="space-y-4">
-            <div className="flex justify-between text-sm">
-              <span>Total</span>
-              <span className="font-semibold">
-                {checked ? `Rp${price.toLocaleString("id-ID")}` : "-"}
-              </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              disabled={item.quantity >= item.stock}
+                              className="rounded-none text-green-600 hover:text-green-700"
+                              onClick={() =>
+                                handleActionCart(
+                                  seller.seller_id,
+                                  item.product_id,
+                                  item.variant_id,
+                                  item.quantity + 1
+                                )
+                              }
+                            >
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              ))}
             </div>
 
-            <Button variant="outline" className="w-full justify-between">
-              {checked
-                ? "Lagi belum ada promo, nih"
-                : "Pilih barang dulu sebelum pakai promo"}
-              <span>›</span>
-            </Button>
+            <Card className="h-fit">
+              <CardHeader className="font-semibold">
+                Ringkasan belanja
+              </CardHeader>
 
-            <Button className="w-full" disabled={!checked}>
-              Beli {checked && "(1)"}
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span>Total</span>
+                  <span className="font-bold">
+                    {totalQty > 0 ? formatRupiah(totalPrice) : "-"}
+                  </span>
+                </div>
+
+                <Button variant="outline" className="w-full justify-between">
+                  {totalQty > 0
+                    ? "Lagi belum ada promo, nih"
+                    : "Pilih barang dulu sebelum pakai promo"}
+                  <span>›</span>
+                </Button>
+
+                <Button className="w-full" disabled={totalQty === 0}>
+                  Beli {totalQty > 0 && `(${totalQty})`}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
     </div>
   );
 };

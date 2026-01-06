@@ -9,6 +9,7 @@ import ProductReviews from "./Components/ProductReview";
 import { useProductDetail } from "@/services/User/DetailProduct/getDetailProduct";
 import { useState } from "react";
 import ProductRekomendasiSection from "./Components/ProductRekomendasiSection";
+import ProductDetailSkeleton from "@/components/ui/productDetailSkeleton";
 
 const ProductDetailPage = () => {
   const params = useParams();
@@ -40,7 +41,7 @@ const ProductDetailPage = () => {
   return (
     <div className="min-h-screen bg-white pb-20 font-sans">
       {isLoading ? (
-        <></>
+        <ProductDetailSkeleton/>
       ) : (
         <>
           <div className="container mx-auto px-4 py-4">
