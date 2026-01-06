@@ -14,21 +14,23 @@ const ProductInfo = ({ product, setActiveVariant }) => {
   const [isClamped, setIsClamped] = useState(false);
 
   const [selectedVariant, setSelectedVariant] = useState(
-    product?.variants[0]?.id
+    product?.variants?.[0]?.id
   );
-  const activeVariant = product?.variants.find((v) => v.id === selectedVariant);
+
+  const activeVariant = product?.variants?.find(
+    (v) => v.id === selectedVariant
+  );
 
   useEffect(() => {
-    setActiveVariant(selectedVariant);
+    if (typeof setActiveVariant === "function") {
+      setActiveVariant(selectedVariant);
+    }
   }, [selectedVariant, setActiveVariant]);
 
   useLayoutEffect(() => {
     if (!descRef.current) return;
-
     const el = descRef.current;
-    const isOverflowing = el.scrollHeight > el.clientHeight;
-
-    setIsClamped(isOverflowing);
+    setIsClamped(el.scrollHeight > el.clientHeight);
   }, [product.description]);
 
   return (
@@ -52,8 +54,8 @@ const ProductInfo = ({ product, setActiveVariant }) => {
       <div className="mt-2">
         <h2 className="text-3xl font-extrabold text-gray-900">
           {product.price !== null
-            ? formatRupiah(product.price + activeVariant.price)
-            : formatRupiah(product.original_price + activeVariant.price)}
+            ? formatRupiah(product.price + (activeVariant?.price || 0))
+            : formatRupiah(product.original_price + (activeVariant?.price || 0))}
         </h2>
 
         {product.discount ? (
@@ -65,7 +67,9 @@ const ProductInfo = ({ product, setActiveVariant }) => {
               {product.discount}%
             </Badge>
             <span className="text-sm text-gray-400 line-through font-medium">
-              {formatRupiah(product.original_price + activeVariant.price)}
+              {formatRupiah(
+                product.original_price + (activeVariant?.price || 0)
+              )}
             </span>
           </div>
         ) : null}
@@ -77,7 +81,7 @@ const ProductInfo = ({ product, setActiveVariant }) => {
         <h3 className="mb-2 text-sm font-semibold text-gray-900">
           Pilih tipe:
           <span className="font-normal text-gray-500">
-            {activeVariant.name}
+            {activeVariant?.name}
           </span>
         </h3>
 
@@ -106,6 +110,7 @@ const ProductInfo = ({ product, setActiveVariant }) => {
 
         <TabsContent value="detail" className="pt-4 text-sm text-gray-700">
           <p
+            ref={descRef}
             className={cn(
               "whitespace-pre-line",
               !showFullDesc && "line-clamp-4"

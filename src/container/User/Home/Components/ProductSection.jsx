@@ -1,107 +1,132 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ProductCard from "@/components/ui/productCard";
+import ProductCardSkeleton from "@/components/ui/productCardSkeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthContext } from "@/contexts/AuthProvider";
-
 import { useProductForYou } from "@/services/User/Home/getProductForYou";
 import { useOfficialProducts } from "@/services/User/Home/getProductOfficial";
-import ProductCardSkeleton from "@/components/ui/productCardSkeleton";
 
 const ProductSection = () => {
   const { isLoggedIn, isLoading } = useAuthContext();
-
   const [activeTab, setActiveTab] = useState("foryou");
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setIsReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   useEffect(() => {
     if (!isLoading) {
-      if (isLoggedIn) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setActiveTab("foryou");
-      } else {
-        setActiveTab("mall");
-      }
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setActiveTab(isLoggedIn ? "foryou" : "mall");
     }
   }, [isLoggedIn, isLoading]);
 
-  const { data: forYouData, isLoading: forYouLoading } = useProductForYou(
-    1,
-    10,
-    activeTab === "foryou"
-  );
+  const {
+    data: forYouData,
+    setSize: setForYouSize,
+    isLoading: forYouLoading,
+    isValidating: forYouValidating,
+  } = useProductForYou(10, activeTab === "foryou");
 
-  const { data: mallData, isLoading: mallLoading } = useOfficialProducts(
-    1,
-    5,
-    activeTab === "mall"
-  );
+  const forYouProducts =
+    forYouData?.flatMap((page) => page?.Data?.products || []) || [];
+
+  const forYouLoadMoreRef = useRef(null);
+
+  useEffect(() => {
+    if (!isReady) return;
+    if (activeTab !== "foryou") return;
+    if (!forYouLoadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !forYouLoading && !forYouValidating) {
+          setForYouSize((prev) => prev + 1);
+        }
+      },
+      { rootMargin: "300px", threshold: 0 }
+    );
+
+    observer.observe(forYouLoadMoreRef.current);
+    return () => observer.disconnect();
+  }, [
+    isReady,
+    activeTab,
+    forYouProducts.length,
+    forYouLoading,
+    forYouValidating,
+    setForYouSize,
+  ]);
+
+  const {
+    data: mallData,
+    setSize: setMallSize,
+    isLoading: mallLoading,
+    isValidating: mallValidating,
+  } = useOfficialProducts(5, activeTab === "mall");
+
+  const mallProducts =
+    mallData?.flatMap((page) => page?.Data?.products || []) || [];
+
+  const mallLoadMoreRef = useRef(null);
+
+  useEffect(() => {
+    if (!isReady) return;
+    if (activeTab !== "mall") return;
+    if (!mallLoadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !mallLoading && !mallValidating) {
+          setMallSize((prev) => prev + 1);
+        }
+      },
+      { rootMargin: "300px", threshold: 0 }
+    );
+
+    observer.observe(mallLoadMoreRef.current);
+    return () => observer.disconnect();
+  }, [
+    isReady,
+    activeTab,
+    mallProducts.length,
+    mallLoading,
+    mallValidating,
+    setMallSize,
+  ]);
+
+  useEffect(() => {
+    if (activeTab === "foryou") setForYouSize(1);
+    if (activeTab === "mall") setMallSize(1);
+  }, [activeTab, setForYouSize, setMallSize]);
+
+  useEffect(() => {
+    if (activeTab !== "mall") return;
+    if (mallLoading || mallValidating) return;
+
+    const scrollable =
+      document.documentElement.scrollHeight > window.innerHeight;
+
+    if (!scrollable) {
+      setMallSize((prev) => prev + 1);
+    }
+  }, [activeTab, mallProducts.length, mallLoading, mallValidating, setMallSize]);
 
   return (
     <div className="p-4">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          {isLoggedIn && (
-            <TabsTrigger value="foryou" className="text-base">
-              For You
-            </TabsTrigger>
-          )}
-
-          <TabsTrigger value="mall">
-            <div className="flex items-center gap-1">
-              <div className="bg-purple-600 text-white p-0.5 rounded-sm flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-3 h-3"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 01.208-1.04z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <span>Mall</span>
-            </div>
-          </TabsTrigger>
+          {isLoggedIn && <TabsTrigger value="foryou">For You</TabsTrigger>}
+          <TabsTrigger value="mall">Mall</TabsTrigger>
         </TabsList>
 
         {isLoggedIn && (
           <TabsContent value="foryou" className="py-4">
-            {forYouLoading ? (
-              <div className="grid grid-cols-5 gap-4">
-                <ProductCardSkeleton />
-                <ProductCardSkeleton />
-                <ProductCardSkeleton />
-                <ProductCardSkeleton />
-                <ProductCardSkeleton />
-              </div>
-            ) : (
-              <div className="grid grid-cols-5 gap-4">
-                {forYouData?.Data?.products?.map((prod) => (
-                  <Link
-                    key={prod.id}
-                    href={`/product/${prod.category_id}/${prod.id}`}
-                  >
-                    <ProductCard data={prod} />
-                  </Link>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        )}
-        <TabsContent value="mall" className="py-4">
-          {mallLoading ? (
             <div className="grid grid-cols-5 gap-4">
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-            </div>
-          ) : (
-            <div className="grid grid-cols-5 gap-4">
-              {mallData?.Data?.products?.map((prod) => (
+              {forYouProducts.map((prod) => (
                 <Link
                   key={prod.id}
                   href={`/product/${prod.category_id}/${prod.id}`}
@@ -109,8 +134,31 @@ const ProductSection = () => {
                   <ProductCard data={prod} />
                 </Link>
               ))}
+              {(forYouLoading || forYouValidating) &&
+                Array.from({ length: 5 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
             </div>
-          )}
+            <div ref={forYouLoadMoreRef} className="h-10" />
+          </TabsContent>
+        )}
+
+        <TabsContent value="mall" className="py-4">
+          <div className="grid grid-cols-5 gap-4">
+            {mallProducts.map((prod) => (
+              <Link
+                key={prod.id}
+                href={`/product/${prod.category_id}/${prod.id}`}
+              >
+                <ProductCard data={prod} />
+              </Link>
+            ))}
+            {(mallLoading || mallValidating) &&
+              Array.from({ length: 5 }).map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+          </div>
+          <div ref={mallLoadMoreRef} className="h-10" />
         </TabsContent>
       </Tabs>
     </div>

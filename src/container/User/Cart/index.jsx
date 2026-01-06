@@ -11,7 +11,7 @@ import { useCreateCart } from "@/services/User/DetailProduct/createCart";
 import ProductCartSkeleton from "@/components/ui/productCartSkeleton";
 
 const CartPage = () => {
-  const { data, isLoading, mutate } = useMyCart();
+  const { data, isLoading, mutate, error } = useMyCart();
   const [checkedItems, setCheckedItems] = useState({});
   const { trigger, isMutating } = useCreateCart();
 
@@ -87,7 +87,9 @@ const CartPage = () => {
   return (
     <div className="container mx-auto py-2">
       {isLoading ? (
-        <ProductCartSkeleton/>
+        <ProductCartSkeleton />
+      ) : error.status == 404 ? (
+        <></>
       ) : (
         <>
           <h1 className="text-xl font-bold mb-4">Keranjang</h1>

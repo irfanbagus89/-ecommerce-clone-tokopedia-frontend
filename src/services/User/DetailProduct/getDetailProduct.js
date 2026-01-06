@@ -1,15 +1,6 @@
-import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher/fetcherApi";
 
-const getProductDetail = async (url) => {
-  const res = await fetcher.get(url);
+export const getDetailProduct = async (productId) => {
+  const res = await fetcher.get(`/products/${productId}`);
   return res.data.Data;
-};
-
-export const useProductDetail = (productId, enabled = true) => {
-  const url = enabled && productId ? `/products/${productId}` : null;
-
-  return useSWR(url, getProductDetail, {
-    refreshInterval: 20000,
-  });
 };

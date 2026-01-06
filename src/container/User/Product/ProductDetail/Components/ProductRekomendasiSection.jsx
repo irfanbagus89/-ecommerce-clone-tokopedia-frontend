@@ -1,3 +1,4 @@
+"use client";
 import ProductCard from "@/components/ui/productCard";
 import ProductCardSkeleton from "@/components/ui/productCardSkeleton";
 import { useRekomendasiProductByStore } from "@/services/User/DetailProduct/getRekomendasiProductByStore";
@@ -6,7 +7,7 @@ import React from "react";
 
 const ProductRekomendasiSection = ({ sellerId, categoryId, id }) => {
   const { data: rekomendasiByStore, isLoading: rekomendasiByStoreLoading } =
-    useRekomendasiProductByStore(1, 10, sellerId, categoryId,id);
+    useRekomendasiProductByStore(1, 10, sellerId, categoryId, id);
   return (
     <section className="py-10" id="product-rekomendasi">
       <h2 className="text-lg font-bold text-gray-900 mb-6 uppercase">

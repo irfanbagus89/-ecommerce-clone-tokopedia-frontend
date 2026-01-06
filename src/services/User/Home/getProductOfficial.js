@@ -1,5 +1,5 @@
 import { fetcher } from "@/lib/fetcher/fetcherApi";
-import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
 
 const getOfficialProducts = async (url) => {
   const res = await fetcher.get(url);
@@ -7,17 +7,25 @@ const getOfficialProducts = async (url) => {
 };
 
 export const useOfficialProducts = (
-  page = 1,
   limit = 5,
   enabled = true
 ) => {
-  const url = enabled
-    ? `/products/official?page=${page}&limit=${limit}`
-    : null;
+  const getKey = (pageIndex, previousPageData) => {
+    // stop kalau data habis
+    if (
+      previousPageData &&
+      previousPageData.page >= previousPageData.totalPages
+    ) {
+      return null;
+    }
 
-  return useSWR(url, getOfficialProducts,{
+    if (!enabled) return null;
+
+    return `/products/official?page=${pageIndex + 1}&limit=${limit}`;
+  };
+
+  return useSWRInfinite(getKey, getOfficialProducts, {
+    revalidateFirstPage: false,
     refreshInterval: 20000,
-    refreshWhenHidden: false,
-    refreshWhenOffline: false,
   });
 };

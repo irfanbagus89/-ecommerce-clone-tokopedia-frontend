@@ -1,14 +1,27 @@
-'use client'
-import ProductDetailPage from '@/container/User/Product/ProductDetail'
-import AppLayout from '@/layout/UserLayout/AppLayout'
-import React from 'react'
+import ProductDetailPage from "@/container/User/Product/ProductDetail";
+import AppLayout from "@/layout/UserLayout/AppLayout";
+import { getDetailProduct } from "@/services/User/DetailProduct/getDetailProduct";
 
-const page = () => {
-  return (
-    <AppLayout>
-        <ProductDetailPage/>
-    </AppLayout>
-  )
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+
+  const data = await getDetailProduct(id);
+
+  return {
+    title: `${data.name} - Harga & Promo Terbaru`,
+    description: data.description.slice(0, 150),
+  };
 }
 
-export default page
+const Page = async ({ params }) => {
+  const { id } = await params;
+
+  const data = await getDetailProduct(id);
+
+  return (
+    <AppLayout>
+      <ProductDetailPage data={data} />
+    </AppLayout>
+  );
+};
+export default Page;

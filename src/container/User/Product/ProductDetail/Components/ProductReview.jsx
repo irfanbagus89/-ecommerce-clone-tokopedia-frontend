@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import ReviewFilter from "./ReviewFilter";
 import ReviewList from "./ReviewList";
