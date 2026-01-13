@@ -1,12 +1,12 @@
 'use client'
 
-import CartPage from "@/container/User/Cart"
+import PaymentPage from "@/container/User/Checkout/Payment"
 import AppLayout from "@/layout/UserLayout/AppLayout"
 
 const page = () => {
   return (
     <AppLayout>
-        <CartPage/>
+        <PaymentPage/>
     </AppLayout>
   )
 }

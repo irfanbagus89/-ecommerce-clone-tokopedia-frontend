@@ -9,9 +9,10 @@ import formatRupiah from "@/lib/currencyHelper";
 import { useMyCart } from "@/services/User/Cart/getMyCart";
 import { useCreateCart } from "@/services/User/DetailProduct/createCart";
 import ProductCartSkeleton from "@/components/ui/productCartSkeleton";
+import Link from "next/link";
 
 const CartPage = () => {
-  const { data, isLoading, mutate, error } = useMyCart();
+  const { data, isLoading, mutate } = useMyCart();
   const [checkedItems, setCheckedItems] = useState({});
   const { trigger, isMutating } = useCreateCart();
 
@@ -88,8 +89,6 @@ const CartPage = () => {
     <div className="container mx-auto py-2">
       {isLoading ? (
         <ProductCartSkeleton />
-      ) : error.status == 404 ? (
-        <></>
       ) : (
         <>
           <h1 className="text-xl font-bold mb-4">Keranjang</h1>
@@ -122,19 +121,22 @@ const CartPage = () => {
                           checked={isChecked(item.cart_item_id)}
                           onCheckedChange={() => toggleItem(item.cart_item_id)}
                         />
-
-                        <Image
-                          src={item.image_url}
-                          alt={item.product_name}
-                          width={64}
-                          height={64}
-                          className="rounded"
-                        />
+                        <Link href={`/product/${item.category_id}/${item.product_id}`}>
+                          <Image
+                            src={item.image_url}
+                            alt={item.product_name}
+                            width={64}
+                            height={64}
+                            className="rounded"
+                          />
+                        </Link>
 
                         <div className="flex-1">
-                          <p className="text-sm font-medium">
-                            {item.product_name}
-                          </p>
+                          <Link href={`/product/${item.category_id}/${item.product_id}`}>
+                            <p className="text-sm font-medium">
+                              {item.product_name}
+                            </p>
+                          </Link>
                           <p className="text-xs text-muted-foreground">
                             {item.variant_name}
                           </p>
@@ -244,10 +246,11 @@ const CartPage = () => {
                     : "Pilih barang dulu sebelum pakai promo"}
                   <span>›</span>
                 </Button>
-
-                <Button className="w-full" disabled={totalQty === 0}>
-                  Beli {totalQty > 0 && `(${totalQty})`}
-                </Button>
+                <Link href={"/checkout/payment"}>
+                  <Button className="w-full" disabled={totalQty === 0}>
+                    Beli {totalQty > 0 && `(${totalQty})`}
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>

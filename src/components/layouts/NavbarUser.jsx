@@ -58,7 +58,7 @@ const NavbarUser = () => {
           </span>
         ) : (
           <div className="flex gap-4">
-            <Link href={"/cart"}>
+            <Link href={"/checkout/cart"}>
               <ShoppingCart className="text-gray-500" />
             </Link>
             <Bell className="text-gray-500" />
