@@ -129,7 +129,7 @@ const NavbarUser = () => {
                   className="w-56"
                   sideOffset={28}
                 >
-                  <DropdownMenuItem>Dashboard Toko</DropdownMenuItem>
+                  <DropdownMenuItem onClick={(() => router.push('/dashboard'))}>Dashboard Toko</DropdownMenuItem>
                   <DropdownMenuItem>Kelola Produk</DropdownMenuItem>
                   <DropdownMenuItem>Pesanan</DropdownMenuItem>
                   <DropdownMenuItem>Chat Pembeli</DropdownMenuItem>

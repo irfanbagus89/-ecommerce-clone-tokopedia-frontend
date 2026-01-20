@@ -4,11 +4,9 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import ProductStatusBadge from "@/container/Seller/Products/components/ProductStatusBadge";
 
-/* =========================
-   DUMMY DATA
-========================= */
 const productsDummy = [
   {
     id: "PRD-001",
@@ -39,10 +37,6 @@ const productsDummy = [
     status: "active",
   },
 ];
-
-/* =========================
-   ProductPage
-========================= */
 const ProductPage = () => {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState([]);
@@ -112,13 +106,12 @@ const ProductPage = () => {
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="p-3 text-left">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={
                       selected.length === filteredProducts.length &&
                       filteredProducts.length > 0
                     }
-                    onChange={toggleSelectAll}
+                    onCheckedChange={toggleSelectAll}
                   />
                 </th>
                 <th className="p-3 text-left">Nama Produk</th>
@@ -147,10 +140,9 @@ const ProductPage = () => {
                   className="border-b last:border-b-0 hover:bg-gray-50"
                 >
                   <td className="p-3">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={selected.includes(product.id)}
-                      onChange={() => toggleSelect(product.id)}
+                      onCheckedChange={() => toggleSelect(product.id)}
                     />
                   </td>
 

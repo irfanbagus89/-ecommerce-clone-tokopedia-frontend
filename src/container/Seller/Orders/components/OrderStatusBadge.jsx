@@ -1,3 +1,5 @@
+import { Badge } from "@/components/ui/badge";
+
 const OrderStatusBadge = ({ status }) => {
   const statusMap = {
     pending: "Menunggu Pembayaran",
@@ -7,7 +9,7 @@ const OrderStatusBadge = ({ status }) => {
     cancelled: "Dibatalkan",
   };
 
-  const colorMap = {
+  const classMap = {
     pending: "bg-yellow-100 text-yellow-700",
     processing: "bg-blue-100 text-blue-700",
     shipped: "bg-purple-100 text-purple-700",
@@ -16,9 +18,9 @@ const OrderStatusBadge = ({ status }) => {
   };
 
   return (
-    <span className={`text-xs px-2 py-1 rounded ${colorMap[status]}`}>
+    <Badge className={`text-xs px-2 py-1 ${classMap[status]}`}>
       {statusMap[status]}
-    </span>
+    </Badge>
   );
 };
 

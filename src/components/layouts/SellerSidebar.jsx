@@ -37,7 +37,7 @@ const SellerSidebar = () => {
           return (
             <Link
               key={i}
-              href={`/seller${menu.href}`}
+              href={`${menu.href}`}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition ${
                 active
                   ? "bg-green-50 text-[#03AC0E] font-medium"

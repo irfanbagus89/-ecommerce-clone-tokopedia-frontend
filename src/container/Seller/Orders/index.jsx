@@ -52,9 +52,6 @@ const tabs = [
   { label: "Dibatalkan", value: "cancelled" },
 ];
 
-/* =========================
-   PAGE
-========================= */
 const OrdersPage = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
@@ -72,7 +69,6 @@ const OrdersPage = () => {
 
   return (
     <div className="p-6">
-      {/* HEADER */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Pesanan</h1>
         <p className="text-sm text-gray-500">
@@ -80,7 +76,6 @@ const OrdersPage = () => {
         </p>
       </div>
 
-      {/* TABS */}
       <div className="flex gap-2 mb-4 overflow-x-auto">
         {tabs.map((tab) => (
           <Button
@@ -99,7 +94,6 @@ const OrdersPage = () => {
         ))}
       </div>
 
-      {/* FILTER BAR */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <Input
           placeholder="Cari invoice atau nama pembeli..."
@@ -108,7 +102,6 @@ const OrdersPage = () => {
         />
       </div>
 
-      {/* ORDER LIST */}
       <div className="space-y-4">
         {filteredOrders.length === 0 && (
           <div className="text-center text-gray-500 py-12">
