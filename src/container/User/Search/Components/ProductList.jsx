@@ -5,17 +5,15 @@ import ProductCard from "@/components/ui/productCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Handbag } from "lucide-react";
 
-const productsDummy = Array.from({ length: 8 }).map((_, i) => ({
-  id: i,
-  name: "AMD Ryzen 5 8400F",
-  price: "Rp1.999.000",
-  store: "Enter Komputer",
-  rating: 4.9,
-  sold: 70,
-  image: "/cpu.png",
-}));
-
-const ProductList = ({ sort, setSort, page, setPage, data, isLoading, activeTab, setActiveTab }) => {
+const ProductList = ({
+  sort,
+  setSort,
+  data,
+  isLoading,
+  isValidating,
+  activeTab,
+  setActiveTab,
+}) => {
   return (
     <div className="space-y-2">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -29,25 +27,18 @@ const ProductList = ({ sort, setSort, page, setPage, data, isLoading, activeTab,
         </TabsList>
 
         <TabsContent value="products">
-          {isLoading ? (
+          {isLoading && data.length === 0 ? (
             <div className="grid grid-cols-5 gap-4">
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
+              {Array.from({ length: 5 }).map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Menampilkan 1-60 barang
-                </p>
-
+              <div className="flex items-center justify-end">
                 <CustomSelect
                   value={sort}
                   onValueChange={(val) => {
-                    setPage(1);
                     setSort(val);
                   }}
                   options={[
@@ -58,8 +49,9 @@ const ProductList = ({ sort, setSort, page, setPage, data, isLoading, activeTab,
                   className="w-[180px] h-9 text-sm"
                 />
               </div>
+
               <div className="grid grid-cols-5 gap-4 mt-5">
-                {data.products.map((prod) => (
+                {data.map((prod) => (
                   <Link
                     key={prod.id}
                     href={`/product/${prod.category_id}/${prod.id}`}
@@ -68,6 +60,14 @@ const ProductList = ({ sort, setSort, page, setPage, data, isLoading, activeTab,
                   </Link>
                 ))}
               </div>
+
+              {isValidating && (
+                <div className="grid grid-cols-5 gap-4 mt-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <ProductCardSkeleton key={i} />
+                  ))}
+                </div>
+              )}
             </>
           )}
         </TabsContent>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Bell, Mail, Search, ShoppingCart } from "lucide-react";
 import { Button } from "../ui/button";
@@ -12,10 +12,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+
 
 const NavbarUser = () => {
   const { isLoggedIn, user, logout } = useAuthContext();
   const [isScrolled, setIsScrolled] = useState(false);
+  const router = useRouter();
+  const [search, setSearch] = useState("");
+
+  const handleSearch = (e) => {
+    if (e.key === "Enter" && search.trim()) {
+      router.push(`/search?s=${encodeURIComponent(search)}`);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,7 +46,7 @@ const NavbarUser = () => {
       ${isScrolled ? "fixed top-0 left-0 shadow-md z-50" : "relative"} `}
     >
       <div className="flex items-center py-4 px-6 gap-4 w-full justify-center">
-        <Link href={'/'}>
+        <Link href={"/"}>
           <Image
             src="https://p16-assets-sg.tokopedia-static.net/tos-alisg-i-cqp9s0kcd0-sg/assets-tokopedia-lite/v2/zeus/production/e5b8438b.svg"
             alt="Logo"
@@ -48,8 +58,11 @@ const NavbarUser = () => {
         <div className="w-[1253px]">
           <Input
             leftIcon={<Search className="text-gray-500" />}
-            placeholder={"Cari di tokopedia"}
-            className={"max-w-[1253px] w-full"}
+            placeholder="Cari di tokopedia"
+            className="max-w-[1253px] w-full"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleSearch}
           />
         </div>
         {!isLoggedIn ? (
