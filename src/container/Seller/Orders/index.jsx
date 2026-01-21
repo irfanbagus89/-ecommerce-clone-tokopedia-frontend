@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import OrderCard from "@/container/Seller/Orders/components/OrderCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 /* =========================
    DUMMY DATA
@@ -53,19 +53,7 @@ const tabs = [
 ];
 
 const OrdersPage = () => {
-  const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
-
-  const filteredOrders = ordersDummy.filter((order) => {
-    const matchStatus =
-      activeTab === "all" ? true : order.status === activeTab;
-
-    const matchSearch =
-      order.id.toLowerCase().includes(search.toLowerCase()) ||
-      order.buyer.toLowerCase().includes(search.toLowerCase());
-
-    return matchStatus && matchSearch;
-  });
 
   return (
     <div className="p-6">
@@ -76,43 +64,50 @@ const OrdersPage = () => {
         </p>
       </div>
 
-      <div className="flex gap-2 mb-4 overflow-x-auto">
-        {tabs.map((tab) => (
-          <Button
-            key={tab.value}
-            size="sm"
-            variant={activeTab === tab.value ? "default" : "outline"}
-            className={
-              activeTab === tab.value
-                ? "bg-[#03AC0E] hover:bg-green-700"
-                : ""
-            }
-            onClick={() => setActiveTab(tab.value)}
-          >
-            {tab.label}
-          </Button>
-        ))}
-      </div>
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList>
+          {tabs.map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <Input
-          placeholder="Cari invoice atau nama pembeli..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+        {tabs.map((tab) => {
+          const filteredOrders = ordersDummy.filter((order) => {
+            const matchStatus =
+              tab.value === "all" ? true : order.status === tab.value;
 
-      <div className="space-y-4">
-        {filteredOrders.length === 0 && (
-          <div className="text-center text-gray-500 py-12">
-            Tidak ada pesanan
-          </div>
-        )}
+            const matchSearch =
+              order.id.toLowerCase().includes(search.toLowerCase()) ||
+              order.buyer.toLowerCase().includes(search.toLowerCase());
 
-        {filteredOrders.map((order) => (
-          <OrderCard key={order.id} order={order} />
-        ))}
-      </div>
+            return matchStatus && matchSearch;
+          });
+
+          return (
+            <TabsContent key={tab.value} value={tab.value}>
+              <div className="flex flex-col md:flex-row gap-4 mb-6">
+                <Input
+                  placeholder="Cari invoice atau nama pembeli..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+              <div className="space-y-4 mt-4">
+                {filteredOrders.length === 0 && (
+                  <div className="text-center text-gray-500 py-12">
+                    Tidak ada pesanan
+                  </div>
+                )}
+                {filteredOrders.map((order) => (
+                  <OrderCard key={order.id} order={order} />
+                ))}
+              </div>
+            </TabsContent>
+          );
+        })}
+      </Tabs>
     </div>
   );
 };

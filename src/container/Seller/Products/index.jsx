@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import ProductStatusBadge from "@/container/Seller/Products/components/ProductStatusBadge";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const productsDummy = [
   {
@@ -40,16 +42,14 @@ const productsDummy = [
 const ProductPage = () => {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState([]);
-
+  const router = useRouter();
   const filteredProducts = productsDummy.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const toggleSelect = (id) => {
     setSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
@@ -72,8 +72,9 @@ const ProductPage = () => {
           </p>
         </div>
 
-        <Button className="bg-[#03AC0E] hover:bg-green-700">
-          + Tambah Produk
+        <Button className="bg-[#03AC0E] hover:bg-green-700" onClick={(() => router.push('/products/create'))}>
+          <Plus className="h-4 w-4" />
+          Tambah Produk
         </Button>
       </div>
 
@@ -100,7 +101,7 @@ const ProductPage = () => {
       )}
 
       {/* TABLE */}
-      <Card className='p-0'>
+      <Card className="p-0">
         <CardContent className="p-0 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
@@ -125,10 +126,7 @@ const ProductPage = () => {
             <tbody>
               {filteredProducts.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={6}
-                    className="text-center py-10 text-gray-500"
-                  >
+                  <td colSpan={6} className="text-center py-10 text-gray-500">
                     Produk tidak ditemukan
                   </td>
                 </tr>
@@ -148,9 +146,7 @@ const ProductPage = () => {
 
                   <td className="p-3">
                     <p className="font-medium">{product.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {product.id}
-                    </p>
+                    <p className="text-xs text-gray-500">{product.id}</p>
                   </td>
 
                   <td className="p-3">

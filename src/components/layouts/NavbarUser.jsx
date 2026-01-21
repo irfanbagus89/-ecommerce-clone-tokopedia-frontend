@@ -16,7 +16,6 @@ import { useRouter } from "next/navigation";
 
 const NavbarUser = () => {
   const { isLoggedIn, user, logout } = useAuthContext();
-  const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter();
   const [search, setSearch] = useState("");
 
@@ -26,23 +25,9 @@ const NavbarUser = () => {
     }
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <nav
-      className={`w-full flex flex-col border-b border-gray-200 bg-white transition-all 
-      ${isScrolled ? "fixed top-0 left-0 shadow-md z-50" : "relative"} `}
+      className={`w-full flex flex-col border-b border-gray-200 bg-white transition-all fixed top-0 left-0 shadow-md z-50`}
     >
       <div className="flex items-center py-4 px-6 gap-4 w-full justify-center">
         {/* LOGO */}
@@ -129,7 +114,9 @@ const NavbarUser = () => {
                   className="w-56"
                   sideOffset={28}
                 >
-                  <DropdownMenuItem onClick={(() => router.push('/dashboard'))}>Dashboard Toko</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+                    Dashboard Toko
+                  </DropdownMenuItem>
                   <DropdownMenuItem>Kelola Produk</DropdownMenuItem>
                   <DropdownMenuItem>Pesanan</DropdownMenuItem>
                   <DropdownMenuItem>Chat Pembeli</DropdownMenuItem>

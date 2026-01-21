@@ -11,9 +11,7 @@ const SellerLayout = ({ children }) => {
       <div className="flex-1 flex flex-col">
         <SellerTopbar />
 
-        <main className="p-6">
-          <div className="max-w-7xl mx-auto">{children}</div>
-        </main>
+        <main className="w-full">{children}</main>
       </div>
     </div>
   );
