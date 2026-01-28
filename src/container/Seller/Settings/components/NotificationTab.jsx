@@ -1,6 +1,6 @@
 const { Button } = require("@/components/ui/button");
 const { Card, CardHeader, CardTitle, CardContent } = require("@/components/ui/card");
-const { Switch } = require("@radix-ui/react-switch");
+import { Switch } from "@/components/ui/switch";
 
 const NotificationTab = () => {
   return (

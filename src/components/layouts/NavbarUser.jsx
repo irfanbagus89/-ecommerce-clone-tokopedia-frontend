@@ -1,18 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Input } from "../ui/input";
 import { Bell, Mail, Search, ShoppingCart } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthContext } from "@/contexts/AuthProvider";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { CustomDropdown } from "../ui/dropdown-menu"; 
 
 const NavbarUser = () => {
   const { isLoggedIn, user, logout } = useAuthContext();
@@ -26,9 +20,7 @@ const NavbarUser = () => {
   };
 
   return (
-    <nav
-      className={`w-full flex flex-col border-b border-gray-200 bg-white transition-all fixed top-0 left-0 shadow-md z-50`}
-    >
+    <nav className="w-full flex flex-col border-b border-gray-200 bg-white transition-all fixed top-0 left-0 shadow-md z-50">
       <div className="flex items-center py-4 px-6 gap-4 w-full justify-center">
         {/* LOGO */}
         <Link href={"/"}>
@@ -80,61 +72,47 @@ const NavbarUser = () => {
         ) : (
           <div className="border-l border-gray-300 px-4 flex items-center gap-6 text-gray-600">
             {/* DROPDOWN TOKO */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <CustomDropdown
+              trigger={
                 <div className="cursor-pointer text-sm font-medium hover:text-black">
                   Toko
                 </div>
-              </DropdownMenuTrigger>
-              {user?.role !== "seller" && (
-                <DropdownMenuContent
-                  align="center"
-                  className="w-72 p-4"
-                  sideOffset={28}
-                >
-                  <p className="text-sm text-gray-600 mb-3">
-                    Anda belum memiliki toko.
-                  </p>
-
-                  <Button className="w-full bg-green-600 hover:bg-green-700 mb-2">
-                    Buka Toko Gratis
-                  </Button>
-
-                  <p className="text-xs text-gray-500">
-                    Tokomu hilang?{" "}
-                    <span className="text-green-600 cursor-pointer hover:underline">
-                      Pelajari Selengkapnya
-                    </span>
-                  </p>
-                </DropdownMenuContent>
-              )}
-              {user?.role === "seller" && (
-                <DropdownMenuContent
-                  align="center"
-                  className="w-56"
-                  sideOffset={28}
-                >
-                  <DropdownMenuItem onClick={() => router.push("/dashboard")}>
-                    Dashboard Toko
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>Kelola Produk</DropdownMenuItem>
-                  <DropdownMenuItem>Pesanan</DropdownMenuItem>
-                  <DropdownMenuItem>Chat Pembeli</DropdownMenuItem>
-                  <DropdownMenuItem>Statistik</DropdownMenuItem>
-                  <DropdownMenuItem>Pengaturan Toko</DropdownMenuItem>
-
-                  <DropdownMenuSeparator />
-
-                  <DropdownMenuItem className="text-red-500">
-                    Tutup Toko
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              )}
-            </DropdownMenu>
+              }
+              contentProps={{ align: "center", sideOffset: 28 }}
+              items={
+                user?.role !== "seller"
+                  ? [
+                      {
+                        type: "label",
+                        label: "Anda belum memiliki toko.",
+                      },
+                      {
+                        label: "Buka Toko Gratis",
+                        onClick: () => router.push("/seller/register"),
+                      },
+                    ]
+                  : [
+                      {
+                        label: "Dashboard Toko",
+                        onClick: () => router.push("/dashboard"),
+                      },
+                      { label: "Kelola Produk" },
+                      { label: "Pesanan" },
+                      { label: "Chat Pembeli" },
+                      { label: "Statistik" },
+                      { label: "Pengaturan Toko" },
+                      { type: "separator" },
+                      {
+                        label: "Tutup Toko",
+                        variant: "destructive",
+                      },
+                    ]
+              }
+            />
 
             {/* DROPDOWN USER */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <CustomDropdown
+              trigger={
                 <div className="flex items-center gap-2 cursor-pointer">
                   {user?.avatar ? (
                     <Image
@@ -151,28 +129,21 @@ const NavbarUser = () => {
                     {user?.name ?? "User"}
                   </span>
                 </div>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent
-                align="start"
-                className="w-44"
-                sideOffset={24}
-              >
-                <DropdownMenuItem>Pembelian</DropdownMenuItem>
-                <DropdownMenuItem>Wishlist</DropdownMenuItem>
-                <DropdownMenuItem>Toko Favorit</DropdownMenuItem>
-                <DropdownMenuItem>Pengaturan</DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem
-                  className="text-red-500 focus:text-red-500"
-                  onClick={logout}
-                >
-                  Keluar
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              }
+              contentProps={{ align: "start", sideOffset: 24 }}
+              items={[
+                { label: "Pembelian" },
+                { label: "Wishlist" },
+                { label: "Toko Favorit" },
+                { label: "Pengaturan" },
+                { type: "separator" },
+                {
+                  label: "Keluar",
+                  variant: "destructive",
+                  onClick: logout,
+                },
+              ]}
+            />
           </div>
         )}
       </div>
