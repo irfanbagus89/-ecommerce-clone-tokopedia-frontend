@@ -17,7 +17,7 @@ import ProductInfo from "@/container/User/Product/ProductDetail/Components/Produ
 
 import { useSubCategories } from "@/services/Seller/Products/getSubCategory";
 import { useCreateProduct } from "@/services/Seller/Products/createProduct";
-import { useCreateProductStore } from "@/store/Seller/createProductStore";
+import { useCreateProductStore } from "@/store/Seller/Products/createProductStore";
 
 import { toast } from "@/lib/toast";
 import { set, z } from "zod";

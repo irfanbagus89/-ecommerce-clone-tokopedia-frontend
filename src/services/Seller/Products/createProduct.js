@@ -34,4 +34,4 @@ export const createProduct = async (url, { arg }) => {
 };
 
 export const useCreateProduct = () =>
-  useSWRMutation("/products", createProduct);
+  useSWRMutation("/seller/products", createProduct);
