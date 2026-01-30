@@ -8,9 +8,13 @@ import ProductStatusBadge from "@/container/Seller/Products/components/ProductSt
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { CustomTable } from "@/components/ui/table";
 import { CustomPagination } from "@/components/ui/pagination";
 import { useMyProducts } from "@/store/Seller/Products/getMyProducts";
+import formatRupiah from "@/lib/currencyHelper";
+import { CustomTable } from "@/components/ui/table";
+import useDeleteVariant from "@/services/Seller/Products/deleteVariant";
+import { mutate } from "swr";
+import { toast } from "@/lib/toast";
 
 const ProductPage = () => {
   const router = useRouter();
@@ -19,13 +23,17 @@ const ProductPage = () => {
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(1);
 
-  const { data } = useMyProducts({
+  const [sort, setSort] = useState("name");
+  const [order, setOrder] = useState("asc");
+
+  const { data, mutate } = useMyProducts({
     page,
     limit: 10,
     search,
-    sort: "name",
-    order: "asc",
+    sort,
+    order,
   });
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useDeleteVariant();
 
   const products = data?.products || [];
   const totalPages = data?.totalPages || 1;
@@ -67,17 +75,32 @@ const ProductPage = () => {
         label: "Produk",
         sortable: true,
         render: (row) => (
-          <div>
+          <div className="max-w-[200px] whitespace-normal wrap-break-word">
             <p className="font-medium">{row.name}</p>
             <p className="text-xs text-gray-500">{row.variant_name}</p>
           </div>
         ),
       },
       {
-        key: "price",
-        label: "Harga",
+        key: "original_price",
+        label: "Harga Asli",
         sortable: true,
-        render: (row) => `Rp ${row.price.toLocaleString("id-ID")}`,
+        render: (row) => formatRupiah(row.original_price),
+      },
+      {
+        key: "price",
+        label: "Harga Sekarang",
+        sortable: true,
+        render: (row) =>
+          row.price != null
+            ? formatRupiah(row.price)
+            : formatRupiah(row.original_price),
+      },
+      {
+        key: "stock",
+        label: "Stock",
+        sortable: true,
+        render: (row) => <span>{row.stock}</span>,
       },
       {
         key: "active",
@@ -91,22 +114,31 @@ const ProductPage = () => {
         key: "action",
         label: "Aksi",
         sortable: false,
-        render: () => (
-          <div className="flex justify-end gap-2">
-            <Button size="sm" variant="outline">
+        render: (row) => (
+          <div className="flex justify-start gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => router.push(`/products/${row.id}`)}
+            >
               Edit
             </Button>
-            <Button size="sm" variant="outline">
-              Arsip
-            </Button>
-            <Button size="sm" variant="destructive">
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={async () => {
+                await deleteTrigger({ id: row.variant_id });
+                toast.success("Varian dihapus");
+                mutate();
+              }}
+            >
               Hapus
             </Button>
           </div>
         ),
       },
     ],
-    [products.length, selected, toggleSelect, toggleSelectAll]
+    [products.length, selected, toggleSelect, toggleSelectAll, router, deleteTrigger, mutate]
   );
 
   return (
@@ -128,6 +160,7 @@ const ProductPage = () => {
           Tambah Produk
         </Button>
       </div>
+
       {/* SEARCH */}
       <Input
         placeholder="Cari produk..."
@@ -138,6 +171,7 @@ const ProductPage = () => {
         }}
         className="mb-4"
       />
+
       {/* BULK */}
       {selected.length > 0 && (
         <div className="flex gap-3 mb-4 text-sm">
@@ -150,9 +184,19 @@ const ProductPage = () => {
           </Button>
         </div>
       )}
-      {/* TABLE */}
-      <CustomTable columns={columns} data={products} />
-      {/* PAGINATION */}
+
+      <CustomTable
+        columns={columns}
+        data={products}
+        sortKey={sort}
+        sortOrder={order}
+        onSortChange={(key, direction) => {
+          setSort(key);
+          setOrder(direction);
+          setPage(1);
+        }}
+      />
+
       <div className="mt-6">
         <CustomPagination
           page={page}

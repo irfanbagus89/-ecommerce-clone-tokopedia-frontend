@@ -1,34 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { CustomSelect } from "@/components/ui/select";
-
-import ProductForm from "./components/ProductForm";
-import ProductImages from "./components/ProductImages";
-import ProductVariants from "./components/ProductVariants";
-import ProductStatus from "./components/ProductStatus";
-import ProductPreview from "./components/ProductPreview";
-
 import { useSubCategories } from "@/services/Seller/Products/getSubCategory";
-import { useCreateProduct } from "@/services/Seller/Products/createProduct";
+import useGetProduct from "@/services/Seller/Products/getProduct";
+import { useUpdateProduct } from "@/services/Seller/Products/updateProduct";
+import { useDeleteVariant } from "@/services/Seller/Products/deleteVariant";
 import { useCreateProductStore } from "@/store/Seller/Products/createProductStore";
-
 import { toast } from "@/lib/toast";
 import { z } from "zod";
 
-/** allow number + single dot */
-const onlyNumberDecimal = (value) =>
-  value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
-const onlyInteger = (value) => value.replace(/[^0-9]/g, "");
+import ProductForm from "../CreateProduct/components/ProductForm";
+import ProductImages from "../CreateProduct/components/ProductImages";
+import ProductVariants from "../CreateProduct/components/ProductVariants";
+import ProductStatus from "../CreateProduct/components/ProductStatus";
+import ProductPreview from "../CreateProduct/components/ProductPreview";
 
 const createProductSchema = z.object({
   name: z.string().min(1, "Nama produk wajib diisi"),
@@ -49,18 +39,17 @@ const createProductSchema = z.object({
     .max(5, "Maksimal 5 foto"),
 });
 
-const CreateProductPage = () => {
-  const router = useRouter();
-  const { data: subCategories, isLoading } = useSubCategories();
-  const { trigger: createProduct, isMutating } = useCreateProduct();
+const onlyNumberDecimal = (value) =>
+  value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
 
+const EditProductPage = () => {
+  const router = useRouter();
+  const params = useParams();
+  const id = params?.id;
+
+  const { data: subCategories, isLoading } = useSubCategories();
   const { form, setField, setVariants, setImages, resetForm } =
     useCreateProductStore();
-
-  // When entering the Create page, ensure stored form is reset (start fresh)
-  useEffect(() => {
-    resetForm();
-  }, [resetForm]);
 
   const {
     handleSubmit,
@@ -82,25 +71,62 @@ const CreateProductPage = () => {
   const images = useWatch({ control, name: "images" }) || [];
   const variants = useWatch({ control, name: "variants" }) || [];
 
-  useEffect(() => {
-    reset(form);
-  }, [form, reset]);
+  const { trigger: updateTrigger, isMutating: isUpdating } = useUpdateProduct();
+  const { trigger: deleteTrigger, isMutating: isDeleting } = useDeleteVariant();
 
-  const categoryOptions =
-    subCategories?.map((item) => ({
-      value: item.id,
-      label: item.name,
-    })) || [];
+  // use SWR hook to fetch product data
+  const {
+    data: res,
+    error: fetchError,
+    isLoading: swrLoading,
+  } = useGetProduct(id);
+
+  useEffect(() => {
+    const apply = () => {
+      if (!res) return;
+      // map backend Data to form shape
+      const mapped = {
+        name: res.name || "",
+        description: res.description || "",
+        price: String(res.price || "0"),
+        category_id: res.category?.id || res.category_id || "",
+        active: !!res.active,
+        images: Array.isArray(res.images) ? res.images : [],
+        variants: (res.variants || []).map((v) => ({
+          id: v.id,
+          name: v.name || "",
+          price: String(v.price || "0"),
+          stock: String(v.stock || "0"),
+        })),
+      };
+
+      reset(mapped);
+      // sync store
+      setField("name", mapped.name);
+      setField("description", mapped.description);
+      setField("price", mapped.price);
+      setField("category_id", mapped.category_id);
+      setField("active", mapped.active);
+      setImages(mapped.images);
+      setVariants(mapped.variants);
+    };
+
+    apply();
+  }, [res, reset, setField, setImages, setVariants]);
+
+  useEffect(() => {
+    if (fetchError) {
+      console.error(fetchError);
+      toast.error("Gagal mengambil data produk");
+    }
+  }, [fetchError]);
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-
     const remainingSlots = 5 - images.length;
     if (remainingSlots <= 0) return;
-
     const selected = files.slice(0, remainingSlots);
     const newImages = [...images, ...selected];
-
     setValue("images", newImages);
     setImages(newImages);
   };
@@ -124,55 +150,49 @@ const CreateProductPage = () => {
     setVariants(newVariants);
   };
 
-  const removeVariant = (index) => {
-    if (variants.length === 1) return;
-    const newVariants = variants.filter((_, i) => i !== index);
-    setValue("variants", newVariants);
-    setVariants(newVariants);
+  const removeVariant = async (index) => {
+    const v = variants[index];
+    if (v?.id) {
+      try {
+        await deleteTrigger({ id: v.id });
+        toast.success("Varian dihapus");
+        const newVariants = variants.filter((_, i) => i !== index);
+        setValue("variants", newVariants);
+        setVariants(newVariants);
+      } catch (err) {
+        console.error(err);
+        toast.error("Gagal menghapus varian");
+      }
+    } else {
+      if (variants.length === 1) return;
+      const newVariants = variants.filter((_, i) => i !== index);
+      setValue("variants", newVariants);
+      setVariants(newVariants);
+    }
   };
 
-  /** PREVIEW */
-  const previewProduct = {
-    title: name || "Nama Produk",
-    description: description || "Deskripsi produk",
-    price: Number(price || 0),
-    original_price: Number(price || 0),
-    stock: variants.reduce((a, b) => a + Number(b.stock || 0), 0),
-    images:
-      images.length > 0
-        ? images.map((file) =>
-            typeof file === "string" ? file : URL.createObjectURL(file)
-          )
-        : ["https://picsum.photos/seed/1/600/600"],
-    variants: variants.map((v, i) => ({
-      id: i,
-      name: v.name || `Varian ${i + 1}`,
-      price: Number(v.price || 0),
-      stock: Number(v.stock || 0),
-    })),
-  };
+  const categoryOptions = (subCategories || []).map((item) => ({
+    value: item.id,
+    label: item.name,
+  }));
 
   const onSubmit = async (data) => {
+    if (!id) return;
     try {
-      await createProduct(data);
-      toast.success("Produk berhasil dibuat");
-      resetForm();
-      setTimeout(() => {
-        router.back();
-      }, 3000);
+      await updateTrigger({ id, data });
+      toast.success("Produk berhasil diperbarui");
+      setTimeout(() => router.back(), 1500);
     } catch (err) {
       console.error(err);
-      toast.error("Gagal menyimpan produk");
+      toast.error("Gagal memperbarui produk");
     }
   };
 
   return (
     <div className="p-6 w-full mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Tambah Produk</h1>
-        <p className="text-sm text-gray-500">
-          Lengkapi detail produk dengan benar
-        </p>
+        <h1 className="text-2xl font-bold">Edit Produk</h1>
+        <p className="text-sm text-gray-500">Ubah detail produk</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -193,7 +213,6 @@ const CreateProductPage = () => {
             onlyNumberDecimal={onlyNumberDecimal}
           />
 
-          {/* IMAGES */}
           <ProductImages
             images={images}
             onImageUpload={handleImageUpload}
@@ -201,7 +220,6 @@ const CreateProductPage = () => {
             error={errors.images?.message}
           />
 
-          {/* VARIANTS */}
           <ProductVariants
             variants={variants}
             addVariant={addVariant}
@@ -213,7 +231,6 @@ const CreateProductPage = () => {
             }
           />
 
-          {/* STATUS */}
           <ProductStatus
             active={active}
             setValue={setValue}
@@ -222,6 +239,7 @@ const CreateProductPage = () => {
 
           <div className="flex justify-end gap-3">
             <Button
+              type="button"
               variant="outline"
               onClick={() => {
                 resetForm();
@@ -230,23 +248,38 @@ const CreateProductPage = () => {
             >
               Batal
             </Button>
-            <Button
-              type="submit"
-              disabled={isMutating}
-              className="bg-[#03AC0E]"
-            >
-              {isMutating ? "Menyimpan..." : "Simpan Produk"}
+            <Button type="submit" className="bg-[#03AC0E]">
+              Simpan Perubahan
             </Button>
           </div>
         </form>
 
-        {/* PREVIEW */}
         <div className="lg:col-span-5 sticky top-6">
-          <ProductPreview previewProduct={previewProduct} />
+          <ProductPreview
+            previewProduct={{
+              title: name || "Nama Produk",
+              description: description || "Deskripsi produk",
+              price: Number(price || 0),
+              original_price: Number(price || 0),
+              stock: variants.reduce((a, b) => a + Number(b.stock || 0), 0),
+              images:
+                images.length > 0
+                  ? images.map((img) =>
+                      typeof img === "string" ? img : URL.createObjectURL(img)
+                    )
+                  : ["https://picsum.photos/seed/1/600/600"],
+              variants: variants.map((v, i) => ({
+                id: v.id || i,
+                name: v.name || `Varian ${i + 1}`,
+                price: Number(v.price || 0),
+                stock: Number(v.stock || 0),
+              })),
+            }}
+          />
         </div>
       </div>
     </div>
   );
 };
 
-export default CreateProductPage;
+export default EditProductPage;

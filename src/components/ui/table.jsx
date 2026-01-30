@@ -52,38 +52,24 @@ function TableCell({ className, ...props }) {
   );
 }
 
-function CustomTable({ columns, data }) {
-  const [sortKey, setSortKey] = React.useState(null);
-  const [sortOrder, setSortOrder] = React.useState("asc");
-
+function CustomTable({
+  columns,
+  data,
+  sortKey,
+  sortOrder,
+  onSortChange,
+}) {
   function handleSort(col) {
-    if (!col.sortable) return;
+    if (!col.sortable || !onSortChange) return;
+
+    let nextOrder = "asc";
 
     if (sortKey === col.key) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortKey(col.key);
-      setSortOrder("asc");
+      nextOrder = sortOrder === "asc" ? "desc" : "asc";
     }
+
+    onSortChange(col.key, nextOrder);
   }
-
-  const sortedData = React.useMemo(() => {
-    if (!sortKey) return data;
-
-    return [...data].sort((a, b) => {
-      const aVal = a[sortKey];
-      const bVal = b[sortKey];
-
-      if (typeof aVal === "string")
-        return sortOrder === "asc"
-          ? aVal.localeCompare(bVal)
-          : bVal.localeCompare(aVal);
-      if (typeof aVal === "number")
-        return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
-
-      return 0;
-    });
-  }, [data, sortKey, sortOrder]);
 
   return (
     <div className="rounded-lg border bg-white shadow-sm">
@@ -118,7 +104,7 @@ function CustomTable({ columns, data }) {
         </TableHeader>
 
         <TableBody>
-          {sortedData.map((row, i) => (
+          {data.map((row, i) => (
             <TableRow key={i}>
               {columns.map((col) => (
                 <TableCell key={col.key}>
