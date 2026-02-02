@@ -3,7 +3,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 const ProductDetailSkeleton = () => {
   return (
     <div className="container mx-auto px-4">
-      {/* Breadcrumb */}
       <div className="mb-6 flex gap-2">
         <Skeleton className="h-4 w-16" />
         <Skeleton className="h-4 w-24" />
@@ -11,7 +10,6 @@ const ProductDetailSkeleton = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-x-10 gap-y-8 lg:grid-cols-12">
-        {/* Gallery */}
         <div className="lg:col-span-4">
           <div className="sticky top-24 space-y-4">
             <Skeleton className="aspect-square w-full rounded-lg" />
@@ -26,17 +24,15 @@ const ProductDetailSkeleton = () => {
           </div>
         </div>
 
-        {/* Product Info */}
         <div className="lg:col-span-5 space-y-4">
-          <Skeleton className="h-6 w-3/4" /> {/* Title */}
-          <Skeleton className="h-4 w-32" /> {/* Sold + rating */}
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-32" />
 
           <div className="space-y-2">
-            <Skeleton className="h-8 w-40" /> {/* Price */}
-            <Skeleton className="h-4 w-24" /> {/* Discount */}
+            <Skeleton className="h-8 w-40" />
+            <Skeleton className="h-4 w-24" />
           </div>
 
-          {/* Variant */}
           <div className="space-y-2">
             <Skeleton className="h-4 w-24" />
             <div className="flex gap-2">
@@ -49,7 +45,6 @@ const ProductDetailSkeleton = () => {
             </div>
           </div>
 
-          {/* Description */}
           <div className="space-y-2 pt-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-4 w-full" />
@@ -57,13 +52,12 @@ const ProductDetailSkeleton = () => {
           </div>
         </div>
 
-        {/* Purchase Card */}
         <div className="hidden lg:block lg:col-span-3">
           <div className="sticky top-24 space-y-4 rounded-xl border p-4">
-            <Skeleton className="h-10 w-full" /> {/* Qty */}
-            <Skeleton className="h-6 w-32" /> {/* Stock */}
-            <Skeleton className="h-12 w-full rounded-lg" /> {/* Add to cart */}
-            <Skeleton className="h-12 w-full rounded-lg" /> {/* Buy now */}
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-12 w-full rounded-lg" />
+            <Skeleton className="h-12 w-full rounded-lg" />
             <div className="flex gap-4">
               <Skeleton className="h-4 w-16" />
               <Skeleton className="h-4 w-16" />

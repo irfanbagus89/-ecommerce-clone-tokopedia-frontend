@@ -79,7 +79,6 @@ const LoginPage = () => {
     >
       <Card className="w-[420px] shadow-lg">
         <CardContent className="space-y-4 p-6">
-          {/* HEADER */}
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-semibold">Masuk ke Tokopedia</h1>
             <Link
@@ -90,7 +89,6 @@ const LoginPage = () => {
             </Link>
           </div>
 
-          {/* FORM */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
               placeholder="Nomor HP atau Email"
@@ -132,7 +130,6 @@ const LoginPage = () => {
             </Button>
           </form>
 
-          {/* DIVIDER */}
           <div className="flex items-center gap-2">
             <Separator className="flex-1" />
             <span className="text-xs text-muted-foreground">
@@ -141,7 +138,6 @@ const LoginPage = () => {
             <Separator className="flex-1" />
           </div>
 
-          {/* SOCIAL */}
           <div className="space-y-2">
             <Button variant="outline" className="w-full">
               Scan Kode QR

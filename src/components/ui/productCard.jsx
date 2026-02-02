@@ -17,7 +17,7 @@ function ProductCard({ className, data, ...props }) {
     rating,
     sold,
     location,
-    flashSale, // Object: { isActive: boolean, stockProgress: number, statusText: string }
+    flashSale,
   } = data;
 
   return (
@@ -28,7 +28,6 @@ function ProductCard({ className, data, ...props }) {
       )}
       {...props}
     >
-      {/* --- Bagian Gambar --- */}
       <div className="relative aspect-square overflow-hidden bg-gray-100">
         <Image
           src={image_url}
@@ -39,24 +38,19 @@ function ProductCard({ className, data, ...props }) {
         />
       </div>
 
-      {/* --- Bagian Konten --- */}
       <CardContent className="flex flex-1 flex-col justify-between gap-2 p-3">
         <div>
-          {/* Judul Produk (Maks 2 baris) */}
           <h3 className="mb-2 line-clamp-2 text-sm font-medium leading-tight text-gray-800">
             {name}
           </h3>
 
-          {/* Harga */}
           {price !== null ? (
             <div className="flex flex-col">
               <span className="text-base font-bold text-gray-900">
                 {formatRupiah(price)}
               </span>
 
-              {/* Harga Coret */}
               <div className="mt-0.5 flex items-center gap-1">
-                {/* Diskon kecil sebelah harga (jika bukan flash sale) */}
                 {discount && !flashSale?.isActive && (
                   <span className="rounded bg-red-100 px-1 text-[10px] font-bold text-red-600">
                     {discount}%
@@ -76,9 +70,7 @@ function ProductCard({ className, data, ...props }) {
           )}
         </div>
 
-        {/* --- Footer Card: Switch Tampilan --- */}
         {flashSale?.isActive ? (
-          // TAMPILAN 1: FLASH SALE (Progress Bar)
           <div className="mt-2 space-y-1">
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
               <div
@@ -91,7 +83,6 @@ function ProductCard({ className, data, ...props }) {
             </p>
           </div>
         ) : (
-          // TAMPILAN 2: STANDAR (Rating & Lokasi)
           <div className="mt-1 space-y-1">
             <div className="flex items-center gap-1 text-xs text-gray-500">
               {rating !== null && rating !== undefined && (

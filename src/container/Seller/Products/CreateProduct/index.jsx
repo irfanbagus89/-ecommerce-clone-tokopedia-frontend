@@ -5,12 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { CustomSelect } from "@/components/ui/select";
 
 import ProductForm from "./components/ProductForm";
 import ProductImages from "./components/ProductImages";
@@ -193,7 +188,6 @@ const CreateProductPage = () => {
             onlyNumberDecimal={onlyNumberDecimal}
           />
 
-          {/* IMAGES */}
           <ProductImages
             images={images}
             onImageUpload={handleImageUpload}
@@ -201,7 +195,6 @@ const CreateProductPage = () => {
             error={errors.images?.message}
           />
 
-          {/* VARIANTS */}
           <ProductVariants
             variants={variants}
             addVariant={addVariant}
@@ -213,7 +206,6 @@ const CreateProductPage = () => {
             }
           />
 
-          {/* STATUS */}
           <ProductStatus
             active={active}
             setValue={setValue}
@@ -240,7 +232,6 @@ const CreateProductPage = () => {
           </div>
         </form>
 
-        {/* PREVIEW */}
         <div className="lg:col-span-5 sticky top-6">
           <ProductPreview previewProduct={previewProduct} />
         </div>

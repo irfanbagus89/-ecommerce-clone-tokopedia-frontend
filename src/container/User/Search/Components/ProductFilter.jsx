@@ -41,7 +41,6 @@ const ProductFilter = ({
     <div className="space-y-6">
       <h2 className="text-lg font-semibold">Filter</h2>
 
-      {/* Jenis Toko */}
       <div className="space-y-2">
         <h3 className="font-medium">Jenis toko</h3>
         {productsMeta?.store_type?.map((store) => (
@@ -55,7 +54,6 @@ const ProductFilter = ({
         ))}
       </div>
 
-      {/* Lokasi */}
       <div className="space-y-2">
         <h3 className="font-medium">Lokasi</h3>
         {productsMeta?.locations?.map((city) => (
@@ -69,7 +67,6 @@ const ProductFilter = ({
         ))}
       </div>
 
-      {/* Harga */}
       <div className="space-y-2">
         <h3 className="font-medium">Harga</h3>
         <div className="flex gap-2">

@@ -125,7 +125,6 @@ function CustomPagination({
   return (
     <Pagination className={className}>
       <PaginationContent>
-        {/* Previous */}
         <PaginationItem>
           <PaginationPrevious
             onClick={() => page > 1 && onPageChange(page - 1)}
@@ -133,7 +132,6 @@ function CustomPagination({
           />
         </PaginationItem>
 
-        {/* Pages */}
         {pages.map((item, index) => (
           <PaginationItem key={index}>
             {item === "ellipsis" ? (
@@ -149,7 +147,6 @@ function CustomPagination({
           </PaginationItem>
         ))}
 
-        {/* Next */}
         <PaginationItem>
           <PaginationNext
             onClick={() => page < totalPages && onPageChange(page + 1)}

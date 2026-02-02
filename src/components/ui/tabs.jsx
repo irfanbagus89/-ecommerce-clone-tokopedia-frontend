@@ -17,7 +17,6 @@ function Tabs({
   );
 }
 
-// Custom: Background transparan, lebar full, dan ada border abu-abu di bawah
 function TabsList({
   className,
   ...props
@@ -33,7 +32,6 @@ function TabsList({
   );
 }
 
-// Custom: Style underline hijau saat aktif, font bold
 function TabsTrigger({
   className,
   ...props
@@ -42,12 +40,9 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        // Base styles
         "relative flex items-center justify-center gap-2 whitespace-nowrap px-4 py-3 text-sm font-bold text-gray-500 transition-all",
         "hover:text-gray-700",
-        // Focus styles
         "focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
-        // Active State Styles (Border bawah hijau & Text hijau)
         "data-[state=active]:border-b-2 data-[state=active]:border-green-600 data-[state=active]:text-green-600 data-[state=active]:shadow-none",
         className
       )}

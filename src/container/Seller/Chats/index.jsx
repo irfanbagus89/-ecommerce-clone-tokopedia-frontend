@@ -65,7 +65,6 @@ const ChatPage = () => {
       <h1 className="text-2xl font-bold mb-4">Chat Pembeli</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-4 h-full">
-        {/* CHAT LIST */}
         <Card className="p-4 flex flex-col">
           <Input
             placeholder="Cari chat..."
@@ -86,9 +85,7 @@ const ChatPage = () => {
           </div>
         </Card>
 
-        {/* CHAT WINDOW */}
         <Card className="flex flex-col">
-          {/* HEADER */}
           <div className="p-4 border-b">
             <p className="font-semibold">{activeChat.name}</p>
             <p className="text-xs text-gray-500">
@@ -96,14 +93,12 @@ const ChatPage = () => {
             </p>
           </div>
 
-          {/* MESSAGES */}
           <div className="flex-1 p-4 overflow-auto space-y-3 bg-gray-50">
             {activeChat.messages.map((msg, i) => (
               <ChatMessage key={i} msg={msg} />
             ))}
           </div>
 
-          {/* INPUT */}
           <div className="p-4 border-t flex gap-2">
             <Input
               placeholder="Ketik pesan..."

@@ -59,13 +59,11 @@ const StatisticsPage = () => {
 
   return (
     <div className="p-6">
-      {/* HEADER */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Statistik</h1>
         <p className="text-sm text-gray-500">Analisa performa tokomu</p>
       </div>
 
-      {/* SUMMARY */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
         {dummyData.map((item, index) => (
           <Card key={index}>
@@ -77,7 +75,6 @@ const StatisticsPage = () => {
         ))}
       </div>
 
-      {/* FILTER */}
       <div className="flex gap-2 mb-4">
         <Button
           size="sm"
@@ -102,9 +99,7 @@ const StatisticsPage = () => {
         </Button>
       </div>
 
-      {/* CHARTS */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
-        {/* SALES LINE */}
         <Card>
           <CardHeader>
             <CardTitle>Grafik Penjualan</CardTitle>
@@ -128,7 +123,6 @@ const StatisticsPage = () => {
           </CardContent>
         </Card>
 
-        {/* TOP PRODUCTS */}
         <Card>
           <CardHeader>
             <CardTitle>Produk Terlaris</CardTitle>
@@ -147,7 +141,6 @@ const StatisticsPage = () => {
         </Card>
       </div>
 
-      {/* TABLE */}
       <Card>
         <CardHeader>
           <CardTitle>Detail Produk Terlaris</CardTitle>

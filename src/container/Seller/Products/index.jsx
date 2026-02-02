@@ -148,7 +148,6 @@ const ProductPage = () => {
 
   return (
     <div className="p-6">
-      {/* HEADER */}
       <div className="flex justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Kelola Produk</h1>
@@ -166,7 +165,6 @@ const ProductPage = () => {
         </Button>
       </div>
 
-      {/* SEARCH */}
       <Input
         placeholder="Cari produk..."
         value={search}
@@ -177,7 +175,6 @@ const ProductPage = () => {
         className="mb-4"
       />
 
-      {/* BULK */}
       {selected.length > 0 && (
         <div className="flex gap-3 mb-4 text-sm">
           <span>{selected.length} produk dipilih</span>

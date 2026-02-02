@@ -19,7 +19,6 @@ const ProductGallery = ({ images }) => {
         />
       </div>
 
-      {/* Thumbnails */}
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {images.map((img, index) => (
           <button

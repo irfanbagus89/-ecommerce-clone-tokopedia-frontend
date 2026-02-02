@@ -22,7 +22,6 @@ const NavbarUser = () => {
   return (
     <nav className="w-full flex flex-col border-b border-gray-200 bg-white transition-all fixed top-0 left-0 shadow-md z-50">
       <div className="flex items-center py-4 px-6 gap-4 w-full justify-center">
-        {/* LOGO */}
         <Link href={"/"}>
           <Image
             src="https://p16-assets-sg.tokopedia-static.net/tos-alisg-i-cqp9s0kcd0-sg/assets-tokopedia-lite/v2/zeus/production/e5b8438b.svg"
@@ -32,7 +31,6 @@ const NavbarUser = () => {
           />
         </Link>
 
-        {/* SEARCH */}
         <div className="w-[1253px]">
           <Input
             leftIcon={<Search className="text-gray-500" />}
@@ -44,7 +42,6 @@ const NavbarUser = () => {
           />
         </div>
 
-        {/* ICONS */}
         {!isLoggedIn ? (
           <span className="pl-4">
             <Bell className="text-gray-500" />
@@ -59,7 +56,6 @@ const NavbarUser = () => {
           </div>
         )}
 
-        {/* AUTH */}
         {!isLoggedIn ? (
           <div className="border-l border-gray-300 px-4 flex gap-4">
             <Link href={"/login"}>
@@ -71,7 +67,6 @@ const NavbarUser = () => {
           </div>
         ) : (
           <div className="border-l border-gray-300 px-4 flex items-center gap-6 text-gray-600">
-            {/* DROPDOWN TOKO */}
             <CustomDropdown
               trigger={
                 <div className="cursor-pointer text-sm font-medium hover:text-black">
@@ -110,7 +105,6 @@ const NavbarUser = () => {
               }
             />
 
-            {/* DROPDOWN USER */}
             <CustomDropdown
               trigger={
                 <div className="flex items-center gap-2 cursor-pointer">

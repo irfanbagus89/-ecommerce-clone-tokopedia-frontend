@@ -11,7 +11,7 @@ function Input({
   placeholder,
   value,
   onChange,
-  floating = false, // ⬅️ OPSIONAL
+  floating = false,
   ...props
 }) {
   const showFloating = floating && (label || placeholder);
@@ -29,7 +29,6 @@ function Input({
           className
         )}
       >
-        {/* FLOATING LABEL (OPSIONAL) */}
         {showFloating && (
           <span
             className={cn(
@@ -57,7 +56,7 @@ function Input({
           aria-invalid={!!error}
           value={value}
           onChange={onChange}
-          placeholder={floating ? "" : placeholder} // ⬅️ normal kalau tidak floating
+          placeholder={floating ? "" : placeholder}
           className={cn(
             "w-full bg-transparent outline-none placeholder:text-gray-400",
             "selection:bg-[#03AC0E] selection:text-white",
@@ -75,7 +74,6 @@ function Input({
         )}
       </div>
 
-      {/* Error message */}
       {error && (
         <p className="mt-1 text-sm text-red-500">
           {error}

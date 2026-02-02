@@ -34,7 +34,6 @@ function Textarea({
           }}
         />
 
-        {/* Counter di dalam textarea */}
         {maxLength && showCount && (
           <span className="pointer-events-none absolute bottom-1.5 right-2 text-xs text-gray-400">
             {count} / {maxLength}
@@ -42,7 +41,6 @@ function Textarea({
         )}
       </div>
 
-      {/* Error message */}
       {error && (
         <p className="mt-1 text-sm text-red-500">
           {error}

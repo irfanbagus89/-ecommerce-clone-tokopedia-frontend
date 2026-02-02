@@ -6,7 +6,6 @@ const OrderCard = ({ order }) => {
   return (
     <Card className='p-0'>
       <CardContent className="p-4 space-y-4">
-        {/* HEADER */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
           <div>
             <p className="font-semibold">{order.id}</p>
@@ -18,14 +17,12 @@ const OrderCard = ({ order }) => {
           <OrderStatusBadge status={order.status} />
         </div>
 
-        {/* ITEMS */}
         <div className="text-sm text-gray-700">
           {order.items.map((item, i) => (
             <p key={i}>• {item}</p>
           ))}
         </div>
 
-        {/* FOOTER */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <p className="font-semibold">
             Total: Rp {order.total.toLocaleString("id-ID")}

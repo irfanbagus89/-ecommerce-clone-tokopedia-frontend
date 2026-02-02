@@ -43,7 +43,6 @@ const FooterUser = () => {
     <footer className="bg-white pt-10 pb-4 text-sm text-gray-600 border-t border-gray-100 shadow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap justify-between">
-          {/* Kolom Links (Tokopedia, Buy, Sell) */}
           <div className="flex w-full md:w-3/5 lg:w-3/4 flex-wrap">
             {footerLinks.map((section) => (
               <div key={section.title} className="w-1/2 sm:w-1/3 mb-6 md:mb-0">
@@ -66,7 +65,6 @@ const FooterUser = () => {
             ))}
           </div>
 
-          {/* Kolom Download App & Follow Us */}
           <div className="w-full md:w-2/5 lg:w-1/4">
             <div className="mb-4">
               <h4 className="font-semibold text-base text-gray-800 mb-4">
@@ -95,15 +93,11 @@ const FooterUser = () => {
               </div>
             </div>
 
-            {/* Follow Us */}
-            
           </div>
         </div>
 
-        {/* Garis Pemisah */}
         <hr className="my-8 border-gray-200" />
 
-        {/* Bagian Bawah Footer (Copyright & T&C) */}
         <div className="flex flex-col sm:flex-row justify-between items-center text-xs text-gray-400">
           <div className="mb-3 sm:mb-0">
             © 2009-2024. PT Tokopedia. All rights reserved.

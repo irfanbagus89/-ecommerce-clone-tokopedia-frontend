@@ -212,7 +212,7 @@ function CustomCarousel({
   items = [],
   renderItem,
   orientation = "horizontal",
-  arrowVisibility = "always", // "always" | "none" | "hover"
+  arrowVisibility = "always",
   showDots = true,
   loop = true,
   autoPlay = false,
@@ -243,7 +243,6 @@ function CustomCarousel({
     };
   }, [carouselApi, onSelect]);
 
-  // autoplay
   React.useEffect(() => {
     if (!autoPlay || !carouselApi) return;
 
@@ -254,7 +253,6 @@ function CustomCarousel({
     return () => clearInterval(interval);
   }, [autoPlay, autoPlayInterval, carouselApi]);
 
-  // helper untuk menampilkan arrows
   const showArrow = (direction) => {
     if (arrowVisibility === "always") return true;
     if (arrowVisibility === "none") return false;
@@ -279,7 +277,6 @@ function CustomCarousel({
         ))}
       </CarouselContent>
 
-      {/* Arrows */}
       {orientation === "horizontal" && showArrow("prev") && (
         <CarouselPrevious>
           <ArrowLeft />
@@ -293,7 +290,6 @@ function CustomCarousel({
         </CarouselNext>
       )}
 
-      {/* Dots */}
       {showDots && (
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
           {items.map((_, index) => (

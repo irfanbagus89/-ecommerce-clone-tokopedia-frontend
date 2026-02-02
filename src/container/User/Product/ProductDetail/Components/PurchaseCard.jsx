@@ -82,7 +82,6 @@ const PurchaseCard = ({ product, selectedVariant, data }) => {
           </button>
         </div>
 
-        {/* Subtotal */}
         <div className="flex justify-between items-center mb-6">
           <span className="text-gray-500 font-medium">Subtotal</span>
           <span className="font-bold text-xl text-gray-900">

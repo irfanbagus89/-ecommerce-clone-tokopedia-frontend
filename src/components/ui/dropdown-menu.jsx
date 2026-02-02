@@ -232,7 +232,6 @@ function renderItems(items, radioValue, onRadioChange) {
       );
     }
 
-    // default item
     return (
       <DropdownMenuItem
         key={i}

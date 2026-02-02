@@ -62,7 +62,6 @@ const RegisterPage = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <div className="flex w-full max-w-4xl overflow-hidden rounded-xl bg-white">
-        {/* LEFT */}
         <div className="flex w-1/2 flex-col items-center justify-center bg-green-50 p-10 text-center">
           <Image
             src="https://p16-images-comn-sg.tokopedia-static.net/tos-alisg-i-zr7vqa5nfb-sg/img/user/register_icon_new.png~tplv-zr7vqa5nfb-image.image"
