@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,13 +13,13 @@ import { useMyProducts } from "@/store/Seller/Products/getMyProducts";
 import formatRupiah from "@/lib/currencyHelper";
 import { CustomTable } from "@/components/ui/table";
 import useDeleteVariant from "@/services/Seller/Products/deleteVariant";
-import { mutate } from "swr";
 import { toast } from "@/lib/toast";
 
 const ProductPage = () => {
   const router = useRouter();
 
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(1);
 
@@ -29,10 +29,15 @@ const ProductPage = () => {
   const { data, mutate } = useMyProducts({
     page,
     limit: 10,
-    search,
+    search: debouncedSearch,
     sort,
     order,
   });
+
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedSearch(search), 500);
+    return () => clearTimeout(handler);
+  }, [search]);
   const { trigger: deleteTrigger, isMutating: isDeleting } = useDeleteVariant();
 
   const products = data?.products || [];
