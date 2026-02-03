@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { useRouter } from "next/navigation";
-import { CustomDropdown } from "../ui/dropdown-menu"; 
+import { CustomDropdown } from "../ui/dropdown-menu";
 
 const NavbarUser = () => {
   const { isLoggedIn, user, logout } = useAuthContext();
@@ -67,43 +67,11 @@ const NavbarUser = () => {
           </div>
         ) : (
           <div className="border-l border-gray-300 px-4 flex items-center gap-6 text-gray-600">
-            <CustomDropdown
-              trigger={
-                <div className="cursor-pointer text-sm font-medium hover:text-black">
-                  Toko
-                </div>
-              }
-              contentProps={{ align: "center", sideOffset: 28 }}
-              items={
-                user?.role !== "seller"
-                  ? [
-                      {
-                        type: "label",
-                        label: "Anda belum memiliki toko.",
-                      },
-                      {
-                        label: "Buka Toko Gratis",
-                        onClick: () => router.push("/seller/register"),
-                      },
-                    ]
-                  : [
-                      {
-                        label: "Dashboard Toko",
-                        onClick: () => router.push("/dashboard"),
-                      },
-                      { label: "Kelola Produk" },
-                      { label: "Pesanan" },
-                      { label: "Chat Pembeli" },
-                      { label: "Statistik" },
-                      { label: "Pengaturan Toko" },
-                      { type: "separator" },
-                      {
-                        label: "Tutup Toko",
-                        variant: "destructive",
-                      },
-                    ]
-              }
-            />
+            <Link href={"/dashboard"}>
+              <div className="cursor-pointer text-sm font-medium hover:text-black">
+                Toko
+              </div>
+            </Link>
 
             <CustomDropdown
               trigger={

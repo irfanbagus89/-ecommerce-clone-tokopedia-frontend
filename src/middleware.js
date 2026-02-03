@@ -43,7 +43,7 @@ export function middleware(request) {
   }
 
   if (payload.role !== "seller") {
-    return NextResponse.redirect(new URL("/unauthorized", request.url));
+    return NextResponse.redirect(new URL("/home", request.url));
   }
 
   return NextResponse.next();
