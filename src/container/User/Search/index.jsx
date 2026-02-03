@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 const ProductSearchPage = () => {
   const [sort, setSort] = useState("relevan");
   const [activeTab, setActiveTab] = useState("products");
+  const [showFilter, setShowFilter] = useState(false);
   const searchParams = useSearchParams();
 
   const [filters, setFilters] = useState({
@@ -71,19 +72,39 @@ const ProductSearchPage = () => {
   }, [minPrice, maxPrice, setSize]);
 
   return (
-    <div className="container mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-        <ProductFilter
-          filters={filters}
-          setFilters={setFilters}
-          productsMeta={meta}
-          minPrice={minPrice}
-          maxPrice={maxPrice}
-          setMaxPrice={setMaxPrice}
-          setMinPrice={setMinPrice}
-          setSize={setSize}
-        />
+    <div className="container mx-auto px-3 sm:px-4 py-4">
+      {/* Mobile Filter Toggle */}
+      <button
+        onClick={() => setShowFilter(!showFilter)}
+        className="lg:hidden w-full flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg mb-4"
+      >
+        <span className="font-medium">Filter</span>
+        <svg
+          className={`w-5 h-5 transition-transform ${showFilter ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
 
+      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 lg:gap-6">
+        {/* Filter Sidebar */}
+        <div className={`${showFilter ? "block" : "hidden"} lg:block`}>
+          <ProductFilter
+            filters={filters}
+            setFilters={setFilters}
+            productsMeta={meta}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            setMaxPrice={setMaxPrice}
+            setMinPrice={setMinPrice}
+            setSize={setSize}
+          />
+        </div>
+
+        {/* Product List */}
         <div>
           <ProductList
             sort={sort}

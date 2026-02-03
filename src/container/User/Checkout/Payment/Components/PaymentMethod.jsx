@@ -6,11 +6,82 @@ import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Wallet, CreditCard, Building2, Truck, Info, ChevronRight, Percent, Shield } from "lucide-react"
-import { useState } from "react"
 
-const PaymentMethod = () => {
-  const [selectedPayment, setSelectedPayment] = useState("gopay")
-  const [showInstallment, setShowInstallment] = useState(false)
+const PaymentMethod = ({ selectedPayment, onSelectPayment, showInstallment, onToggleInstallment, selectedInstallment, onSelectInstallment }) => {
+  const ewalletOptions = [
+    {
+      value: "gopay",
+      name: "GoPay",
+      badge: "Cashback 2%",
+      badgeColor: "bg-green-600",
+      balance: "Rp500.000",
+    },
+    {
+      value: "ovo",
+      name: "OVO",
+      badge: "Diskon 5rb",
+      badgeColor: "bg-purple-600",
+      balance: "Rp250.000",
+    },
+    {
+      value: "dana",
+      name: "DANA",
+      badge: null,
+      badgeColor: null,
+      balance: "Rp100.000",
+    },
+    {
+      value: "shopeepay",
+      name: "ShopeePay",
+      badge: "Gratis Ongkir",
+      badgeColor: "bg-orange-500",
+      balance: "Rp75.000",
+    },
+  ];
+
+  const bankOptions = [
+    {
+      value: "bca_va",
+      name: "BCA Virtual Account",
+      description: "Bayar lewat ATM, m-BCA, atau internet banking",
+    },
+    {
+      value: "mandiri_va",
+      name: "Mandiri Virtual Account",
+      description: "Bayar lewat ATM, Mandiri Online, atau Livin by Mandiri",
+    },
+    {
+      value: "bri_va",
+      name: "BRI Virtual Account",
+      description: "Bayar lewat ATM, BRI Mobile, atau internet banking",
+    },
+    {
+      value: "bni_va",
+      name: "BNI Virtual Account",
+      description: "Bayar lewat ATM, BNI Mobile, atau internet banking",
+    },
+  ];
+
+  const installmentOptions = [
+    {
+      value: "installment_3",
+      label: "Cicilan 3 Bulan",
+      interest: "0% Bunga",
+      interestColor: "text-green-600",
+    },
+    {
+      value: "installment_6",
+      label: "Cicilan 6 Bulan",
+      interest: "0% Bunga",
+      interestColor: "text-green-600",
+    },
+    {
+      value: "installment_12",
+      label: "Cicilan 12 Bulan",
+      interest: "0.95% / bulan",
+      interestColor: "text-orange-600",
+    },
+  ];
 
   return (
     <Card className="lg:sticky lg:top-6">
@@ -23,7 +94,7 @@ const PaymentMethod = () => {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <RadioGroup value={selectedPayment} onValueChange={setSelectedPayment} className="space-y-3">
+        <RadioGroup value={selectedPayment} onValueChange={onSelectPayment} className="space-y-3">
 
           {/* E-Wallet Section */}
           <div className="space-y-2">
@@ -32,84 +103,39 @@ const PaymentMethod = () => {
               <span>Dompet Digital</span>
             </div>
 
-            {/* GoPay */}
-            <Label htmlFor="gopay" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-              <div className="flex items-start gap-3">
-                <RadioGroupItem value="gopay" id="gopay" className="mt-1" onClick={(e) => e.stopPropagation()} />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">
-                        GoPay
-                      </span>
-                      <Badge className="bg-green-600 text-xs">Cashback 2%</Badge>
+            {ewalletOptions.map((option) => (
+              <Label
+                key={option.value}
+                htmlFor={option.value}
+                className={`border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block ${
+                  selectedPayment === option.value ? "border-green-500 bg-green-50" : ""
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <RadioGroupItem
+                    value={option.value}
+                    id={option.value}
+                    className="mt-1"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-sm">
+                          {option.name}
+                        </span>
+                        {option.badge && (
+                          <Badge className={`${option.badgeColor} text-xs`}>{option.badge}</Badge>
+                        )}
+                      </div>
                     </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Saldo: {option.balance}
+                    </p>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Saldo: Rp500.000
-                  </p>
                 </div>
-              </div>
-            </Label>
-
-            {/* OVO */}
-            <Label htmlFor="ovo" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-              <div className="flex items-start gap-3">
-                <RadioGroupItem value="ovo" id="ovo" className="mt-1" onClick={(e) => e.stopPropagation()} />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">
-                        OVO
-                      </span>
-                      <Badge className="bg-purple-600 text-xs">Diskon 5rb</Badge>
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Saldo: Rp250.000
-                  </p>
-                </div>
-              </div>
-            </Label>
-
-            {/* Dana */}
-            <Label htmlFor="dana" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-              <div className="flex items-start gap-3">
-                <RadioGroupItem value="dana" id="dana" className="mt-1" onClick={(e) => e.stopPropagation()} />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">
-                        DANA
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Saldo: Rp100.000
-                  </p>
-                </div>
-              </div>
-            </Label>
-
-            {/* ShopeePay */}
-            <Label htmlFor="shopeepay" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-              <div className="flex items-start gap-3">
-                <RadioGroupItem value="shopeepay" id="shopeepay" className="mt-1" onClick={(e) => e.stopPropagation()} />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">
-                        ShopeePay
-                      </span>
-                      <Badge className="bg-orange-500 text-xs">Gratis Ongkir</Badge>
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Saldo: Rp75.000
-                  </p>
-                </div>
-              </div>
-            </Label>
+              </Label>
+            ))}
           </div>
 
           <Separator />
@@ -121,65 +147,32 @@ const PaymentMethod = () => {
               <span>Transfer Bank & Virtual Account</span>
             </div>
 
-            {/* BCA VA */}
-            <Label htmlFor="bca_va" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-              <div className="flex items-start gap-3">
-                <RadioGroupItem value="bca_va" id="bca_va" className="mt-1" onClick={(e) => e.stopPropagation()} />
-                <div className="flex-1">
-                  <span className="font-semibold text-sm">
-                    BCA Virtual Account
-                  </span>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Bayar lewat ATM, m-BCA, atau internet banking
-                  </p>
+            {bankOptions.map((option) => (
+              <Label
+                key={option.value}
+                htmlFor={option.value}
+                className={`border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block ${
+                  selectedPayment === option.value ? "border-green-500 bg-green-50" : ""
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <RadioGroupItem
+                    value={option.value}
+                    id={option.value}
+                    className="mt-1"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <div className="flex-1">
+                    <span className="font-semibold text-sm">
+                      {option.name}
+                    </span>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {option.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Label>
-
-            {/* Mandiri VA */}
-            <Label htmlFor="mandiri_va" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-              <div className="flex items-start gap-3">
-                <RadioGroupItem value="mandiri_va" id="mandiri_va" className="mt-1" onClick={(e) => e.stopPropagation()} />
-                <div className="flex-1">
-                  <span className="font-semibold text-sm">
-                    Mandiri Virtual Account
-                  </span>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Bayar lewat ATM, Mandiri Online, atau Livin by Mandiri
-                  </p>
-                </div>
-              </div>
-            </Label>
-
-            {/* BRI VA */}
-            <Label htmlFor="bri_va" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-              <div className="flex items-start gap-3">
-                <RadioGroupItem value="bri_va" id="bri_va" className="mt-1" onClick={(e) => e.stopPropagation()} />
-                <div className="flex-1">
-                  <span className="font-semibold text-sm">
-                    BRI Virtual Account
-                  </span>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Bayar lewat ATM, BRI Mobile, atau internet banking
-                  </p>
-                </div>
-              </div>
-            </Label>
-
-            {/* BNI VA */}
-            <Label htmlFor="bni_va" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-              <div className="flex items-start gap-3">
-                <RadioGroupItem value="bni_va" id="bni_va" className="mt-1" onClick={(e) => e.stopPropagation()} />
-                <div className="flex-1">
-                  <span className="font-semibold text-sm">
-                    BNI Virtual Account
-                  </span>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Bayar lewat ATM, BNI Mobile, atau internet banking
-                  </p>
-                </div>
-              </div>
-            </Label>
+              </Label>
+            ))}
           </div>
 
           <Separator />
@@ -194,7 +187,7 @@ const PaymentMethod = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setShowInstallment(!showInstallment)}
+                onClick={() => onToggleInstallment(!showInstallment)}
                 className="text-green-600 hover:text-green-700 p-0 h-auto text-xs"
               >
                 {showInstallment ? 'Sembunyikan' : 'Cicilan'}
@@ -203,7 +196,9 @@ const PaymentMethod = () => {
             </div>
 
             {/* Credit Card Input */}
-            <div className="border rounded-lg p-3 hover:border-green-500 transition-colors">
+            <div className={`border rounded-lg p-3 hover:border-green-500 transition-colors ${
+              selectedPayment === "credit_card" ? "border-green-500 bg-green-50" : ""
+            }`}>
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="credit_card" id="credit_card" className="mt-1" />
@@ -241,35 +236,27 @@ const PaymentMethod = () => {
               <div className="space-y-2 pl-2">
                 <div className="text-xs text-muted-foreground mb-2">Pilih tenor cicilan:</div>
 
-                <Label htmlFor="installment_3" className="border rounded-lg p-2 hover:border-green-500 transition-colors cursor-pointer block">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="installment_3" id="installment_3" onClick={(e) => e.stopPropagation()} />
-                      <span>Cicilan 3 Bulan</span>
+                {installmentOptions.map((option) => (
+                  <Label
+                    key={option.value}
+                    htmlFor={option.value}
+                    className={`border rounded-lg p-2 hover:border-green-500 transition-colors cursor-pointer block ${
+                      selectedInstallment === option.value ? "border-green-500 bg-green-50" : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem
+                          value={option.value}
+                          id={option.value}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <span>{option.label}</span>
+                      </div>
+                      <span className={`font-medium ${option.interestColor}`}>{option.interest}</span>
                     </div>
-                    <span className="text-green-600 font-medium">0% Bunga</span>
-                  </div>
-                </Label>
-
-                <Label htmlFor="installment_6" className="border rounded-lg p-2 hover:border-green-500 transition-colors cursor-pointer block">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="installment_6" id="installment_6" onClick={(e) => e.stopPropagation()} />
-                      <span>Cicilan 6 Bulan</span>
-                    </div>
-                    <span className="text-green-600 font-medium">0% Bunga</span>
-                  </div>
-                </Label>
-
-                <Label htmlFor="installment_12" className="border rounded-lg p-2 hover:border-green-500 transition-colors cursor-pointer block">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="installment_12" id="installment_12" onClick={(e) => e.stopPropagation()} />
-                      <span>Cicilan 12 Bulan</span>
-                    </div>
-                    <span className="text-orange-600 font-medium">0.95% / bulan</span>
-                  </div>
-                </Label>
+                  </Label>
+                ))}
               </div>
             )}
           </div>
@@ -283,9 +270,19 @@ const PaymentMethod = () => {
               <span>Bayar di Tempat (COD)</span>
             </div>
 
-            <Label htmlFor="cod" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
+            <Label
+              htmlFor="cod"
+              className={`border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block ${
+                selectedPayment === "cod" ? "border-green-500 bg-green-50" : ""
+              }`}
+            >
               <div className="flex items-start gap-3">
-                <RadioGroupItem value="cod" id="cod" className="mt-1" onClick={(e) => e.stopPropagation()} />
+                <RadioGroupItem
+                  value="cod"
+                  id="cod"
+                  className="mt-1"
+                  onClick={(e) => e.stopPropagation()}
+                />
                 <div className="flex-1">
                   <span className="font-semibold text-sm">
                     Cash on Delivery
@@ -306,7 +303,7 @@ const PaymentMethod = () => {
 
         {/* Payment Info */}
         <div className="flex items-start gap-2 text-xs text-muted-foreground bg-gray-50 p-2 rounded-lg">
-          <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+          <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
           <p>
             Pembayaran Anda aman dan terenkripsi. Kami tidak menyimpan informasi kartu kredit Anda.
           </p>

@@ -12,15 +12,15 @@ const categories = [
 
 const CategorySection = () => {
   return (
-    <Card className={"grid grid-cols-6 gap-4 p-4 text-gray-500 my-4"}>
+    <Card className={"grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-4 p-2 sm:p-4 text-gray-500 my-2 sm:my-4"}>
       {categories.map((cat) => (
         <CardContent
           key={cat.name}
-          className="flex flex-col items-center justify-center p-4"
+          className="flex flex-col items-center justify-center p-2 sm:p-4 cursor-pointer hover:bg-gray-50 rounded-lg transition-colors"
         >
-          <div className="">{cat.icon}</div>
+          <div className="text-xl sm:text-2xl">{cat.icon}</div>
 
-          <CardTitle className={"mt-2 text-sm font-medium"}>
+          <CardTitle className={"mt-1 sm:mt-2 text-xs sm:text-sm font-medium text-center"}>
             {cat.name}
           </CardTitle>
         </CardContent>

@@ -12,18 +12,19 @@ const HomeContainer = () => {
   ];
 
   return (
-    <div>
+    <div className="w-full">
       <CustomCarousel
         items={images}
         autoPlay={true}
         arrowVisibility={"hover"}
         renderItem={(src) => (
-          <div className="h-80 w-full relative overflow-hidden rounded-lg">
+          <div className="h-48 sm:h-56 md:h-64 lg:h-80 w-full relative overflow-hidden rounded-lg bg-white">
             <Image
               src={src}
               alt="Banner_carousel"
               fill
-              style={{ objectFit: "cover" }}
+              style={{ objectFit: "contain" }}
+              priority
             />
           </div>
         )}

@@ -2,15 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { MapPin, Phone, Edit2, ChevronRight, Shield } from "lucide-react"
 
-const AddressCard = () => {
+const AddressCard = ({ selectedAddress, onSelectAddress }) => {
   return (
-    <Card className="overflow-hidden">
+    <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <div className="flex items-center gap-2">
           <CardTitle className="text-base">Alamat Pengiriman</CardTitle>
-          <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-            Utama
-          </span>
+          {selectedAddress?.isPrimary && (
+            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+              Utama
+            </span>
+          )}
         </div>
         <Button variant="ghost" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50">
           <Edit2 className="w-4 h-4 mr-1" />
@@ -26,9 +28,9 @@ const AddressCard = () => {
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm">Rumah - Irfan Bagus</p>
+            <p className="font-semibold text-sm">{selectedAddress?.label || "Pilih Alamat"}</p>
             <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-              Jl. Tambak Asri Gang 32 No. 15, RT.05/RW.02, Kel. Krembangan, Kec. Krembangan, Kota Surabaya, Jawa Timur 60175
+              {selectedAddress?.address || "Silakan pilih alamat pengiriman"}
             </p>
           </div>
         </div>
@@ -36,7 +38,7 @@ const AddressCard = () => {
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Phone className="w-3.5 h-3.5" />
-            <span>081234567890</span>
+            <span>{selectedAddress?.phone || "-"}</span>
           </div>
         </div>
 

@@ -3,7 +3,63 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Truck, Clock, Shield, Info } from "lucide-react"
 
-const ShippingOptions = () => {
+const ShippingOptions = ({ selectedShipping, onSelectShipping }) => {
+  const shippingOptions = [
+    {
+      value: "jne_reg",
+      name: "JNE Regular",
+      price: 9000,
+      estimated: "2-3 Hari",
+      type: "Reguler",
+      typeColor: "bg-orange-100 text-orange-700",
+      available: true,
+    },
+    {
+      value: "jne_yes",
+      name: "JNE YES",
+      price: 18000,
+      estimated: "Besok",
+      type: "Cepat",
+      typeColor: "bg-red-100 text-red-700",
+      available: true,
+    },
+    {
+      value: "jnt_reg",
+      name: "J&T Express",
+      price: 8000,
+      estimated: "2-3 Hari",
+      type: "Reguler",
+      typeColor: "bg-orange-100 text-orange-700",
+      available: true,
+    },
+    {
+      value: "sicepat_best",
+      name: "SiCepat BEST",
+      price: 12000,
+      estimated: "1-2 Hari",
+      type: "Best",
+      typeColor: "bg-purple-100 text-purple-700",
+      available: true,
+    },
+    {
+      value: "gosend_instant",
+      name: "GoSend Instant",
+      price: 25000,
+      estimated: "Hari ini",
+      type: "Instant",
+      typeColor: "bg-green-100 text-green-700",
+      available: true,
+    },
+  ];
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    }).format(price);
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -15,141 +71,58 @@ const ShippingOptions = () => {
       </CardHeader>
 
       <CardContent className="space-y-3">
-        <RadioGroup defaultValue="jne_reg" className="space-y-2">
-          {/* JNE Regular */}
-          <Label htmlFor="jne_reg" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-            <div className="flex items-start gap-3">
-              <RadioGroupItem value="jne_reg" id="jne_reg" className="mt-1" onClick={(e) => e.stopPropagation()} />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">
-                      JNE Regular
-                    </span>
-                    <span className="px-1.5 py-0.5 bg-orange-100 text-orange-700 text-xs rounded">
-                      Reguler
-                    </span>
+        <RadioGroup value={selectedShipping?.courier} onValueChange={(value) => {
+          const selected = shippingOptions.find(opt => opt.value === value);
+          if (selected) {
+            onSelectShipping({
+              courier: selected.value,
+              name: selected.name,
+              price: selected.price,
+              estimated: selected.estimated,
+              type: selected.type,
+            });
+          }
+        }} className="space-y-2">
+          {shippingOptions.map((option) => (
+            <Label
+              key={option.value}
+              htmlFor={option.value}
+              className={`border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block ${
+                selectedShipping?.courier === option.value ? "border-green-500 bg-green-50" : ""
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <RadioGroupItem
+                  value={option.value}
+                  id={option.value}
+                  className="mt-1"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm">
+                        {option.name}
+                      </span>
+                      <span className={`px-1.5 py-0.5 text-xs rounded ${option.typeColor}`}>
+                        {option.type}
+                      </span>
+                    </div>
+                    <span className="font-semibold text-sm">{formatPrice(option.price)}</span>
                   </div>
-                  <span className="font-semibold text-sm">Rp9.000</span>
-                </div>
-                <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>Estimasi tiba 2-3 Hari</span>
+                  <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      <span>Estimasi tiba {option.estimated}</span>
+                    </div>
+                    {option.available && (
+                      <span className="text-green-600 font-medium">Tersedia</span>
+                    )}
                   </div>
-                  <span className="text-green-600 font-medium">Tersedia</span>
-                </div>
-              </div>
-            </div>
-          </Label>
-
-          {/* JNE YES */}
-          <Label htmlFor="jne_yes" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-            <div className="flex items-start gap-3">
-              <RadioGroupItem value="jne_yes" id="jne_yes" className="mt-1" onClick={(e) => e.stopPropagation()} />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">
-                      JNE YES
-                    </span>
-                    <span className="px-1.5 py-0.5 bg-red-100 text-red-700 text-xs rounded">
-                      Cepat
-                    </span>
-                  </div>
-                  <span className="font-semibold text-sm">Rp18.000</span>
-                </div>
-                <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>Estimasi tiba Besok</span>
-                  </div>
-                  <span className="text-green-600 font-medium">Tersedia</span>
                 </div>
               </div>
-            </div>
-          </Label>
-
-          {/* J&T Express */}
-          <Label htmlFor="jnt_reg" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-            <div className="flex items-start gap-3">
-              <RadioGroupItem value="jnt_reg" id="jnt_reg" className="mt-1" onClick={(e) => e.stopPropagation()} />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">
-                      J&T Express
-                    </span>
-                    <span className="px-1.5 py-0.5 bg-orange-100 text-orange-700 text-xs rounded">
-                      Reguler
-                    </span>
-                  </div>
-                  <span className="font-semibold text-sm">Rp8.000</span>
-                </div>
-                <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>Estimasi tiba 2-3 Hari</span>
-                  </div>
-                  <span className="text-green-600 font-medium">Tersedia</span>
-                </div>
-              </div>
-            </div>
-          </Label>
-
-          {/* SiCepat */}
-          <Label htmlFor="sicepat_best" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-            <div className="flex items-start gap-3">
-              <RadioGroupItem value="sicepat_best" id="sicepat_best" className="mt-1" onClick={(e) => e.stopPropagation()} />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">
-                      SiCepat BEST
-                    </span>
-                    <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">
-                      Best
-                    </span>
-                  </div>
-                  <span className="font-semibold text-sm">Rp12.000</span>
-                </div>
-                <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>Estimasi tiba 1-2 Hari</span>
-                  </div>
-                  <span className="text-green-600 font-medium">Tersedia</span>
-                </div>
-              </div>
-            </div>
-          </Label>
-
-          {/* GoSend Instant */}
-          <Label htmlFor="gosend_instant" className="border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer block">
-            <div className="flex items-start gap-3">
-              <RadioGroupItem value="gosend_instant" id="gosend_instant" className="mt-1" onClick={(e) => e.stopPropagation()} />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">
-                      GoSend Instant
-                    </span>
-                    <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-xs rounded">
-                      Instant
-                    </span>
-                  </div>
-                  <span className="font-semibold text-sm">Rp25.000</span>
-                </div>
-                <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>Estimasi tiba Hari ini</span>
-                  </div>
-                  <span className="text-green-600 font-medium">Tersedia</span>
-                </div>
-              </div>
-            </div>
-          </Label>
+            </Label>
+          ))}
         </RadioGroup>
 
         <div className="flex items-start gap-2 text-xs text-muted-foreground bg-gray-50 p-2 rounded-lg">

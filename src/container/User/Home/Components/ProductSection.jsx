@@ -116,16 +116,16 @@ const ProductSection = () => {
   }, [activeTab, mallProducts.length, mallLoading, mallValidating, setMallSize]);
 
   return (
-    <div className="p-4">
+    <div className="p-2 sm:p-4">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
+        <TabsList className="w-full sm:w-auto">
           {isLoggedIn && <TabsTrigger value="foryou">For You</TabsTrigger>}
           <TabsTrigger value="mall">Mall</TabsTrigger>
         </TabsList>
 
         {isLoggedIn && (
-          <TabsContent value="foryou" className="py-4">
-            <div className="grid grid-cols-5 gap-4">
+          <TabsContent value="foryou" className="py-2 sm:py-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
               {forYouProducts.map((prod) => (
                 <Link
                   key={prod.id}
@@ -143,8 +143,8 @@ const ProductSection = () => {
           </TabsContent>
         )}
 
-        <TabsContent value="mall" className="py-4">
-          <div className="grid grid-cols-5 gap-4">
+        <TabsContent value="mall" className="py-2 sm:py-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
             {mallProducts.map((prod) => (
               <Link
                 key={prod.id}

@@ -15,26 +15,27 @@ const ProductList = ({
   setActiveTab,
 }) => {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3 sm:space-y-4">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList>
-          <TabsTrigger value="products">
-            <div className="flex items-center gap-1">
-              <span>Produk</span>
-              <Handbag />
+        <TabsList className="w-full sm:w-auto">
+          <TabsTrigger value="products" className="flex-1 sm:flex-none">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <span className="text-sm sm:text-base">Produk</span>
+              <Handbag className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="products">
+        <TabsContent value="products" className="space-y-4">
           {isLoading && data.length === 0 ? (
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))}
             </div>
           ) : (
             <>
+              {/* Sort Dropdown */}
               <div className="flex items-center justify-end">
                 <CustomSelect
                   value={sort}
@@ -46,11 +47,12 @@ const ProductList = ({
                     { label: "Termurah", value: "termurah" },
                     { label: "Termahal", value: "termahal" },
                   ]}
-                  className="w-[180px] h-9 text-sm"
+                  className="w-full sm:w-[180px] h-9 text-sm"
                 />
               </div>
 
-              <div className="grid grid-cols-5 gap-4 mt-5">
+              {/* Product Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
                 {data.map((prod) => (
                   <Link
                     key={prod.id}
@@ -61,8 +63,9 @@ const ProductList = ({
                 ))}
               </div>
 
+              {/* Loading Skeleton */}
               {isValidating && (
-                <div className="grid grid-cols-5 gap-4 mt-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 mt-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <ProductCardSkeleton key={i} />
                   ))}

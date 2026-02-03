@@ -5,9 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { Ticket, Gift, Percent, Calendar, ChevronRight, Check } from "lucide-react"
 import { useState } from "react"
 
-const VoucherCard = () => {
+const VoucherCard = ({ selectedVoucher, onSelectVoucher, onApplyVoucher, onRemoveVoucher }) => {
   const [voucherCode, setVoucherCode] = useState("")
-  const [appliedVoucher, setAppliedVoucher] = useState(null)
 
   const availableVouchers = [
     {
@@ -15,7 +14,7 @@ const VoucherCard = () => {
       code: "HEMAT10",
       title: "Diskon 10%",
       description: "Minimal belanja Rp50.000",
-      discount: "Rp10.000",
+      discount: -10000,
       maxDiscount: "Rp20.000",
       expiry: "28 Feb 2026",
       type: "percentage",
@@ -26,7 +25,7 @@ const VoucherCard = () => {
       code: "GRATISONGKIR",
       title: "Gratis Ongkir",
       description: "Maksimal potongan Rp10.000",
-      discount: "Rp10.000",
+      discount: -10000,
       maxDiscount: "Rp10.000",
       expiry: "15 Feb 2026",
       type: "shipping",
@@ -37,7 +36,7 @@ const VoucherCard = () => {
       code: "CASHBACK5",
       title: "Cashback 5%",
       description: "Maksimal cashback Rp15.000",
-      discount: "Rp5.000",
+      discount: -5000,
       maxDiscount: "Rp15.000",
       expiry: "10 Mar 2026",
       type: "cashback",
@@ -45,15 +44,15 @@ const VoucherCard = () => {
     }
   ]
 
-  const handleApplyVoucher = () => {
+  const handleApplyVoucherClick = () => {
     if (voucherCode.trim()) {
-      setAppliedVoucher(voucherCode.toUpperCase())
+      onApplyVoucher(voucherCode)
       setVoucherCode("")
     }
   }
 
   const handleSelectVoucher = (voucher) => {
-    setAppliedVoucher(voucher.code)
+    onSelectVoucher(voucher)
   }
 
   return (
@@ -62,7 +61,7 @@ const VoucherCard = () => {
         <div className="flex items-center gap-2">
           <CardTitle className="text-base">Voucher & Promo</CardTitle>
           <Badge variant="secondary" className="text-xs">
-            3 Tersedia
+            {availableVouchers.length} Tersedia
           </Badge>
         </div>
       </CardHeader>
@@ -80,7 +79,7 @@ const VoucherCard = () => {
             />
           </div>
           <Button
-            onClick={handleApplyVoucher}
+            onClick={handleApplyVoucherClick}
             className="bg-green-600 hover:bg-green-700"
           >
             Pakai
@@ -88,19 +87,19 @@ const VoucherCard = () => {
         </div>
 
         {/* Applied Voucher */}
-        {appliedVoucher && (
+        {selectedVoucher && (
           <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3">
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-green-600" />
               <div>
-                <p className="font-medium text-sm text-green-800">{appliedVoucher}</p>
+                <p className="font-medium text-sm text-green-800">{selectedVoucher.code}</p>
                 <p className="text-xs text-green-600">Berhasil digunakan</p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setAppliedVoucher(null)}
+              onClick={onRemoveVoucher}
               className="text-red-600 hover:text-red-700 hover:bg-red-50"
             >
               Hapus
@@ -115,7 +114,7 @@ const VoucherCard = () => {
             <div
               key={voucher.id}
               className={`border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer ${
-                appliedVoucher === voucher.code ? 'border-green-500 bg-green-50' : ''
+                selectedVoucher?.code === voucher.code ? 'border-green-500 bg-green-50' : ''
               }`}
               onClick={() => handleSelectVoucher(voucher)}
             >
@@ -148,7 +147,13 @@ const VoucherCard = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <p className="font-medium text-sm">{voucher.title}</p>
-                    <span className="font-semibold text-sm text-green-600">{voucher.discount}</span>
+                    <span className="font-semibold text-sm text-green-600">
+                      {new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0
+                      }).format(Math.abs(voucher.discount))}
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">{voucher.description}</p>
                   <div className="flex items-center gap-2 mt-1.5">
@@ -156,7 +161,7 @@ const VoucherCard = () => {
                       <Calendar className="w-3 h-3" />
                       <span>Berakhir {voucher.expiry}</span>
                     </div>
-                    {appliedVoucher === voucher.code && (
+                    {selectedVoucher?.code === voucher.code && (
                       <Badge className="bg-green-600 text-xs">
                         <Check className="w-3 h-3 mr-1" />
                         Dipakai

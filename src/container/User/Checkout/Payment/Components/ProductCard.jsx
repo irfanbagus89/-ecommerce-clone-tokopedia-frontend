@@ -10,40 +10,10 @@ import {
   MapPin,
   Shield,
   CheckCircle,
-  Plus,
-  Minus,
   MessageCircle,
 } from "lucide-react";
-import { useState } from "react";
 
-const ProductCard = () => {
-  const [quantity, setQuantity] = useState(1);
-
-  const products = [
-    {
-      id: 1,
-      name: "Kursi Kantor Minimalis Ergonomis - Mesh Back Support",
-      image: "https://picsum.photos/seed/chair/600/600",
-      originalPrice: 899000,
-      discountedPrice: 479000,
-      discountPercent: 47,
-      quantity: 1,
-      variant: "Hitam",
-      stock: 50,
-    },
-    {
-      id: 2,
-      name: "Meja Kerja Modern - Kayu Jati Solid",
-      image: "https://picsum.photos/seed/desk/600/600",
-      originalPrice: 1250000,
-      discountedPrice: 899000,
-      discountPercent: 28,
-      quantity: 1,
-      variant: "Natural",
-      stock: 25,
-    },
-  ];
-
+const ProductCard = ({ products, notes, onNotesChange }) => {
   const store = {
     name: "Furniture Official Store",
     isOfficial: true,
@@ -52,11 +22,6 @@ const ProductCard = () => {
     rating: 4.9,
     totalReviews: 2847,
     chatResponse: "Kurang dari 1 jam",
-  };
-
-  const handleQuantityChange = (delta) => {
-    const newQuantity = Math.max(1, quantity + delta);
-    setQuantity(newQuantity);
   };
 
   const formatPrice = (price) => {
@@ -163,8 +128,9 @@ const ProductCard = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-center">
-                      {quantity}
+                    <div className="flex items-center gap-1 text-sm text-gray-600">
+                      <span className="text-gray-400">x</span>
+                      <span className="font-medium">{product.quantity}</span>
                     </div>
                   </div>
                 </div>
@@ -178,7 +144,7 @@ const ProductCard = () => {
         {/* Shipping Protection */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <div className="flex items-start gap-2">
-            <Shield className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+            <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="font-medium text-sm text-blue-800">
                 Proteksi Pembeli
@@ -199,6 +165,8 @@ const ProductCard = () => {
           <Input
             placeholder="Contoh: Tolong bungkus dengan bubble wrap"
             className="text-sm"
+            value={notes}
+            onChange={(e) => onNotesChange(e.target.value)}
           />
         </div>
       </CardContent>

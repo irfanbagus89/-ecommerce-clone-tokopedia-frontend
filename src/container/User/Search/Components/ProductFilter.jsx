@@ -38,48 +38,61 @@ const ProductFilter = ({
   };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-lg font-semibold">Filter</h2>
-
-      <div className="space-y-2">
-        <h3 className="font-medium">Jenis toko</h3>
-        {productsMeta?.store_type?.map((store) => (
-          <div key={store.id} className="flex items-center gap-2">
-            <Checkbox
-              checked={filters.storeTypes.includes(store.id)}
-              onCheckedChange={() => toggleStoreType(store.id)}
-            />
-            <label>{store.name}</label>
-          </div>
-        ))}
+    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100 space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-base sm:text-lg font-semibold">Filter</h2>
+        <span className="text-xs sm:text-sm text-gray-500">
+          {productsMeta?.total || 0} produk
+        </span>
       </div>
 
       <div className="space-y-2">
-        <h3 className="font-medium">Lokasi</h3>
-        {productsMeta?.locations?.map((city) => (
-          <div key={city} className="flex items-center gap-2">
-            <Checkbox
-              checked={filters.locations.includes(city)}
-              onCheckedChange={() => toggleLocation(city)}
-            />
-            <label>{city}</label>
-          </div>
-        ))}
+        <h3 className="text-sm sm:text-base font-medium">Jenis toko</h3>
+        <div className="space-y-1.5">
+          {productsMeta?.store_type?.map((store) => (
+            <div key={store.id} className="flex items-center gap-2 sm:gap-3">
+              <Checkbox
+                checked={filters.storeTypes.includes(store.id)}
+                onCheckedChange={() => toggleStoreType(store.id)}
+                className="w-4 h-4 sm:w-5 sm:h-5"
+              />
+              <label className="text-sm sm:text-base cursor-pointer">{store.name}</label>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-2">
-        <h3 className="font-medium">Harga</h3>
-        <div className="flex gap-2">
+        <h3 className="text-sm sm:text-base font-medium">Lokasi</h3>
+        <div className="space-y-1.5">
+          {productsMeta?.locations?.map((city) => (
+            <div key={city} className="flex items-center gap-2 sm:gap-3">
+              <Checkbox
+                checked={filters.locations.includes(city)}
+                onCheckedChange={() => toggleLocation(city)}
+                className="w-4 h-4 sm:w-5 sm:h-5"
+              />
+              <label className="text-sm sm:text-base cursor-pointer">{city}</label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <h3 className="text-sm sm:text-base font-medium">Harga</h3>
+        <div className="flex flex-col sm:flex-row gap-2">
           <Input
             placeholder="Rp Min"
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
+            className="text-sm"
           />
 
           <Input
             placeholder="Rp Max"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
+            className="text-sm"
           />
         </div>
       </div>
