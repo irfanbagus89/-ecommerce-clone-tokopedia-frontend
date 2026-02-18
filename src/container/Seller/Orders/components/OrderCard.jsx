@@ -72,7 +72,7 @@ const OrderCard = ({ order }) => {
             {order.status === "pending" && (
               <Button
                 size="sm"
-                className="h-9 px-4 bg-gradient-to-r from-[#03AC0E] to-[#028a0b] hover:from-[#028a0b] hover:to-[#027009] text-white font-medium shadow-md shadow-green-200"
+                className="h-9 px-4 bg-linear-to-r from-[#03AC0E] to-[#028a0b] hover:from-[#028a0b] hover:to-[#027009] text-white font-medium shadow-md shadow-green-200"
               >
                 <CheckCircle size={14} className="mr-1.5" />
                 Proses Pesanan
@@ -82,7 +82,7 @@ const OrderCard = ({ order }) => {
             {order.status === "processing" && (
               <Button
                 size="sm"
-                className="h-9 px-4 bg-gradient-to-r from-[#03AC0E] to-[#028a0b] hover:from-[#028a0b] hover:to-[#027009] text-white font-medium shadow-md shadow-green-200"
+                className="h-9 px-4 bg-linear-to-r from-[#03AC0E] to-[#028a0b] hover:from-[#028a0b] hover:to-[#027009] text-white font-medium shadow-md shadow-green-200"
               >
                 <Truck size={14} className="mr-1.5" />
                 Kirim Pesanan

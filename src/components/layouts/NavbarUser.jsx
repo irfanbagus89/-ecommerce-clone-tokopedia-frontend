@@ -40,7 +40,7 @@ const NavbarUser = () => {
               alt="Logo"
               width={100}
               height={22}
-              className="w-[80px] sm:w-[100px] md:w-[120px] h-auto"
+              className="w-20 sm:w-[100px] md:w-[120px] h-auto"
             />
           </Link>
         </div>

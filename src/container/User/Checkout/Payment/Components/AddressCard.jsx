@@ -22,8 +22,8 @@ const AddressCard = ({ selectedAddress, onSelectAddress }) => {
 
       <CardContent className="space-y-3">
         <div className="flex gap-3">
-          <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
-            <div className="w-full h-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+            <div className="w-full h-full bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center">
               <MapPin className="w-8 h-8 text-green-600" />
             </div>
           </div>

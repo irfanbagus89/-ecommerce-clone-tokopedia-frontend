@@ -119,7 +119,7 @@ const VoucherCard = ({ selectedVoucher, onSelectVoucher, onApplyVoucher, onRemov
               onClick={() => handleSelectVoucher(voucher)}
             >
               <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
                   voucher.color === 'green' ? 'bg-green-100' :
                   voucher.color === 'blue' ? 'bg-blue-100' :
                   'bg-orange-100'
@@ -169,7 +169,7 @@ const VoucherCard = ({ selectedVoucher, onSelectVoucher, onApplyVoucher, onRemov
                     )}
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1" />
+                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
               </div>
             </div>
           ))}

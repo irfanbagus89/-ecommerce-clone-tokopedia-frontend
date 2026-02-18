@@ -5,15 +5,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
-  ShoppingBag,
   HelpCircle,
   LogOut,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 const SellerTopbar = ({ collapsed = false, setCollapsed = () => {} }) => {
+  const router = useRouter();
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-30">
       {/* Left Section */}
@@ -41,12 +41,7 @@ const SellerTopbar = ({ collapsed = false, setCollapsed = () => {} }) => {
           <Input
             placeholder="Cari produk, pesanan, atau lainnya..."
             className=" h-10 bg-gray-50 border-gray-200 focus:border-[#03AC0E] focus:ring-[#03AC0E]/20"
-            leftIcon={
-              <Search
-                className="text-gray-400"
-                size={18}
-              />
-            }
+            leftIcon={<Search className="text-gray-400" size={18} />}
           />
         </div>
       </div>
@@ -77,14 +72,17 @@ const SellerTopbar = ({ collapsed = false, setCollapsed = () => {} }) => {
             <p className="text-xs text-gray-500">Premium Seller</p>
           </div>
           <Avatar className="w-10 h-10 border-2 border-[#03AC0E]">
-            <AvatarFallback className="bg-gradient-to-br from-[#03AC0E] to-[#028a0b] text-white font-semibold">
+            <AvatarFallback className="bg-linear-to-br from-[#03AC0E] to-[#028a0b] text-white font-semibold">
               TS
             </AvatarFallback>
           </Avatar>
         </div>
 
         {/* Logout */}
-        <button className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-gray-600">
+        <button
+          className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-gray-600"
+          onClick={() => router.replace("/")}
+        >
           <LogOut size={20} />
         </button>
       </div>

@@ -179,7 +179,7 @@ const ProductPage = () => {
           </div>
 
           <Button
-            className="bg-gradient-to-r from-[#03AC0E] to-[#028a0b] hover:from-[#028a0b] hover:to-[#027009] text-white font-semibold shadow-lg shadow-green-200"
+            className="bg-linear-to-r from-[#03AC0E] to-[#028a0b] hover:from-[#028a0b] hover:to-[#027009] text-white font-semibold shadow-lg shadow-green-200"
             onClick={() => router.push("/products/create")}
           >
             <Plus className="h-4 w-4 mr-2" />

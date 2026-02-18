@@ -126,7 +126,7 @@ const ShippingOptions = ({ selectedShipping, onSelectShipping }) => {
         </RadioGroup>
 
         <div className="flex items-start gap-2 text-xs text-muted-foreground bg-gray-50 p-2 rounded-lg">
-          <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+          <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
           <p>
             Estimasi pengiriman dihitung dari waktu penjual memproses pesanan. Waktu pengiriman dapat berubah tergantung kondisi lapangan.
           </p>

@@ -32,7 +32,7 @@ const SellerSidebar = ({ collapsed = false }) => {
       <div className={`p-5 border-b border-gray-100 ${collapsed ? "flex justify-center" : ""}`}>
         {!collapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#03AC0E] to-[#028a0b] rounded-xl flex items-center justify-center shadow-lg shadow-green-200">
+            <div className="w-10 h-10 bg-linear-to-br from-[#03AC0E] to-[#028a0b] rounded-xl flex items-center justify-center shadow-lg shadow-green-200">
               <Store className="text-white" size={20} />
             </div>
             <div>
@@ -42,7 +42,7 @@ const SellerSidebar = ({ collapsed = false }) => {
           </div>
         )}
         {collapsed && (
-          <div className="w-10 h-10 bg-gradient-to-br from-[#03AC0E] to-[#028a0b] rounded-xl flex items-center justify-center shadow-lg shadow-green-200">
+          <div className="w-10 h-10 bg-linear-to-br from-[#03AC0E] to-[#028a0b] rounded-xl flex items-center justify-center shadow-lg shadow-green-200">
             <Store className="text-white" size={20} />
           </div>
         )}
@@ -82,7 +82,7 @@ const SellerSidebar = ({ collapsed = false }) => {
       {/* Bottom Section */}
       <div className={`p-4 border-t border-gray-100 ${collapsed ? "flex justify-center" : ""}`}>
         {!collapsed && (
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
+          <div className="bg-linear-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-8 h-8 bg-[#03AC0E] rounded-lg flex items-center justify-center">
                 <Store className="text-white" size={16} />

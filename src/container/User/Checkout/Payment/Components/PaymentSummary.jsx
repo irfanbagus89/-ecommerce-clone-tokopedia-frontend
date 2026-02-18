@@ -199,7 +199,7 @@ const PaymentSummary = ({
 
         {/* Additional Info */}
         <div className="flex items-start gap-2 text-xs text-muted-foreground bg-blue-50 p-2 rounded-lg">
-          <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-blue-600" />
+          <Info className="w-3.5 h-3.5 shrink-0 mt-0.5 text-blue-600" />
           <p>
             Pesanan akan diproses setelah pembayaran berhasil. Estimasi pengiriman 2-3 hari kerja.
           </p>

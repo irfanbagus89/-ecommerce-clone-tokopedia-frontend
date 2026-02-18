@@ -91,7 +91,7 @@ const FloatingChatButton = () => {
     <div className="fixed bottom-6 right-6 z-50">
       {/* Chat Panel */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 w-[380px] h-[600px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col animate-in slide-in-from-bottom-5 duration-300">
+        <div className="absolute bottom-20 right-0 w-[500px] h-[600px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col animate-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
           <div className="bg-linear-to-r from-[#03AC0E] to-[#028a0b] p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -108,9 +108,6 @@ const FloatingChatButton = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors">
-                <MoreVertical className="text-white" size={16} />
-              </button>
               <button
                 onClick={() => setIsOpen(false)}
                 className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
@@ -245,7 +242,7 @@ const FloatingChatButton = () => {
                     <div
                       className={`px-3 py-2 rounded-2xl max-w-[80%] text-xs ${
                         msg.from === "seller"
-                          ? "bg-gradient-to-br from-[#03AC0E] to-[#028a0b] text-white rounded-br-md"
+                          ? "bg-linear-to-br from-[#03AC0E] to-[#028a0b] text-white rounded-br-md"
                           : "bg-white border border-gray-200 text-gray-800 rounded-bl-md"
                       }`}
                     >
@@ -278,7 +275,7 @@ const FloatingChatButton = () => {
                   <button
                     onClick={sendMessage}
                     disabled={!message.trim()}
-                    className="w-10 h-10 bg-gradient-to-br from-[#03AC0E] to-[#028a0b] hover:from-[#028a0b] hover:to-[#027009] disabled:opacity-50 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-all duration-200 shadow-lg shadow-green-200"
+                    className="w-10 h-10 bg-linear-to-br from-[#03AC0E] to-[#028a0b] hover:from-[#028a0b] hover:to-[#027009] disabled:opacity-50 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-all duration-200 shadow-lg shadow-green-200"
                   >
                     <Send className="text-white" size={16} />
                   </button>
@@ -295,7 +292,7 @@ const FloatingChatButton = () => {
         className={`group relative flex items-center justify-center w-14 h-14 rounded-full shadow-2xl transition-all duration-300 ${
           isOpen
             ? "bg-gray-600 hover:bg-gray-700"
-            : "bg-gradient-to-br from-[#03AC0E] to-[#028a0b] hover:shadow-green-300/50"
+            : "bg-linear-to-br from-[#03AC0E] to-[#028a0b] hover:shadow-green-300/50"
         }`}
       >
         {/* Ripple Effect */}
