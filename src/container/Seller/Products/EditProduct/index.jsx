@@ -51,6 +51,8 @@ const EditProductPage = () => {
   const { form, setField, setVariants, setImages, resetForm } =
     useCreateProductStore();
 
+  const [deletedVariants, setDeletedVariants] = useState([]);
+
   const {
     handleSubmit,
     setValue,
@@ -88,15 +90,15 @@ const EditProductPage = () => {
       const mapped = {
         name: res.name || "",
         description: res.description || "",
-        price: String(res.price || "0"),
-        category_id: res.category?.id || res.category_id || "",
+        price: res.original_price || 0,
+        category_id: res.category?.id || "",
         active: !!res.active,
         images: Array.isArray(res.images) ? res.images : [],
         variants: (res.variants || []).map((v) => ({
           id: v.id,
           name: v.name || "",
-          price: String(v.price || "0"),
-          stock: String(v.stock || "0"),
+          price: v.price || 0,
+          stock: v.stock || 0,
         })),
       };
 
@@ -151,24 +153,21 @@ const EditProductPage = () => {
   };
 
   const removeVariant = async (index) => {
+    if (variants.length === 1) {
+      toast.error("Produk minimal harus memiliki 1 varian");
+      return;
+    }
+
     const v = variants[index];
     if (v?.id) {
-      try {
-        await deleteTrigger({ id: v.id });
-        toast.success("Varian dihapus");
-        const newVariants = variants.filter((_, i) => i !== index);
-        setValue("variants", newVariants);
-        setVariants(newVariants);
-      } catch (err) {
-        console.error(err);
-        toast.error("Gagal menghapus varian");
-      }
-    } else {
-      if (variants.length === 1) return;
-      const newVariants = variants.filter((_, i) => i !== index);
-      setValue("variants", newVariants);
-      setVariants(newVariants);
+      // Tandai variant ID ini untuk dihapus saat di-submit
+      setDeletedVariants((prev) => [...prev, v.id]);
     }
+
+    // Hapus dari UI (form state)
+    const newVariants = variants.filter((_, i) => i !== index);
+    setValue("variants", newVariants);
+    setVariants(newVariants);
   };
 
   const categoryOptions = (subCategories || []).map((item) => ({
@@ -179,6 +178,17 @@ const EditProductPage = () => {
   const onSubmit = async (data) => {
     if (!id) return;
     try {
+      // Jika ada varian yang dihapus, lakukan proses penghapusan di backend sekarang
+      if (deletedVariants.length > 0) {
+        for (const variantId of deletedVariants) {
+          try {
+            await deleteTrigger({ id: variantId });
+          } catch (err) {
+            console.error("Gagal menghapus varian: ", variantId, err);
+          }
+        }
+      }
+
       await updateTrigger({ id, data });
       toast.success("Produk berhasil diperbarui");
       setTimeout(() => router.back(), 1500);
