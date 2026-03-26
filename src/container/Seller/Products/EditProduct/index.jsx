@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -198,6 +198,28 @@ const EditProductPage = () => {
     }
   };
 
+  const previewImages = useMemo(() => {
+    if (!images || images.length === 0) return ["https://picsum.photos/seed/1/600/600"];
+    return images.map((img) =>
+      typeof img === "string" ? img : URL.createObjectURL(img)
+    );
+  }, [images]);
+
+  const previewProduct = useMemo(() => ({
+    title: name || "Nama Produk",
+    description: description || "Deskripsi produk",
+    price: Number(price || 0),
+    original_price: Number(price || 0),
+    stock: variants.reduce((a, b) => a + Number(b.stock || 0), 0),
+    images: previewImages,
+    variants: variants.map((v, i) => ({
+      id: v.id || i,
+      name: v.name || `Varian ${i + 1}`,
+      price: Number(v.price || 0),
+      stock: Number(v.stock || 0),
+    })),
+  }), [name, description, price, variants, previewImages]);
+
   return (
     <div className="p-6 w-full mx-auto">
       <div className="mb-6">
@@ -265,27 +287,7 @@ const EditProductPage = () => {
         </form>
 
         <div className="lg:col-span-5 sticky top-6">
-          <ProductPreview
-            previewProduct={{
-              title: name || "Nama Produk",
-              description: description || "Deskripsi produk",
-              price: Number(price || 0),
-              original_price: Number(price || 0),
-              stock: variants.reduce((a, b) => a + Number(b.stock || 0), 0),
-              images:
-                images.length > 0
-                  ? images.map((img) =>
-                      typeof img === "string" ? img : URL.createObjectURL(img)
-                    )
-                  : ["https://picsum.photos/seed/1/600/600"],
-              variants: variants.map((v, i) => ({
-                id: v.id || i,
-                name: v.name || `Varian ${i + 1}`,
-                price: Number(v.price || 0),
-                stock: Number(v.stock || 0),
-              })),
-            }}
-          />
+          <ProductPreview previewProduct={previewProduct} />
         </div>
       </div>
     </div>

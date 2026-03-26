@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -127,25 +127,27 @@ const CreateProductPage = () => {
   };
 
   /** PREVIEW */
-  const previewProduct = {
+  const previewImages = useMemo(() => {
+    if (!images || images.length === 0) return ["https://picsum.photos/seed/1/600/600"];
+    return images.map((file) =>
+      typeof file === "string" ? file : URL.createObjectURL(file)
+    );
+  }, [images]);
+
+  const previewProduct = useMemo(() => ({
     title: name || "Nama Produk",
     description: description || "Deskripsi produk",
     price: Number(price || 0),
     original_price: Number(price || 0),
     stock: variants.reduce((a, b) => a + Number(b.stock || 0), 0),
-    images:
-      images.length > 0
-        ? images.map((file) =>
-            typeof file === "string" ? file : URL.createObjectURL(file)
-          )
-        : ["https://picsum.photos/seed/1/600/600"],
+    images: previewImages,
     variants: variants.map((v, i) => ({
       id: i,
       name: v.name || `Varian ${i + 1}`,
       price: Number(v.price || 0),
       stock: Number(v.stock || 0),
     })),
-  };
+  }), [name, description, price, variants, previewImages]);
 
   const onSubmit = async (data) => {
     try {
