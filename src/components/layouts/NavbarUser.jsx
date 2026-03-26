@@ -13,7 +13,6 @@ const NavbarUser = () => {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const handleSearch = (e) => {
     if (e.key === "Enter" && search.trim()) {
       router.push(`/search?s=${encodeURIComponent(search)}`);
@@ -76,7 +75,9 @@ const NavbarUser = () => {
           {!isLoggedIn ? (
             <div className="hidden md:flex border-l border-gray-300 px-2 sm:px-4 gap-2 sm:gap-4">
               <Link href={"/login"}>
-                <Button variant={"outline"} size="sm">Masuk</Button>
+                <Button variant={"outline"} size="sm">
+                  Masuk
+                </Button>
               </Link>
               <Link href={"/register"}>
                 <Button size="sm">Daftar</Button>
@@ -155,7 +156,9 @@ const NavbarUser = () => {
           {!isLoggedIn ? (
             <div className="flex flex-col gap-2">
               <Link href={"/login"} onClick={() => setMobileMenuOpen(false)}>
-                <Button variant={"outline"} className="w-full">Masuk</Button>
+                <Button variant={"outline"} className="w-full">
+                  Masuk
+                </Button>
               </Link>
               <Link href={"/register"} onClick={() => setMobileMenuOpen(false)}>
                 <Button className="w-full">Daftar</Button>
@@ -163,12 +166,18 @@ const NavbarUser = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              <Link href={"/dashboard"} onClick={() => setMobileMenuOpen(false)}>
+              <Link
+                href={"/dashboard"}
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 <div className="flex items-center gap-2 py-2 text-gray-600 hover:text-black">
                   <span className="text-sm font-medium">Toko</span>
                 </div>
               </Link>
-              <Link href={"/checkout/cart"} onClick={() => setMobileMenuOpen(false)}>
+              <Link
+                href={"/checkout/cart"}
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 <div className="flex items-center gap-2 py-2 text-gray-600 hover:text-black">
                   <ShoppingCart className="w-5 h-5" />
                   <span className="text-sm font-medium">Keranjang</span>
@@ -177,10 +186,34 @@ const NavbarUser = () => {
               <div className="py-2 text-gray-600">
                 <span className="text-sm font-medium">Akun</span>
                 <div className="flex flex-col gap-2 mt-2 ml-2">
-                  <Link href="#" onClick={() => setMobileMenuOpen(false)} className="text-sm hover:text-black">Pembelian</Link>
-                  <Link href="#" onClick={() => setMobileMenuOpen(false)} className="text-sm hover:text-black">Wishlist</Link>
-                  <Link href="#" onClick={() => setMobileMenuOpen(false)} className="text-sm hover:text-black">Toko Favorit</Link>
-                  <Link href="#" onClick={() => setMobileMenuOpen(false)} className="text-sm hover:text-black">Pengaturan</Link>
+                  <Link
+                    href="#"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-sm hover:text-black"
+                  >
+                    Pembelian
+                  </Link>
+                  <Link
+                    href="#"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-sm hover:text-black"
+                  >
+                    Wishlist
+                  </Link>
+                  <Link
+                    href="#"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-sm hover:text-black"
+                  >
+                    Toko Favorit
+                  </Link>
+                  <Link
+                    href="#"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-sm hover:text-black"
+                  >
+                    Pengaturan
+                  </Link>
                   <button
                     onClick={() => {
                       logout();

@@ -7,7 +7,7 @@ const getMyCart = async (url) => {
 };
 
 export const useMyCart = (enabled = true) => {
-  const url = enabled ? `/carts` : null;
+  const url = enabled ? `/v1/carts` : null;
 
   return useSWR(url, getMyCart, {
     refreshInterval: 20000,

@@ -48,7 +48,7 @@ const RegisterPage = () => {
 
     try {
       const res = await registerUser(payload);
-      if (res.Message.statusCode === 201) {
+      if (res?.Metadata?.code === 201) {
         toast.success("Pendaftaran Berhasil");
         setTimeout(() => {
           router.push("/login");

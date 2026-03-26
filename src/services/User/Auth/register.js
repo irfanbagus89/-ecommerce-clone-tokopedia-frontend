@@ -1,4 +1,4 @@
-import { fetcher } from "@/lib/fetcher/fetcherApi";
+import { basicAuthFetcher } from "@/lib/fetcher/fetcherApi";
 import useSWRMutation from "swr/mutation";
 
 const USE_MOCK = false;
@@ -22,10 +22,10 @@ export const registerUser = async (url, { arg }) => {
     await new Promise((res) => setTimeout(res, 500));
     return mockAPIResult;
   }
-  const result = await fetcher.post(url, arg);
+  const result = await basicAuthFetcher.post(url, arg);
 
   return result.data;
 };
 
 export const useRegisterUser = () =>
-  useSWRMutation("/auth/register", registerUser);
+  useSWRMutation("/v1/auth/register", registerUser);

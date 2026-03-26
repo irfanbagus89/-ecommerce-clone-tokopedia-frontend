@@ -1,8 +1,8 @@
-import { fetcher } from "@/lib/fetcher/fetcherApi";
+import { basicAuthFetcher } from "@/lib/fetcher/fetcherApi";
 import useSWR from "swr";
 
 const getRekomendasiProductByStore = async (url) => {
-  const res = await fetcher.get(url);
+  const res = await basicAuthFetcher.get(url);
   return res.data;
 };
 
@@ -13,7 +13,7 @@ export const useRekomendasiProductByStore = (
   categoryId,
   id
 ) => {
-  const url = `/products/recommendations-by-store?sellerId=${sellerId}&categoryId=${categoryId}&page=${page}&limit=${limit}&id=${id}`;
+  const url = `/v1/products/recommendations-by-store?sellerId=${sellerId}&categoryId=${categoryId}&page=${page}&limit=${limit}&id=${id}`;
   
   return useSWR(url, getRekomendasiProductByStore, {
     refreshInterval: 20000,

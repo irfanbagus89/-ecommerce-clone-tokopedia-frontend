@@ -36,7 +36,7 @@ const ProductFilter = ({
       };
     });
   };
-
+  console.log(productsMeta, "product");
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100 space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between">
@@ -56,7 +56,9 @@ const ProductFilter = ({
                 onCheckedChange={() => toggleStoreType(store.id)}
                 className="w-4 h-4 sm:w-5 sm:h-5"
               />
-              <label className="text-sm sm:text-base cursor-pointer">{store.name}</label>
+              <label className="text-sm sm:text-base cursor-pointer">
+                {store.name}
+              </label>
             </div>
           ))}
         </div>
@@ -72,7 +74,9 @@ const ProductFilter = ({
                 onCheckedChange={() => toggleLocation(city)}
                 className="w-4 h-4 sm:w-5 sm:h-5"
               />
-              <label className="text-sm sm:text-base cursor-pointer">{city}</label>
+              <label className="text-sm sm:text-base cursor-pointer">
+                {city}
+              </label>
             </div>
           ))}
         </div>

@@ -138,7 +138,6 @@ const PaymentPage = () => {
       total: calculateTotal(),
     };
 
-    console.log("Data Pembayaran:", paymentData);
     alert("Pembayaran berhasil diproses!");
   };
 

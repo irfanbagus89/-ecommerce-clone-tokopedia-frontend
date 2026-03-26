@@ -80,7 +80,7 @@ const CartPage = () => {
       quantity: Number(qty),
     };
     const res = await trigger(payload);
-    if (res.Message.statusCode == 201) {
+    if (res?.Metadata?.code == 201) {
       mutate();
     }
   };

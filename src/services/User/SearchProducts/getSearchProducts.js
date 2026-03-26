@@ -1,8 +1,8 @@
 import useSWRInfinite from "swr/infinite";
-import { fetcher } from "@/lib/fetcher/fetcherApi";
+import { basicAuthFetcher } from "@/lib/fetcher/fetcherApi";
 
 const getSearchProduct = async ([url, params]) => {
-  const res = await fetcher.get(url, { params });
+  const res = await basicAuthFetcher.get(url, { params });
   return res.data.Data;
 };
 
@@ -40,7 +40,7 @@ export const useSearchProduct = (
       ...(maxPrice && { maxPrice }),
     };
 
-    return ["/products", params];
+    return ["/v1/products", params];
   };
 
   return useSWRInfinite(getKey, getSearchProduct, {

@@ -1,8 +1,8 @@
-import { fetcher } from "@/lib/fetcher/fetcherApi";
+import { basicAuthFetcher } from "@/lib/fetcher/fetcherApi";
 import useSWRInfinite from "swr/infinite";
 
 const getOfficialProducts = async (url) => {
-  const res = await fetcher.get(url);
+  const res = await basicAuthFetcher.get(url);
   return res.data;
 };
 
@@ -21,7 +21,7 @@ export const useOfficialProducts = (
 
     if (!enabled) return null;
 
-    return `/products/official?page=${pageIndex + 1}&limit=${limit}`;
+    return `/v1/products/official?page=${pageIndex + 1}&limit=${limit}`;
   };
 
   return useSWRInfinite(getKey, getOfficialProducts, {

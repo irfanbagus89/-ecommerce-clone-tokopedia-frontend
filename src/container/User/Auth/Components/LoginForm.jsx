@@ -52,7 +52,7 @@ const LoginPage = () => {
     try {
       const res = await loginUser(payload);
 
-      if (res?.Message?.statusCode === 200) {
+      if (res?.Metadata?.code === 200) {
         toast.success("Login berhasil");
         await refetch();
         setTimeout(() => {

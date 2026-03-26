@@ -20,12 +20,7 @@ const ProductSearchPage = () => {
   const [minPrice, setMinPrice] = useState(filters.minPrice);
   const [maxPrice, setMaxPrice] = useState(filters.maxPrice);
 
-  const {
-    data,
-    setSize,
-    isLoading,
-    isValidating,
-  } = useSearchProduct({
+  const { data, setSize, isLoading, isValidating } = useSearchProduct({
     limit: 10,
     search: searchParams.get("s"),
     storeTypes: filters.storeTypes,
@@ -34,7 +29,6 @@ const ProductSearchPage = () => {
     maxPrice: filters.maxPrice,
     sort,
   });
-
   const products = data?.flatMap((page) => page?.products || []) || [];
   const meta = data?.[0] || null;
 
@@ -80,12 +74,19 @@ const ProductSearchPage = () => {
       >
         <span className="font-medium">Filter</span>
         <svg
-          className={`w-5 h-5 transition-transform ${showFilter ? "rotate-180" : ""}`}
+          className={`w-5 h-5 transition-transform ${
+            showFilter ? "rotate-180" : ""
+          }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 

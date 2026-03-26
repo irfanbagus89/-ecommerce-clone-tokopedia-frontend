@@ -6,11 +6,10 @@ import { mutate } from "swr"
 export function useAuth() {
   const { data, error, isLoading } = useMe()
   const { trigger: logoutUser, isMutating } = useLogoutUser();
-
   const logout = async () => {
     await logoutUser()
     
-    mutate("/auth/me", null, false)
+    mutate("/v1/auth/me", null, false)
   }
 
   return {

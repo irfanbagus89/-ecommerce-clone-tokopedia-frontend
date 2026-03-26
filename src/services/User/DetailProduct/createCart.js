@@ -25,4 +25,4 @@ export const createCart = async (url, { arg }) => {
   return result.data;
 };
 
-export const useCreateCart = () => useSWRMutation("/carts", createCart);
+export const useCreateCart = () => useSWRMutation("/v1/carts", createCart);

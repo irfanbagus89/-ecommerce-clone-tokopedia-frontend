@@ -1,8 +1,8 @@
 import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher/fetcherApi";
+import { basicAuthFetcher } from "@/lib/fetcher/fetcherApi";
 
 const getProductReviews = async ([url, params]) => {
-  const res = await fetcher.get(url, {
+  const res = await basicAuthFetcher.get(url, {
     params,
   });
 
@@ -27,7 +27,7 @@ export const useProductReviews = (
     : null;
 
   return useSWR(
-    shouldFetch ? [`/reviews/${productId}`, params] : null,
+    shouldFetch ? [`/v1/reviews/${productId}`, params] : null,
     getProductReviews,
     {
       keepPreviousData: true,
