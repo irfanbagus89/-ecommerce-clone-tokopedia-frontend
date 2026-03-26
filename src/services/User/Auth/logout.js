@@ -22,4 +22,4 @@ const logoutFetcher = async (url) => {
 };
 
 export const useLogoutUser = () =>
-  useSWRMutation("/auth/logout", logoutFetcher);
+  useSWRMutation("/v1/auth/logout", logoutFetcher);

@@ -28,13 +28,13 @@ const updateProductFn = async (url, { arg }) => {
     });
   }
 
-  const res = await fetcher.put(`/seller/products/${id}`, formData, {
+  const res = await fetcher.put(`${url}/${id}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
   return res.data;
 };
 
-export const useUpdateProduct = () => useSWRMutation("/seller/products", updateProductFn);
+export const useUpdateProduct = () => useSWRMutation("/v1/seller/products", updateProductFn);
 
 export default useUpdateProduct;

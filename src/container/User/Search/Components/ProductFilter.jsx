@@ -42,7 +42,7 @@ const ProductFilter = ({
       <div className="flex items-center justify-between">
         <h2 className="text-base sm:text-lg font-semibold">Filter</h2>
         <span className="text-xs sm:text-sm text-gray-500">
-          {productsMeta?.total || 0} produk
+          {productsMeta?.totalResult || 0} produk
         </span>
       </div>
 

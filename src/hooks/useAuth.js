@@ -17,7 +17,7 @@ export function useAuth() {
     isLoggedIn: !!data?.Data,
     loading: isLoading,
     error,
-    refetch: () => mutate("/auth/me"),
+    refetch: () => mutate("/v1/auth/me"),
     logout:logout
   }
 }

@@ -26,7 +26,7 @@ export const useMyProducts = (
     : null;
 
   return useSWR(
-    shouldFetch ? ["/seller/my-products", params] : null,
+    shouldFetch ? ["/v1/seller/my-products", params] : null,
     getMyProducts,
     {
       keepPreviousData: true,

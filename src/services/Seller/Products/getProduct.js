@@ -7,7 +7,7 @@ const getProduct = async (url) => {
 };
 
 export const useGetProduct = (id) => {
-  const url = id ? `/products/${id}` : null;
+  const url = id ? `/v1/seller/products/${id}` : null;
   return useSWR(url, getProduct, { revalidateOnFocus: false });
 };
 

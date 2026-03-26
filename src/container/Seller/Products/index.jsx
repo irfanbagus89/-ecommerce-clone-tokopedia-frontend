@@ -9,7 +9,7 @@ import { Plus, Search, Filter, Grid3x3, List, MoreVertical, Edit, Trash2, Packag
 import { useRouter } from "next/navigation";
 
 import { CustomPagination } from "@/components/ui/pagination";
-import { useMyProducts } from "@/store/Seller/Products/getMyProducts";
+import { useMyProducts } from "@/services/Seller/Products/getMyProducts";
 import formatRupiah from "@/lib/currencyHelper";
 import { CustomTable } from "@/components/ui/table";
 import useDeleteVariant from "@/services/Seller/Products/deleteVariant";

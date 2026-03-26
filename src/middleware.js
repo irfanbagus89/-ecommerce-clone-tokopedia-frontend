@@ -30,7 +30,7 @@ export function middleware(request) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get("access_token")?.value;
+  const token = request.cookies.get("accessToken")?.value;
 
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
