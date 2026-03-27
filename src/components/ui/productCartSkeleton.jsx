@@ -8,7 +8,7 @@ const ProductCartSkeleton = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-          {[1, 2].map((seller) => (
+          {[1].map((seller) => (
             <Card key={seller}>
               <CardContent className="p-4 space-y-4">
                 <div className="flex items-center gap-2">

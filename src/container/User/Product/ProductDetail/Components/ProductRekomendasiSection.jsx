@@ -14,7 +14,7 @@ const ProductRekomendasiSection = ({ sellerId, categoryId, id }) => {
         Lainnya di Toko Ini
       </h2>
       {rekomendasiByStoreLoading ? (
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
           <ProductCardSkeleton />
           <ProductCardSkeleton />
           <ProductCardSkeleton />
@@ -22,7 +22,7 @@ const ProductRekomendasiSection = ({ sellerId, categoryId, id }) => {
           <ProductCardSkeleton />
         </div>
       ) : (
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
           {rekomendasiByStore?.Data?.products?.map((prod) => (
             <Link
               key={prod.id}

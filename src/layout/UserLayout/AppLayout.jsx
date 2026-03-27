@@ -5,10 +5,12 @@ import NavbarUser from "@/components/layouts/NavbarUser";
 
 export default function AppLayout({ children }) {
   return (
-    <div className="min-h-screen w-full bg-white">
+    <div className="min-h-screen w-full bg-white flex flex-col">
       <NavbarUser />
-      <main className="flex justify-center items-center p-4 pt-[130px] sm:pt-[94px]">
-        <div className="w-full max-w-7xl">{children}</div>
+      <main className="flex-1 flex justify-center items-start p-4 pt-[130px] sm:pt-[94px]">
+        <div className="w-full max-w-7xl">
+          {children}
+        </div>
       </main>
       <FooterUser/>
     </div>
