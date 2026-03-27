@@ -23,9 +23,9 @@ const loginSchema = z.object({
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || /^[0-9]{9,15}$/.test(value),
       {
         message: "Masukkan email atau nomor HP yang valid",
-      }
+      },
     ),
-  password: z.string().min(1, "Password tidak boleh kosong"),
+  password: z.string().min(8, "Password tidak boleh kosong"),
 });
 
 const LoginPage = () => {
@@ -63,9 +63,7 @@ const LoginPage = () => {
       }
     } catch (err) {
       console.error("Login failed:", err);
-      toast.error(
-        "Login gagal. email atau password anda salah"
-      );
+      toast.error("Login gagal. email atau password anda salah");
     }
   };
 
@@ -78,7 +76,7 @@ const LoginPage = () => {
       }}
     >
       <Card className="w-[420px] shadow-lg">
-        <CardContent className="space-y-4 p-6">
+        <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-semibold">Masuk ke Tokopedia</h1>
             <Link
@@ -156,7 +154,7 @@ const LoginPage = () => {
       </Card>
 
       <footer className="absolute bottom-6 text-xs text-muted-foreground">
-        © 2009–2025, PT Tokopedia ·{" "}
+        © 2009-2026, PT Tokopedia ·
         <span className="cursor-pointer text-emerald-600">Bantuan</span>
       </footer>
     </div>

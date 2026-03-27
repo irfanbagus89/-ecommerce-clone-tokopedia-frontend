@@ -1,39 +1,27 @@
 import {
   X,
-  Check,
+  CheckCircle2,
   Info,
-  AlertTriangle,
+  AlertCircle,
   XCircle,
 } from "lucide-react";
 
 const toastVariants = {
   success: {
-    border: "border-green-400",
-    bg: "bg-green-50",
-    iconBg: "bg-green-500",
-    icon: <Check size={18} className="text-white" />,
-    title: "Congratulations!",
+    bg: "bg-[#00AA5B]",
+    icon: <CheckCircle2 size={24} className="text-white shrink-0" />,
   },
   info: {
-    border: "border-blue-400",
-    bg: "bg-blue-50",
-    iconBg: "bg-blue-500",
-    icon: <Info size={18} className="text-white" />,
-    title: "Did you know?",
+    bg: "bg-[#0081c4]",
+    icon: <Info size={24} className="text-white shrink-0" />,
   },
   warning: {
-    border: "border-yellow-400",
-    bg: "bg-yellow-50",
-    iconBg: "bg-yellow-500",
-    icon: <AlertTriangle size={18} className="text-white" />,
-    title: "Warning!",
+    bg: "bg-[#FF8B00]",
+    icon: <AlertCircle size={24} className="text-white shrink-0" />,
   },
   error: {
-    border: "border-red-400",
-    bg: "bg-red-50",
-    iconBg: "bg-red-500",
-    icon: <XCircle size={18} className="text-white" />,
-    title: "Something went wrong!",
+    bg: "bg-[#E32221]",
+    icon: <XCircle size={24} className="text-white shrink-0" />,
   },
 };
 
@@ -44,39 +32,47 @@ export default function ToastContent({
   closeToast,
   action,
 }) {
-  const variant = toastVariants[type];
+  const variant = toastVariants[type] || toastVariants.info;
 
   return (
     <div
       className={`
-        flex items-start gap-4 p-4 rounded-xl border
-        ${variant.border} ${variant.bg}
-        shadow-sm w-full max-w-md
+        flex items-center gap-3 px-4 py-3 rounded-xl 
+        ${variant.bg} text-white shadow-[0_4px_12px_rgba(0,0,0,0.15)]
+        w-full max-w-sm md:max-w-md pointer-events-auto transition-all
       `}
     >
-      <div
-        className={`flex items-center justify-center w-9 h-9 rounded-full ${variant.iconBg}`}
-      >
-        {variant.icon}
-      </div>
+      {variant.icon}
 
-      <div className="flex-1">
-        <p className="text-sm text-gray-600">
+      <div className="flex-1 flex flex-col justify-center min-w-0">
+        <p className="text-[14px] font-semibold leading-snug break-words">
           {message}
-          {action && (
-            <button className="ml-1 text-blue-600 hover:underline">
-              {action}
-            </button>
-          )}
         </p>
+        {description && (
+          <p className="text-[12px] text-white/90 leading-tight mt-0.5 break-words">
+            {description}
+          </p>
+        )}
       </div>
 
-      <button
-        onClick={closeToast}
-        className="text-gray-400 hover:text-gray-700 transition"
-      >
-        <X size={18} />
-      </button>
+      {action && (
+        <button 
+          className="shrink-0 text-[13px] font-bold tracking-wide uppercase px-2 py-1 bg-white/20 hover:bg-white/30 rounded-md transition-colors"
+          onClick={action.onClick}
+        >
+          {action.label || action}
+        </button>
+      )}
+
+      {!action && (
+        <button
+          onClick={closeToast}
+          className="shrink-0 text-white/70 hover:text-white transition-colors p-1"
+          aria-label="Close"
+        >
+          <X size={18} />
+        </button>
+      )}
     </div>
   );
 }

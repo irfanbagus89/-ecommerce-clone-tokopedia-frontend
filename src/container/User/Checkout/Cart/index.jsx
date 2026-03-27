@@ -81,6 +81,7 @@ const CartPage = () => {
     };
     const res = await trigger(payload);
     if (res?.Metadata?.code == 201) {
+      window.dispatchEvent(new Event("cartUpdated"));
       mutate();
     }
   };
@@ -121,7 +122,9 @@ const CartPage = () => {
                           checked={isChecked(item.cart_item_id)}
                           onCheckedChange={() => toggleItem(item.cart_item_id)}
                         />
-                        <Link href={`/product/${item.category_id}/${item.product_id}`}>
+                        <Link
+                          href={`/product/${item.category_id}/${item.product_id}`}
+                        >
                           <Image
                             src={item.image_url}
                             alt={item.product_name}
@@ -132,7 +135,9 @@ const CartPage = () => {
                         </Link>
 
                         <div className="flex-1">
-                          <Link href={`/product/${item.category_id}/${item.product_id}`}>
+                          <Link
+                            href={`/product/${item.category_id}/${item.product_id}`}
+                          >
                             <p className="text-sm font-medium">
                               {item.product_name}
                             </p>
@@ -168,7 +173,7 @@ const CartPage = () => {
                                   seller.seller_id,
                                   item.product_id,
                                   item.variant_id,
-                                  0
+                                  0,
                                 )
                               }
                             >
@@ -187,7 +192,7 @@ const CartPage = () => {
                                   seller.seller_id,
                                   item.product_id,
                                   item.variant_id,
-                                  item.quantity - 1
+                                  item.quantity - 1,
                                 )
                               }
                             >
@@ -212,7 +217,7 @@ const CartPage = () => {
                                   seller.seller_id,
                                   item.product_id,
                                   item.variant_id,
-                                  item.quantity + 1
+                                  item.quantity + 1,
                                 )
                               }
                             >

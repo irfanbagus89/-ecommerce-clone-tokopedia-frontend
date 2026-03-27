@@ -11,7 +11,7 @@ const ProductDetail = ({ product, data }) => {
   );
 
   return (
-    <div className="container mx-auto px-4 grid lg:grid-cols-12 gap-10">
+    <div className="container mx-auto px-4 grid lg:grid-cols-12 gap-10 pb-48 lg:pb-0">
       <div className="lg:col-span-4">
         <ProductGallery images={product.images} />
       </div>

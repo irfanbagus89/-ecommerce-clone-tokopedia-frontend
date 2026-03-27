@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Bell, Mail, Menu, Search, ShoppingCart, X } from "lucide-react";
+import { useCountMyCart } from "@/services/User/Cart/countMyCart";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +14,22 @@ const NavbarUser = () => {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const { data: cartCountData, mutate: mutateCartCount } = useCountMyCart();
+  const cartItemCount = cartCountData?.count || 0;
+
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      mutateCartCount();
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 300);
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    return () => window.removeEventListener("cartUpdated", handleCartUpdate);
+  }, [mutateCartCount]);
+
   const handleSearch = (e) => {
     if (e.key === "Enter" && search.trim()) {
       router.push(`/search?s=${encodeURIComponent(search)}`);
@@ -64,8 +81,13 @@ const NavbarUser = () => {
             </span>
           ) : (
             <div className="flex gap-2 sm:gap-4 items-center">
-              <Link href={"/checkout/cart"}>
-                <ShoppingCart className="text-gray-500 w-5 h-5" />
+              <Link href={"/checkout/cart"} className="relative block">
+                <ShoppingCart className={`text-gray-500 w-5 h-5 transition-transform duration-300 ${isAnimating ? "scale-125 text-green-600" : ""}`} />
+                {cartItemCount > 0 && (
+                  <span className={`absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white text-white text-[9px] font-bold ${isAnimating ? "animate-bounce" : ""}`}>
+                    {cartItemCount > 99 ? "99+" : cartItemCount}
+                  </span>
+                )}
               </Link>
               <Bell className="text-gray-500 w-5 h-5 hidden sm:block" />
               <Mail className="text-gray-500 w-5 h-5 hidden sm:block" />
@@ -179,7 +201,14 @@ const NavbarUser = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <div className="flex items-center gap-2 py-2 text-gray-600 hover:text-black">
-                  <ShoppingCart className="w-5 h-5" />
+                  <div className="relative">
+                    <ShoppingCart className={`w-5 h-5 transition-transform duration-300 ${isAnimating ? "scale-125 text-green-600" : ""}`} />
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white text-white text-[9px] font-bold">
+                        {cartItemCount > 99 ? "99+" : cartItemCount}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-sm font-medium">Keranjang</span>
                 </div>
               </Link>
