@@ -61,8 +61,8 @@ const RegisterPage = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="flex w-full max-w-4xl overflow-hidden rounded-xl bg-white">
-        <div className="flex w-1/2 flex-col items-center justify-center bg-green-50 p-10 text-center">
+      <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-lg md:flex-row">
+        <div className="hidden w-full flex-col items-center justify-center bg-green-50 p-10 text-center md:flex md:w-1/2">
           <Image
             src="https://p16-images-comn-sg.tokopedia-static.net/tos-alisg-i-zr7vqa5nfb-sg/img/user/register_icon_new.png~tplv-zr7vqa5nfb-image.image"
             alt="Tokopedia Register"
@@ -80,7 +80,7 @@ const RegisterPage = () => {
           </p>
         </div>
 
-        <div className="flex w-1/2 flex-col justify-center p-10">
+        <div className="flex w-full flex-col justify-center p-6 sm:p-8 md:w-1/2 md:p-10">
           <h1 className="mb-1 text-2xl font-bold">Daftar Sekarang</h1>
           <p className="mb-6 text-sm text-gray-600">
             Sudah punya akun Tokopedia?{" "}

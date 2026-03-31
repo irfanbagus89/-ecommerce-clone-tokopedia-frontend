@@ -82,9 +82,13 @@ const NavbarUser = () => {
           ) : (
             <div className="flex gap-2 sm:gap-4 items-center">
               <Link href={"/checkout/cart"} className="relative block">
-                <ShoppingCart className={`text-gray-500 w-5 h-5 transition-transform duration-300 ${isAnimating ? "scale-125 text-green-600" : ""}`} />
+                <ShoppingCart
+                  className={`text-gray-500 w-5 h-5 transition-transform duration-300 ${isAnimating ? "scale-125 text-green-600" : ""}`}
+                />
                 {cartItemCount > 0 && (
-                  <span className={`absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white text-white text-[9px] font-bold ${isAnimating ? "animate-bounce" : ""}`}>
+                  <span
+                    className={`absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white text-white text-[9px] font-bold ${isAnimating ? "animate-bounce" : ""}`}
+                  >
                     {cartItemCount > 99 ? "99+" : cartItemCount}
                   </span>
                 )}
@@ -148,15 +152,6 @@ const NavbarUser = () => {
               />
             </div>
           )}
-
-          {/* Mobile Auth Button */}
-          {!isLoggedIn && (
-            <div className="md:hidden">
-              <Link href={"/login"}>
-                <Button size="sm">Masuk</Button>
-              </Link>
-            </div>
-          )}
         </div>
       </div>
 
@@ -202,7 +197,9 @@ const NavbarUser = () => {
               >
                 <div className="flex items-center gap-2 py-2 text-gray-600 hover:text-black">
                   <div className="relative">
-                    <ShoppingCart className={`w-5 h-5 transition-transform duration-300 ${isAnimating ? "scale-125 text-green-600" : ""}`} />
+                    <ShoppingCart
+                      className={`w-5 h-5 transition-transform duration-300 ${isAnimating ? "scale-125 text-green-600" : ""}`}
+                    />
                     {cartItemCount > 0 && (
                       <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white text-white text-[9px] font-bold">
                         {cartItemCount > 99 ? "99+" : cartItemCount}
