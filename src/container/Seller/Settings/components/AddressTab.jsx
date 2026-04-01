@@ -1,6 +1,6 @@
-const { Button } = require("@/components/ui/button");
-const { Card, CardHeader, CardTitle, CardContent } = require("@/components/ui/card");
-const { Input } = require("@/components/ui/input");
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { EditableInput } from "./EditableField";
 
 const AddressTab = () => {
   return (
@@ -9,9 +9,12 @@ const AddressTab = () => {
         <CardTitle>Alamat Toko</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Input placeholder="Alamat lengkap" />
-        <Input placeholder="Kota" />
-        <Input placeholder="Kode pos" />
+        <EditableInput
+          placeholder="Alamat lengkap"
+          defaultValue="Jl. Kebon Jeruk No. 123"
+        />
+        <EditableInput placeholder="Kota" defaultValue="Jakarta Barat" />
+        <EditableInput placeholder="Kode pos" defaultValue="11530" />
 
         <Button className="bg-[#03AC0E] hover:bg-green-700">
           Simpan Alamat
@@ -21,4 +24,4 @@ const AddressTab = () => {
   );
 };
 
-export default AddressTab
+export default AddressTab;

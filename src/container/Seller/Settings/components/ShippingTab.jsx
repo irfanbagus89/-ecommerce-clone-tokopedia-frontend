@@ -1,6 +1,6 @@
-const { Button } = require("@/components/ui/button");
-const { Card, CardHeader, CardTitle, CardContent } = require("@/components/ui/card");
-const { Switch } = require("@radix-ui/react-switch");
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { EditableSwitch } from "./EditableField";
 
 const ShippingTab = () => {
   return (
@@ -11,15 +11,15 @@ const ShippingTab = () => {
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <span>JNE</span>
-          <Switch />
+          <EditableSwitch defaultChecked={true} />
         </div>
         <div className="flex items-center justify-between">
           <span>J&T</span>
-          <Switch />
+          <EditableSwitch defaultChecked={true} />
         </div>
         <div className="flex items-center justify-between">
           <span>SiCepat</span>
-          <Switch />
+          <EditableSwitch defaultChecked={false} />
         </div>
 
         <Button className="bg-[#03AC0E] hover:bg-green-700">
@@ -30,4 +30,4 @@ const ShippingTab = () => {
   );
 };
 
-export default ShippingTab
+export default ShippingTab;
