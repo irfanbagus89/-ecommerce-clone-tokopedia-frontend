@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { useRouter } from "next/navigation";
 import { CustomDropdown } from "../ui/dropdown-menu";
+import { SellerAccessModal } from "../ui/seller-access-modal";
 
 const NavbarUser = () => {
   const { isLoggedIn, user, logout } = useAuthContext();
@@ -15,6 +16,15 @@ const NavbarUser = () => {
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showSellerModal, setShowSellerModal] = useState(false);
+
+  const handleTokoClick = (e) => {
+    if (user?.role !== "seller") {
+      e.preventDefault();
+      setShowSellerModal(true);
+      setMobileMenuOpen(false);
+    }
+  };
 
   const { data: cartCountData, mutate: mutateCartCount } = useCountMyCart();
   const cartItemCount = cartCountData?.count || 0;
@@ -111,7 +121,7 @@ const NavbarUser = () => {
             </div>
           ) : (
             <div className="hidden md:flex border-l border-gray-300 px-2 sm:px-4 items-center gap-4 sm:gap-6 text-gray-600">
-              <Link href={"/dashboard"}>
+              <Link href={"/dashboard"} onClick={handleTokoClick}>
                 <div className="cursor-pointer text-xs sm:text-sm font-medium hover:text-black">
                   Toko
                 </div>
@@ -185,7 +195,15 @@ const NavbarUser = () => {
             <div className="flex flex-col gap-3">
               <Link
                 href={"/dashboard"}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => {
+                  if (user?.role !== "seller") {
+                    e.preventDefault();
+                    setShowSellerModal(true);
+                    setMobileMenuOpen(false);
+                  } else {
+                    setMobileMenuOpen(false);
+                  }
+                }}
               >
                 <div className="flex items-center gap-2 py-2 text-gray-600 hover:text-black">
                   <span className="text-sm font-medium">Toko</span>
@@ -255,6 +273,11 @@ const NavbarUser = () => {
           )}
         </div>
       )}
+
+      <SellerAccessModal 
+        isOpen={showSellerModal} 
+        onClose={setShowSellerModal} 
+      />
     </nav>
   );
 };
