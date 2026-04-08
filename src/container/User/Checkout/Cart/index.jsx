@@ -96,143 +96,172 @@ const CartPage = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
-              {sellers.map((seller) => (
-                <Card key={seller.seller_id}>
-                  <CardContent className="p-4 space-y-4 pt-0!">
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                        checked={isSellerChecked(seller)}
-                        onCheckedChange={() => toggleSeller(seller)}
+              {sellers.length === 0 ? (
+                <div className="w-full flex items-center justify-center p-6 sm:p-12 border border-gray-100 rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.05)] bg-white mt-4">
+                  <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">
+                    <div className="relative w-[150px] h-[150px] sm:w-[180px] sm:h-[180px] shrink-0">
+                      <Image
+                        src="https://lf-web-assets.tokopedia-static.net/obj/tokopedia-web-sg/backfunnel_v3/4d27af6a.svg"
+                        alt="Keranjang Kosong"
+                        fill
+                        className="object-contain"
                       />
-                      <span className="font-semibold">
-                        {seller.seller_name}
-                      </span>
                     </div>
-
-                    <Separator />
-
-                    {seller.items.map((item) => (
-                      <div
-                        key={item.cart_item_id}
-                        className="flex items-center gap-4"
-                      >
+                    <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+                      <h2 className="text-xl sm:text-[22px] font-bold text-[#31353B] mb-1.5 leading-tight">
+                        Wah, keranjang belanjamu kosong
+                      </h2>
+                      <p className="text-[#6D7588] text-sm sm:text-base mb-6">
+                        Yuk, isi dengan barang-barang impianmu!
+                      </p>
+                      <Link href={"/"}>
+                        <Button className="bg-[#00AA5B] hover:bg-[#008f4c] text-white font-bold h-10 px-10 rounded-lg text-sm">
+                          Mulai Belanja
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                sellers.map((seller) => (
+                  <Card key={seller.seller_id}>
+                    <CardContent className="p-4 space-y-4 pt-0!">
+                      <div className="flex items-center gap-2">
                         <Checkbox
                           className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                          checked={isChecked(item.cart_item_id)}
-                          onCheckedChange={() => toggleItem(item.cart_item_id)}
+                          checked={isSellerChecked(seller)}
+                          onCheckedChange={() => toggleSeller(seller)}
                         />
-                        <Link
-                          href={`/product/${item.category_id}/${item.product_id}`}
-                        >
-                          <Image
-                            src={item.image_url}
-                            alt={item.product_name}
-                            width={64}
-                            height={64}
-                            className="rounded"
-                          />
-                        </Link>
+                        <span className="font-semibold">
+                          {seller.seller_name}
+                        </span>
+                      </div>
 
-                        <div className="flex-1">
+                      <Separator />
+
+                      {seller.items.map((item) => (
+                        <div
+                          key={item.cart_item_id}
+                          className="flex items-center gap-4"
+                        >
+                          <Checkbox
+                            className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                            checked={isChecked(item.cart_item_id)}
+                            onCheckedChange={() =>
+                              toggleItem(item.cart_item_id)
+                            }
+                          />
                           <Link
                             href={`/product/${item.category_id}/${item.product_id}`}
                           >
-                            <p className="text-sm font-medium">
-                              {item.product_name}
-                            </p>
+                            <Image
+                              src={item.image_url}
+                              alt={item.product_name}
+                              width={64}
+                              height={64}
+                              className="rounded"
+                            />
                           </Link>
-                          <p className="text-xs text-muted-foreground">
-                            {item.variant_name}
-                          </p>
 
-                          <p className="font-bold mt-1">
-                            {formatRupiah(getItemPrice(item))}
-                          </p>
-
-                          {item.discount && (
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="bg-red-100 text-red-600 text-xs font-bold px-1.5 rounded-sm">
-                                {item.discount}%
-                              </span>
-                              <span className="text-xs text-gray-400 line-through">
-                                {formatRupiah(getOriginalPrice(item))}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {item.quantity > 1 ? (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="rounded-none text-green-600 hover:text-green-700"
-                              onClick={() =>
-                                handleActionCart(
-                                  seller.seller_id,
-                                  item.product_id,
-                                  item.variant_id,
-                                  0,
-                                )
-                              }
+                          <div className="flex-1">
+                            <Link
+                              href={`/product/${item.category_id}/${item.product_id}`}
                             >
-                              <Trash2 className="w-5 h-5 text-muted-foreground" />
-                            </Button>
-                          ) : (
-                            <></>
-                          )}
-                          <div className="flex items-center border rounded-md">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="rounded-none text-green-600 hover:text-green-700"
-                              onClick={() =>
-                                handleActionCart(
-                                  seller.seller_id,
-                                  item.product_id,
-                                  item.variant_id,
-                                  item.quantity - 1,
-                                )
-                              }
-                            >
-                              {item.quantity > 1 ? (
-                                <Minus className="h-4 w-4" />
-                              ) : (
+                              <p className="text-sm font-medium">
+                                {item.product_name}
+                              </p>
+                            </Link>
+                            <p className="text-xs text-muted-foreground">
+                              {item.variant_name}
+                            </p>
+
+                            <p className="font-bold mt-1">
+                              {formatRupiah(getItemPrice(item))}
+                            </p>
+
+                            {item.discount && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="bg-red-100 text-red-600 text-xs font-bold px-1.5 rounded-sm">
+                                  {item.discount}%
+                                </span>
+                                <span className="text-xs text-gray-400 line-through">
+                                  {formatRupiah(getOriginalPrice(item))}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {item.quantity > 1 ? (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="rounded-none text-green-600 hover:text-green-700"
+                                onClick={() =>
+                                  handleActionCart(
+                                    seller.seller_id,
+                                    item.product_id,
+                                    item.variant_id,
+                                    0,
+                                  )
+                                }
+                              >
                                 <Trash2 className="w-5 h-5 text-muted-foreground" />
-                              )}
-                            </Button>
+                              </Button>
+                            ) : (
+                              <></>
+                            )}
+                            <div className="flex items-center border rounded-md">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="rounded-none text-green-600 hover:text-green-700"
+                                onClick={() =>
+                                  handleActionCart(
+                                    seller.seller_id,
+                                    item.product_id,
+                                    item.variant_id,
+                                    item.quantity - 1,
+                                  )
+                                }
+                              >
+                                {item.quantity > 1 ? (
+                                  <Minus className="h-4 w-4" />
+                                ) : (
+                                  <Trash2 className="w-5 h-5 text-muted-foreground" />
+                                )}
+                              </Button>
 
-                            <span className="w-10 text-center font-bold">
-                              {item.quantity}
-                            </span>
+                              <span className="w-10 text-center font-bold">
+                                {item.quantity}
+                              </span>
 
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              disabled={item.quantity >= item.stock}
-                              className="rounded-none text-green-600 hover:text-green-700"
-                              onClick={() =>
-                                handleActionCart(
-                                  seller.seller_id,
-                                  item.product_id,
-                                  item.variant_id,
-                                  item.quantity + 1,
-                                )
-                              }
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                disabled={item.quantity >= item.stock}
+                                className="rounded-none text-green-600 hover:text-green-700"
+                                onClick={() =>
+                                  handleActionCart(
+                                    seller.seller_id,
+                                    item.product_id,
+                                    item.variant_id,
+                                    item.quantity + 1,
+                                  )
+                                }
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              ))}
+                      ))}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
-
-            <Card className="h-fit">
+            <Card className="h-fit mt-4">
               <CardHeader className="font-semibold">
                 Ringkasan belanja
               </CardHeader>
