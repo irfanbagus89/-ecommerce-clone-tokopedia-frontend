@@ -8,6 +8,7 @@ import Image from "next/image";
 import formatRupiah from "@/lib/currencyHelper";
 import { useMyCart } from "@/services/User/Cart/getMyCart";
 import { useCreateCart } from "@/services/User/DetailProduct/createCart";
+import { useUpdateCheckCart } from "@/services/User/Cart/updateCheckCart";
 import ProductCartSkeleton from "@/components/ui/productCartSkeleton";
 import Link from "next/link";
 
@@ -15,32 +16,54 @@ const CartPage = () => {
   const { data, isLoading, mutate } = useMyCart();
   const [checkedItems, setCheckedItems] = useState({});
   const { trigger, isMutating } = useCreateCart();
+  const { trigger: triggerUpdateCheck } = useUpdateCheckCart();
 
   const sellers = data?.sellers || [];
 
-  const isChecked = (id) => checkedItems[id] ?? true;
+  const isChecked = (item) => checkedItems[item.cart_item_id] ?? item.is_checked ?? true;
 
-  const toggleItem = (id) => {
+  const toggleItem = async (item) => {
+    const newCheckedStatus = !isChecked(item);
     setCheckedItems((prev) => ({
       ...prev,
-      [id]: !isChecked(id),
+      [item.cart_item_id]: newCheckedStatus,
     }));
+
+    try {
+      await triggerUpdateCheck({ id: item.cart_item_id });
+      mutate();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const isSellerChecked = (seller) => {
-    return seller.items.every((item) => isChecked(item.cart_item_id));
+    if (!seller.items || seller.items.length === 0) return false;
+    return seller.items.every((item) => isChecked(item));
   };
 
-  const toggleSeller = (seller) => {
+  const toggleSeller = async (seller) => {
     const checked = isSellerChecked(seller);
+    const newCheckedStatus = !checked;
 
     setCheckedItems((prev) => {
       const next = { ...prev };
       seller.items.forEach((item) => {
-        next[item.cart_item_id] = !checked;
+        next[item.cart_item_id] = newCheckedStatus;
       });
       return next;
     });
+
+    try {
+      await Promise.all(
+        seller.items.map((item) =>
+          triggerUpdateCheck({ id: item.cart_item_id })
+        )
+      );
+      mutate();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getItemPrice = (item) => {
@@ -56,7 +79,7 @@ const CartPage = () => {
     return (
       sum +
       seller.items.reduce((s, item) => {
-        if (!isChecked(item.cart_item_id)) return s;
+        if (!isChecked(item)) return s;
         return s + item.quantity;
       }, 0)
     );
@@ -66,7 +89,7 @@ const CartPage = () => {
     return (
       sum +
       seller.items.reduce((s, item) => {
-        if (!isChecked(item.cart_item_id)) return s;
+        if (!isChecked(item)) return s;
         return s + getItemPrice(item) * item.quantity;
       }, 0)
     );
@@ -146,9 +169,9 @@ const CartPage = () => {
                         >
                           <Checkbox
                             className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                            checked={isChecked(item.cart_item_id)}
+                            checked={isChecked(item)}
                             onCheckedChange={() =>
-                              toggleItem(item.cart_item_id)
+                              toggleItem(item)
                             }
                           />
                           <Link
