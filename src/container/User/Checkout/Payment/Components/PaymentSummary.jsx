@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { usePaymentMethods } from "@/services/User/Payments/paymentActions";
 import { CustomSelect } from "@/components/ui/select";
+import formatRupiah from "@/lib/currencyHelper";
 
 const SummaryRow = ({ label, value, minus, bold }) => {
   return (
@@ -39,12 +40,6 @@ const PaymentSummary = ({
   calculateTotal,
   totalItems,
 }) => {
-  const formatPrice = (price) =>
-    new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(price);
 
   const { data: methods } = usePaymentMethods();
 
@@ -74,29 +69,29 @@ const PaymentSummary = ({
         <div className="space-y-2">
           <SummaryRow
             label={`Total Item (${totalItems} barang)`}
-            value={totalItems > 0 ? formatPrice(calculatePrice()) : "Dihitung saat checkout"}
+            value={totalItems > 0 ? formatRupiah(calculatePrice()) : "Dihitung saat checkout"}
           />
           {calculateDiscount() > 0 && (
             <SummaryRow
               label="Diskon Barang"
-              value={formatPrice(-calculateDiscount())}
+              value={formatRupiah(-calculateDiscount())}
               minus
             />
           )}
           {selectedVoucher && (
             <SummaryRow
               label="Voucher"
-              value={formatPrice(calculateVoucherDiscount())}
+              value={formatRupiah(calculateVoucherDiscount())}
               minus
               subLabel={selectedVoucher.code}
             />
           )}
           <SummaryRow
             label="Ongkos Kirim"
-            value={formatPrice(selectedShipping?.price || 0)}
+            value={formatRupiah(selectedShipping?.price || 0)}
           />
-          <SummaryRow label="Biaya Layanan" value={formatPrice(2000)} />
-          <SummaryRow label="Asuransi Pengiriman" value={formatPrice(3200)} />
+          <SummaryRow label="Biaya Layanan" value={formatRupiah(2000)} />
+          <SummaryRow label="Asuransi Pengiriman" value={formatRupiah(3200)} />
         </div>
 
         <Separator className="my-3" />
@@ -105,13 +100,13 @@ const PaymentSummary = ({
         <div className="bg-green-50 rounded-lg p-3 space-y-2">
           <SummaryRow
             label="Total Tagihan"
-            value={formatPrice(calculateTotal())}
+            value={formatRupiah(calculateTotal())}
             bold
           />
           {savings > 0 && (
             <div className="flex items-center gap-2 text-xs text-green-700">
               <CheckCircle className="w-3.5 h-3.5" />
-              <span>Hemat {formatPrice(savings)} dari pembelian ini</span>
+              <span>Hemat {formatRupiah(savings)} dari pembelian ini</span>
             </div>
           )}
         </div>

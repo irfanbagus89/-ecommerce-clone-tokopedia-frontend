@@ -14,6 +14,12 @@ const nextConfig = {
         port: "",
         pathname: "/**", // bisa gunakan pattern untuk folder tertentu
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/**", // bisa gunakan pattern untuk folder tertentu
+      },
     ],
   },
   async rewrites() {
