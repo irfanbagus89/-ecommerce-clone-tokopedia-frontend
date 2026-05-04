@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AddressCard from "./Components/AddressCard";
 import PaymentSummary from "./Components/PaymentSummary";
@@ -20,6 +20,7 @@ import { useCheckout } from "@/services/User/Checkout/checkoutActions";
 import { useCheckoutCart } from "@/services/User/Cart/getCheckoutCart";
 import { useValidateVoucher } from "@/services/User/Vouchers/validateVoucher";
 import { toast } from "@/lib/toast";
+import { usePaymentStatus } from "@/services/User/Orders/usePaymentStatus";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -92,22 +93,85 @@ const InfoRow = ({ label, value, copiable, mono }) => (
 
 // ── PaymentInstructions ───────────────────────────────────────────────────────
 
+const StatusBadge = ({ paymentStatus }) => {
+  if (!paymentStatus || paymentStatus === "unpaid" || paymentStatus === "pending") {
+    return (
+      <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
+        <Loader2 className="w-4 h-4 shrink-0 animate-spin" />
+        <span>Menunggu konfirmasi pembayaran...</span>
+      </div>
+    );
+  }
+  if (paymentStatus === "paid") {
+    return (
+      <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 rounded-lg px-3 py-2">
+        <CheckCircle2 className="w-4 h-4 shrink-0" />
+        <span className="font-medium">Pembayaran dikonfirmasi! Mengalihkan...</span>
+      </div>
+    );
+  }
+  if (paymentStatus === "expired") {
+    return (
+      <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2">
+        <Clock className="w-4 h-4 shrink-0" />
+        <span>Waktu pembayaran telah habis</span>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2">
+      <Clock className="w-4 h-4 shrink-0" />
+      <span>Pembayaran {paymentStatus}</span>
+    </div>
+  );
+};
+
 const PaymentInstructions = ({ result, onDone }) => {
-  const { midtrans_order_id, payment_method, payment_type, instructions } = result;
+  const { midtrans_order_id, payment_method, payment_type, instructions, order_ids } = result;
   const expired = instructions?.expired_at || result.expired_at;
 
+  // ── Polling status pembayaran ──────────────────────────────────────────────
+  const primaryOrderId = order_ids?.[0];
+  const { data: orderData } = usePaymentStatus(primaryOrderId);
+  const paymentStatus = orderData?.payment_status;
+
+  // ── Countdown timer ────────────────────────────────────────────────────────
+  const [secondsLeft, setSecondsLeft] = useState(null);
+
+  useEffect(() => {
+    if (!expired) return;
+    const expiry = new Date(expired).getTime();
+    const tick = () => setSecondsLeft(Math.max(0, Math.floor((expiry - Date.now()) / 1000)));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [expired]);
+
+  const formatCountdown = (s) => {
+    if (s === null) return null;
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return `${h}j ${m}m ${String(sec).padStart(2, "0")}d`;
+    return `${m}m ${String(sec).padStart(2, "0")}d`;
+  };
+
+  // ── Auto-redirect saat paid ────────────────────────────────────────────────
+  useEffect(() => {
+    if (paymentStatus !== "paid") return;
+    toast.success("Pembayaran berhasil dikonfirmasi!");
+    const id = setTimeout(onDone, 3000);
+    return () => clearTimeout(id);
+  }, [paymentStatus, onDone]);
+
+  // ── Render instruksi per tipe pembayaran ───────────────────────────────────
   const renderDetail = () => {
     switch (payment_type) {
       case "bank_transfer":
         return (
           <div className="space-y-1">
             <InfoRow label="Bank" value={bankLabel(payment_method?.code)} />
-            <InfoRow
-              label="Nomor Virtual Account"
-              value={instructions?.va_number}
-              copiable
-              mono
-            />
+            <InfoRow label="Nomor Virtual Account" value={instructions?.va_number} copiable mono />
           </div>
         );
 
@@ -142,7 +206,6 @@ const PaymentInstructions = ({ result, onDone }) => {
             {instructions?.qr_string && (
               <div className="text-center space-y-2">
                 <p className="text-xs text-muted-foreground">Atau scan QR Code</p>
-                {/* qr_string dari Core API GoPay berupa URL gambar dari actions */}
                 <img
                   src={instructions.qr_string}
                   alt="QR Code"
@@ -165,11 +228,7 @@ const PaymentInstructions = ({ result, onDone }) => {
               Scan QR Code menggunakan aplikasi e-wallet atau mobile banking Anda.
             </p>
             {qrImageUrl ? (
-              <img
-                src={qrImageUrl}
-                alt="QRIS"
-                className="mx-auto w-52 h-52 object-contain border rounded-lg"
-              />
+              <img src={qrImageUrl} alt="QRIS" className="mx-auto w-52 h-52 object-contain border rounded-lg" />
             ) : (
               <div className="bg-gray-50 rounded-lg p-4 text-xs font-mono break-all text-left">
                 {instructions?.qr_string}
@@ -186,9 +245,7 @@ const PaymentInstructions = ({ result, onDone }) => {
         return (
           <div className="space-y-1">
             <InfoRow label="Minimarket" value={storeName} />
-            {paymentCode && (
-              <InfoRow label="Kode Bayar" value={paymentCode} copiable mono />
-            )}
+            {paymentCode && <InfoRow label="Kode Bayar" value={paymentCode} copiable mono />}
           </div>
         );
       }
@@ -204,12 +261,22 @@ const PaymentInstructions = ({ result, onDone }) => {
     }
   };
 
+  const isPaid = paymentStatus === "paid";
+  const isFailed = ["expired", "cancelled", "failed"].includes(paymentStatus);
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-lg">
       {/* Header */}
       <div className="text-center mb-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 mb-4">
-          <CheckCircle2 className="w-8 h-8 text-green-600" />
+        <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
+          isPaid ? "bg-green-100" : isFailed ? "bg-red-50" : "bg-green-50"
+        }`}>
+          {isPaid
+            ? <CheckCircle2 className="w-8 h-8 text-green-600" />
+            : isFailed
+            ? <Clock className="w-8 h-8 text-red-500" />
+            : <CheckCircle2 className="w-8 h-8 text-green-600" />
+          }
         </div>
         <h1 className="text-xl font-bold">Pesanan Berhasil Dibuat!</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -227,39 +294,45 @@ const PaymentInstructions = ({ result, onDone }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+
+          {/* Status realtime */}
+          <StatusBadge paymentStatus={paymentStatus} />
+
           {/* Order ID */}
           <div className="bg-gray-50 rounded-lg px-3 py-2">
-            <InfoRow
-              label="ID Pesanan"
-              value={midtrans_order_id}
-              copiable
-              mono
-            />
+            <InfoRow label="ID Pesanan" value={midtrans_order_id} copiable mono />
           </div>
 
-          {/* Payment detail per type */}
-          <div className="bg-gray-50 rounded-lg px-3 py-1">
-            {renderDetail()}
-          </div>
+          {/* Payment detail per type — sembunyikan jika sudah selesai */}
+          {!isPaid && !isFailed && (
+            <div className="bg-gray-50 rounded-lg px-3 py-1">
+              {renderDetail()}
+            </div>
+          )}
 
-          {/* Expiry */}
-          {expired && (
-            <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
-              <Clock className="w-4 h-4 shrink-0" />
-              <span>
-                Bayar sebelum{" "}
-                <span className="font-semibold">{formatDate(expired)}</span>
-              </span>
+          {/* Countdown + Expiry */}
+          {expired && !isPaid && !isFailed && (
+            <div className="flex items-center justify-between text-sm bg-amber-50 rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2 text-amber-700">
+                <Clock className="w-4 h-4 shrink-0" />
+                <span>Bayar sebelum <span className="font-semibold">{formatDate(expired)}</span></span>
+              </div>
+              {secondsLeft !== null && secondsLeft > 0 && (
+                <span className="font-mono text-amber-800 font-semibold text-xs tabular-nums">
+                  {formatCountdown(secondsLeft)}
+                </span>
+              )}
             </div>
           )}
 
           {/* CTA */}
           <Button
-            className="w-full bg-green-600 hover:bg-green-700"
+            className={`w-full ${isPaid ? "bg-green-600 hover:bg-green-700" : "bg-gray-700 hover:bg-gray-800"}`}
             onClick={onDone}
           >
-            Lihat Status Pesanan
+            {isPaid ? "Lihat Pesanan Saya" : "Ke Halaman Pesanan"}
           </Button>
+
         </CardContent>
       </Card>
     </div>
