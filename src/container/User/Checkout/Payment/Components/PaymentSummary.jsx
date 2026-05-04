@@ -1,76 +1,79 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Shield, Lock, CheckCircle, Info, ChevronRight } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  Shield,
+  Lock,
+  CheckCircle,
+  Info,
+  ChevronRight,
+  Loader2,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { usePaymentMethods } from "@/services/User/Payments/paymentActions";
+import { CustomSelect } from "@/components/ui/select";
 
 const SummaryRow = ({ label, value, minus, bold, subLabel }) => {
   return (
     <div className="space-y-0.5">
-      <div className={`flex justify-between ${bold ? "font-semibold text-base" : "text-sm"}`}>
+      <div
+        className={`flex justify-between ${bold ? "font-semibold text-base" : "text-sm"}`}
+      >
         <span>{label}</span>
-        <span className={minus ? "text-red-500" : ""}>
-          {value}
-        </span>
+        <span className={minus ? "text-red-500" : ""}>{value}</span>
       </div>
-      {subLabel && (
-        <p className="text-xs text-muted-foreground">{subLabel}</p>
-      )}
+      {subLabel && <p className="text-xs text-muted-foreground">{subLabel}</p>}
     </div>
-  )
-}
+  );
+};
 
 const PaymentSummary = ({
   products,
   selectedShipping,
   selectedVoucher,
   selectedPayment,
+  onSelectPayment,
   agreeTerms,
   onAgreeTermsChange,
   onPayment,
+  isProcessing,
   calculateSubtotal,
   calculateOriginalTotal,
   calculateDiscount,
   calculateVoucherDiscount,
   calculateTotal,
+  cartItemCount,
 }) => {
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
     }).format(price);
   };
 
-  const getPaymentMethodName = () => {
-    const paymentNames = {
-      gopay: "GoPay",
-      ovo: "OVO",
-      dana: "DANA",
-      shopeepay: "ShopeePay",
-      bca_va: "BCA Virtual Account",
-      mandiri_va: "Mandiri Virtual Account",
-      bri_va: "BRI Virtual Account",
-      bni_va: "BNI Virtual Account",
-      credit_card: "Kartu Kredit / Debit",
-      cod: "Cash on Delivery",
-    };
-    return paymentNames[selectedPayment] || selectedPayment;
-  };
+  const { data: methods, isLoading: isLoadingMethods } = usePaymentMethods();
 
+ 
   const getPaymentBadge = () => {
     const badges = {
       gopay: { text: "Cashback 2%", color: "bg-green-100 text-green-700" },
       ovo: { text: "Diskon 5rb", color: "bg-purple-100 text-purple-700" },
       dana: null,
-      shopeepay: { text: "Gratis Ongkir", color: "bg-orange-100 text-orange-700" },
+      shopeepay: {
+        text: "Gratis Ongkir",
+        color: "bg-orange-100 text-orange-700",
+      },
     };
     return badges[selectedPayment];
   };
 
-  const totalItems = products.reduce((sum, product) => sum + product.quantity, 0);
+  const totalItems =
+    products.length > 0
+      ? products.reduce((sum, product) => sum + product.quantity, 0)
+      : cartItemCount || 0;
   const savings = calculateDiscount() + Math.abs(calculateVoucherDiscount());
 
   return (
@@ -87,16 +90,26 @@ const PaymentSummary = ({
         {/* Price Breakdown */}
         <div className="space-y-2">
           <SummaryRow
-            label={`Total Harga (${totalItems} barang)`}
-            value={formatPrice(calculateOriginalTotal())}
-            subLabel={products.map(p => formatPrice(p.originalPrice)).join(" + ")}
+            label={`Total Item (${totalItems} barang)`}
+            value={
+              products.length > 0
+                ? formatPrice(calculateOriginalTotal())
+                : "Dihitung saat checkout"
+            }
+            subLabel={
+              products.length > 0
+                ? products.map((p) => formatPrice(p.originalPrice)).join(" + ")
+                : "Total akan dikonfirmasi backend"
+            }
           />
-          <SummaryRow
-            label="Diskon Barang"
-            value={formatPrice(-calculateDiscount())}
-            minus
-            subLabel={`Hemat ${products.map(p => p.discountPercent + "%").join(" & ")}`}
-          />
+          {products.length > 0 && (
+            <SummaryRow
+              label="Diskon Barang"
+              value={formatPrice(-calculateDiscount())}
+              minus
+              subLabel={`Hemat ${products.map((p) => p.discountPercent + "%").join(" & ")}`}
+            />
+          )}
           {selectedVoucher && (
             <SummaryRow
               label="Voucher"
@@ -139,21 +152,27 @@ const PaymentSummary = ({
           )}
         </div>
 
-        {/* Payment Method Info */}
-        <div className="flex items-center justify-between text-sm bg-gray-50 rounded-lg p-2">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-green-600 rounded flex items-center justify-center">
-              <span className="text-white text-xs font-bold">
-                {getPaymentMethodName().charAt(0)}
-              </span>
-            </div>
-            <span className="font-medium">{getPaymentMethodName()}</span>
+        {/* Payment Method Selector */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm font-medium">
+            <span>Metode Pembayaran</span>
+            {getPaymentBadge() && (
+              <Badge className={getPaymentBadge().color}>
+                {getPaymentBadge().text}
+              </Badge>
+            )}
           </div>
-          {getPaymentBadge() && (
-            <div className="flex items-center gap-1 text-green-600 text-xs">
-              <Badge className={getPaymentBadge().color}>{getPaymentBadge().text}</Badge>
-            </div>
-          )}
+          
+          <CustomSelect
+            placeholder="Pilih metode pembayaran..."
+            value={selectedPayment !== "midtrans" ? selectedPayment : ""}
+            onValueChange={onSelectPayment}
+            options={methods?.map((m) => ({
+              value: m.code,
+              label: m.name,
+            })) || []}
+            className="w-full bg-gray-50"
+          />
         </div>
 
         {/* Terms Checkbox */}
@@ -165,7 +184,10 @@ const PaymentSummary = ({
             className="mt-0.5"
           />
           <div className="flex-1 space-y-1">
-            <Label htmlFor="terms" className="text-sm font-normal cursor-pointer leading-snug">
+            <Label
+              htmlFor="terms"
+              className="text-sm font-normal cursor-pointer leading-snug"
+            >
               Saya menyetujui Syarat & Ketentuan serta Kebijakan Privasi
             </Label>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -179,10 +201,17 @@ const PaymentSummary = ({
         <Button
           size="lg"
           className="w-full mt-2 bg-green-600 hover:bg-green-700 font-semibold"
-          disabled={!agreeTerms}
+          disabled={!agreeTerms || isProcessing}
           onClick={onPayment}
         >
-          Bayar Sekarang
+          {isProcessing ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Memproses...
+            </>
+          ) : (
+            "Bayar Sekarang via Midtrans"
+          )}
         </Button>
 
         {/* Secure Payment Info */}
@@ -201,18 +230,22 @@ const PaymentSummary = ({
         <div className="flex items-start gap-2 text-xs text-muted-foreground bg-blue-50 p-2 rounded-lg">
           <Info className="w-3.5 h-3.5 shrink-0 mt-0.5 text-blue-600" />
           <p>
-            Pesanan akan diproses setelah pembayaran berhasil. Estimasi pengiriman 2-3 hari kerja.
+            Pesanan akan diproses setelah pembayaran berhasil. Estimasi
+            pengiriman 2-3 hari kerja.
           </p>
         </div>
 
         {/* Help Link */}
-        <Button variant="ghost" className="w-full text-sm text-green-600 hover:text-green-700 hover:bg-green-50">
+        <Button
+          variant="ghost"
+          className="w-full text-sm text-green-600 hover:text-green-700 hover:bg-green-50"
+        >
           Butuh Bantuan?
           <ChevronRight className="w-4 h-4 ml-1" />
         </Button>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default PaymentSummary
+export default PaymentSummary;

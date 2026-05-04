@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,6 +14,7 @@ import ProductCartSkeleton from "@/components/ui/productCartSkeleton";
 import Link from "next/link";
 
 const CartPage = () => {
+  const router = useRouter();
   const { data, isLoading, mutate } = useMyCart();
   const [checkedItems, setCheckedItems] = useState({});
   const { trigger, isMutating } = useCreateCart();
@@ -107,6 +109,17 @@ const CartPage = () => {
       window.dispatchEvent(new Event("cartUpdated"));
       mutate();
     }
+  };
+
+  const handleProceedToPayment = () => {
+    const checkedIds = sellers.flatMap((seller) =>
+      seller.items
+        .filter((item) => isChecked(item))
+        .map((item) => item.cart_item_id)
+    );
+    if (checkedIds.length === 0) return;
+    const params = new URLSearchParams({ ids: checkedIds.join(",") });
+    router.push(`/checkout/payment?${params.toString()}`);
   };
 
   return (
@@ -303,11 +316,13 @@ const CartPage = () => {
                     : "Pilih barang dulu sebelum pakai promo"}
                   <span>›</span>
                 </Button>
-                <Link href={"/checkout/payment"}>
-                  <Button className="w-full" disabled={totalQty === 0}>
-                    Beli {totalQty > 0 && `(${totalQty})`}
-                  </Button>
-                </Link>
+                <Button
+                  className="w-full"
+                  disabled={totalQty === 0}
+                  onClick={handleProceedToPayment}
+                >
+                  Beli {totalQty > 0 && `(${totalQty})`}
+                </Button>
               </CardContent>
             </Card>
           </div>

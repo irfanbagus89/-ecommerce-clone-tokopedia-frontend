@@ -1,9 +1,51 @@
+"use client";
+
 import Image from "next/image";
 import { Star, ThumbsUp, MoreVertical } from "lucide-react";
 import { CustomSelect } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CustomPagination } from "@/components/ui/pagination";
 import formatDate from "@/lib/dateFormat";
+import { useMarkReviewHelpful } from "@/services/User/Reviews/createReview";
+import { toast } from "@/lib/toast";
+import { useState } from "react";
+
+const HelpfulButton = ({ review, onUpdate }) => {
+  const { trigger, isMutating } = useMarkReviewHelpful();
+  const [marked, setMarked] = useState(false);
+  const [count, setCount] = useState(review.helpful || 0);
+
+  const handleClick = async () => {
+    if (marked || isMutating) return;
+    try {
+      await trigger({ id: review.id });
+      setMarked(true);
+      setCount((c) => c + 1);
+      onUpdate?.();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Gagal menandai");
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={isMutating}
+      className={`flex items-center gap-1 transition-colors ${
+        marked
+          ? "text-[#03AC0E]"
+          : "text-gray-500 hover:text-[#03AC0E]"
+      }`}
+    >
+      <ThumbsUp
+        className={`w-4 h-4 ${marked ? "fill-[#03AC0E]" : ""}`}
+      />
+      <span className="text-sm">
+        Membantu {count > 0 && `(${count})`}
+      </span>
+    </button>
+  );
+};
 
 const ReviewList = ({
   reviews,
@@ -12,6 +54,7 @@ const ReviewList = ({
   sort,
   setSort,
   pagination,
+  onRefresh,
 }) => {
   return (
     <div className="w-full">
@@ -102,12 +145,7 @@ const ReviewList = ({
               </div>
             )}
 
-            <div className="flex items-center gap-1 text-gray-500">
-              <ThumbsUp className="w-4 h-4" />
-              <span className="text-sm">
-                Membantu {review.helpful > 0 && `(${review.helpful})`}
-              </span>
-            </div>
+            <HelpfulButton review={review} onUpdate={onRefresh} />
           </div>
         ))}
       </div>

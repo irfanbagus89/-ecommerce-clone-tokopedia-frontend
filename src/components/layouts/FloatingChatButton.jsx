@@ -1,91 +1,77 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Search, MoreVertical } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { MessageCircle, X, Send, Search, Loader2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-
-/* =========================
-   DUMMY DATA
-   ========================= */
-const chatsDummy = [
-  {
-    id: 1,
-    name: "Budi Santoso",
-    lastMessage: "Kak, stok masih ada?",
-    online: true,
-    unread: 2,
-    messages: [
-      { from: "buyer", text: "Halo kak", time: "10:30" },
-      { from: "seller", text: "Halo, ada yang bisa dibantu?", time: "10:31" },
-      { from: "buyer", text: "Kak, stok masih ada?", time: "10:32" },
-      { from: "buyer", text: "Saya mau order 1 pcs", time: "10:33" },
-    ],
-  },
-  {
-    id: 2,
-    name: "Siti Rahayu",
-    lastMessage: "Bisa kirim hari ini?",
-    online: false,
-    unread: 1,
-    messages: [
-      { from: "buyer", text: "Halo kak", time: "09:15" },
-      { from: "seller", text: "Halo kak", time: "09:20" },
-      { from: "buyer", text: "Bisa kirim hari ini?", time: "09:25" },
-    ],
-  },
-  {
-    id: 3,
-    name: "Ahmad Wijaya",
-    lastMessage: "Terima kasih kak",
-    online: true,
-    unread: 0,
-    messages: [
-      { from: "buyer", text: "Barang sudah sampai", time: "08:00" },
-      { from: "seller", text: "Alhamdulillah, semoga puas", time: "08:05" },
-      { from: "buyer", text: "Terima kasih kak", time: "08:10" },
-    ],
-  },
-];
+import { useAuthContext } from "@/contexts/AuthProvider";
+import { 
+  useConversations, 
+  useMessages, 
+  useSendMessage, 
+  useUnreadChatCount 
+} from "@/services/User/Chat/chatActions";
+import { format } from "date-fns";
 
 const FloatingChatButton = () => {
+  const { user, isLoggedIn } = useAuthContext();
   const [isOpen, setIsOpen] = useState(false);
-  const [activeChat, setActiveChat] = useState(chatsDummy[0]);
+  const [activeChatId, setActiveChatId] = useState(null);
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef(null);
 
-  const filteredChats = chatsDummy.filter((chat) =>
-    chat.name.toLowerCase().includes(search.toLowerCase())
+  const { data: conversationsData } = useConversations();
+  const conversations = conversationsData || [];
+
+  const { data: messagesData, isLoading: isLoadingMessages } = useMessages(activeChatId);
+  const messages = messagesData?.data || [];
+
+  const { data: unreadData } = useUnreadChatCount();
+  const totalUnread = unreadData?.unread_count || 0;
+
+  const { trigger: triggerSendMessage, isMutating: isSending } = useSendMessage();
+
+  const formattedChats = conversations.map(c => {
+    const isMeBuyer = user?.id === c.buyer_id;
+    return {
+      id: c.id,
+      name: isMeBuyer ? c.store_name : c.buyer_name,
+      avatar: isMeBuyer ? null : c.buyer_avatar,
+      lastMessage: c.last_message,
+      unread: c.unread_count,
+      online: false, // Optional: Implement online status later if available
+    };
+  });
+
+  const filteredChats = formattedChats.filter((chat) =>
+    chat.name?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalUnread = chatsDummy.reduce((sum, chat) => sum + chat.unread, 0);
+  const activeChat = formattedChats.find(c => c.id === activeChatId);
 
-  const sendMessage = () => {
-    if (!message.trim()) return;
+  const handleSendMessage = async () => {
+    if (!message.trim() || !activeChatId) return;
 
-    const newMessage = {
-      from: "seller",
-      text: message,
-      time: new Date().toLocaleTimeString("id-ID", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-
-    setActiveChat((prev) => ({
-      ...prev,
-      messages: [...prev.messages, newMessage],
-      lastMessage: message,
-    }));
-
-    setMessage("");
+    try {
+      await triggerSendMessage({
+        conversationId: activeChatId,
+        message: message,
+      });
+      setMessage("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
   };
 
   // Auto scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChat.messages]);
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  if (!isLoggedIn) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -100,10 +86,10 @@ const FloatingChatButton = () => {
               </div>
               <div>
                 <h3 className="text-white font-semibold text-sm">
-                  Chat Pembeli
+                  Chat
                 </h3>
                 <p className="text-white/80 text-xs">
-                  {filteredChats.length} chat aktif
+                  {filteredChats.length} chat
                 </p>
               </div>
             </div>
@@ -128,12 +114,7 @@ const FloatingChatButton = () => {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="h-8 text-xs"
-                    rightIcon={
-                      <Search
-                        className=" text-gray-400"
-                        size={14}
-                      />
-                    }
+                    rightIcon={<Search className="text-gray-400" size={14} />}
                   />
                 </div>
               </div>
@@ -141,9 +122,9 @@ const FloatingChatButton = () => {
                 {filteredChats.map((chat) => (
                   <div
                     key={chat.id}
-                    onClick={() => setActiveChat(chat)}
+                    onClick={() => setActiveChatId(chat.id)}
                     className={`p-2 rounded-lg cursor-pointer transition ${
-                      activeChat.id === chat.id
+                      activeChatId === chat.id
                         ? "bg-[#03AC0E] text-white"
                         : "hover:bg-white"
                     }`}
@@ -151,9 +132,10 @@ const FloatingChatButton = () => {
                     <div className="flex items-center gap-2">
                       <div className="relative">
                         <Avatar className="w-8 h-8">
+                          {chat.avatar && <AvatarImage src={chat.avatar} />}
                           <AvatarFallback
                             className={`text-xs ${
-                              activeChat.id === chat.id
+                              activeChatId === chat.id
                                 ? "bg-white/20 text-white"
                                 : "bg-[#03AC0E] text-white"
                             }`}
@@ -168,7 +150,7 @@ const FloatingChatButton = () => {
                       <div className="flex-1 min-w-0">
                         <p
                           className={`text-xs font-medium truncate ${
-                            activeChat.id === chat.id
+                            activeChatId === chat.id
                               ? "text-white"
                               : "text-gray-800"
                           }`}
@@ -177,7 +159,7 @@ const FloatingChatButton = () => {
                         </p>
                         <p
                           className={`text-[10px] truncate ${
-                            activeChat.id === chat.id
+                            activeChatId === chat.id
                               ? "text-white/80"
                               : "text-gray-500"
                           }`}
@@ -188,7 +170,7 @@ const FloatingChatButton = () => {
                       {chat.unread > 0 && (
                         <span
                           className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                            activeChat.id === chat.id
+                            activeChatId === chat.id
                               ? "bg-white text-[#03AC0E]"
                               : "bg-[#03AC0E] text-white"
                           }`}
@@ -204,83 +186,106 @@ const FloatingChatButton = () => {
 
             {/* Chat Messages */}
             <div className="flex-1 flex flex-col bg-white">
-              {/* Active Chat Header */}
-              <div className="p-3 border-b border-gray-100 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback className="bg-[#03AC0E] text-white text-xs">
-                      {activeChat.name?.[0] ?? "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-800">
-                      {activeChat.name}
-                    </p>
-                    <p className="text-[10px] text-gray-500">
-                      {activeChat.online ? (
-                        <span className="flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                          Online
-                        </span>
-                      ) : (
-                        "Offline"
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Messages */}
-              <div className="flex-1 p-3 overflow-auto space-y-2 bg-gray-50">
-                {activeChat.messages.map((msg, i) => (
-                  <div
-                    key={i}
-                    className={`flex ${
-                      msg.from === "seller" ? "justify-end" : "justify-start"
-                    }`}
-                  >
-                    <div
-                      className={`px-3 py-2 rounded-2xl max-w-[80%] text-xs ${
-                        msg.from === "seller"
-                          ? "bg-linear-to-br from-[#03AC0E] to-[#028a0b] text-white rounded-br-md"
-                          : "bg-white border border-gray-200 text-gray-800 rounded-bl-md"
-                      }`}
-                    >
-                      <p>{msg.text}</p>
-                      <p
-                        className={`text-[9px] mt-1 ${
-                          msg.from === "seller"
-                            ? "text-white/70"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {msg.time}
-                      </p>
+              {activeChatId ? (
+                <>
+                  {/* Active Chat Header */}
+                  <div className="p-3 border-b border-gray-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="w-8 h-8">
+                        {activeChat?.avatar && <AvatarImage src={activeChat.avatar} />}
+                        <AvatarFallback className="bg-[#03AC0E] text-white text-xs">
+                          {activeChat?.name?.[0] ?? "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {activeChat?.name}
+                        </p>
+                        <p className="text-[10px] text-gray-500">
+                          {activeChat?.online ? (
+                            <span className="flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                              Online
+                            </span>
+                          ) : (
+                            "Offline"
+                          )}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
 
-              {/* Input */}
-              <div className="p-3 border-t border-gray-100">
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Ketik pesan..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                    className="flex-1 text-xs"
-                  />
-                  <button
-                    onClick={sendMessage}
-                    disabled={!message.trim()}
-                    className="w-10 h-10 bg-linear-to-br from-[#03AC0E] to-[#028a0b] hover:from-[#028a0b] hover:to-[#027009] disabled:opacity-50 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-all duration-200 shadow-lg shadow-green-200"
-                  >
-                    <Send className="text-white" size={16} />
-                  </button>
+                  {/* Messages */}
+                  <div className="flex-1 p-3 overflow-auto space-y-2 bg-gray-50">
+                    {isLoadingMessages ? (
+                      <div className="h-full flex items-center justify-center">
+                        <Loader2 className="animate-spin text-gray-400" />
+                      </div>
+                    ) : messages.length === 0 ? (
+                      <div className="h-full flex items-center justify-center text-xs text-gray-400">
+                        Belum ada pesan
+                      </div>
+                    ) : (
+                      messages.map((msg) => {
+                        const isMe = msg.sender_id === user?.id;
+                        return (
+                          <div
+                            key={msg.id}
+                            className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                          >
+                            <div
+                              className={`px-3 py-2 rounded-2xl max-w-[80%] text-xs ${
+                                isMe
+                                  ? "bg-linear-to-br from-[#03AC0E] to-[#028a0b] text-white rounded-br-md"
+                                  : "bg-white border border-gray-200 text-gray-800 rounded-bl-md"
+                              }`}
+                            >
+                              <p>{msg.message}</p>
+                              <p
+                                className={`text-[9px] mt-1 ${
+                                  isMe ? "text-white/70" : "text-gray-400"
+                                }`}
+                              >
+                                {msg.created_at ? format(new Date(msg.created_at), "HH:mm") : ""}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+
+                  {/* Input */}
+                  <div className="p-3 border-t border-gray-100">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Ketik pesan..."
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                        className="flex-1 text-xs"
+                        disabled={isSending}
+                      />
+                      <button
+                        onClick={handleSendMessage}
+                        disabled={!message.trim() || isSending}
+                        className="w-10 h-10 bg-linear-to-br from-[#03AC0E] to-[#028a0b] hover:from-[#028a0b] hover:to-[#027009] disabled:opacity-50 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-all duration-200 shadow-lg shadow-green-200"
+                      >
+                        {isSending ? (
+                          <Loader2 className="animate-spin text-white" size={16} />
+                        ) : (
+                          <Send className="text-white" size={16} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center text-sm text-gray-400">
+                  Pilih chat untuk memulai pesan
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -314,7 +319,7 @@ const FloatingChatButton = () => {
         {/* Tooltip */}
         {!isOpen && (
           <div className="absolute right-full mr-3 px-3 py-2 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-            Chat Pembeli
+            Chat
             <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 border-4 border-transparent border-l-gray-900"></div>
           </div>
         )}

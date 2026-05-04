@@ -10,39 +10,62 @@ function decodeJWT(token) {
   }
 }
 
+const sellerRoutes = [
+  "/dashboard",
+  "/orders-seller",
+  "/products",
+  "/statistics",
+  "/chats",
+  "/settings",
+];
+
+const adminRoutes = [
+  "/dashboard-admin",
+  "/users",
+  "/sellers",
+  "/orders-admin",
+  "/withdrawals",
+  "/vouchers",
+];
+
+const userProtectedRoutes = [
+  "/account",
+  "/orders",
+  "/wishlist",
+  "/checkout",
+];
+
+const matches = (pathname, routes) =>
+  routes.some(
+    (r) => pathname === r || pathname.startsWith(r + "/"),
+  );
+
 export function middleware(request) {
   const pathname = request.nextUrl.pathname;
 
-  const sellerRoutes = [
-    "/dashboard",
-    "/orders",
-    "/products",
-    "/statistics",
-    "/chats",
-  ];
+  const isSellerRoute = matches(pathname, sellerRoutes);
+  const isAdminRoute = matches(pathname, adminRoutes);
+  const isUserRoute = matches(pathname, userProtectedRoutes);
 
-  const isSellerRoute = sellerRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
-  );
-
-  // Kalau bukan route seller → bebas
-  if (!isSellerRoute) {
+  if (!isSellerRoute && !isAdminRoute && !isUserRoute) {
     return NextResponse.next();
   }
 
   const token = request.cookies.get("accessToken")?.value;
-
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   const payload = decodeJWT(token);
-
   if (!payload) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (payload.role !== "seller") {
+  if (isSellerRoute && payload.role !== "seller") {
+    return NextResponse.redirect(new URL("/home", request.url));
+  }
+
+  if (isAdminRoute && payload.role !== "admin") {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 
@@ -52,9 +75,20 @@ export function middleware(request) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
-    "/orders/:path*",
+    "/orders-seller/:path*",
     "/products/:path*",
     "/statistics/:path*",
     "/chats/:path*",
+    "/settings/:path*",
+    "/dashboard-admin/:path*",
+    "/users/:path*",
+    "/sellers/:path*",
+    "/orders-admin/:path*",
+    "/withdrawals/:path*",
+    "/vouchers/:path*",
+    "/account/:path*",
+    "/orders/:path*",
+    "/wishlist/:path*",
+    "/checkout/:path*",
   ],
 };

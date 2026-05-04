@@ -2,6 +2,7 @@
 
 import FooterUser from "@/components/layouts/FooterUser";
 import NavbarUser from "@/components/layouts/NavbarUser";
+import FloatingChatButton from "@/components/layouts/FloatingChatButton";
 
 export default function AppLayout({ children }) {
   return (
@@ -13,6 +14,7 @@ export default function AppLayout({ children }) {
         </div>
       </main>
       <FooterUser/>
+      <FloatingChatButton />
     </div>
   );
 }

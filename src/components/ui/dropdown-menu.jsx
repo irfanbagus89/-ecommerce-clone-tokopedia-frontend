@@ -232,6 +232,20 @@ function renderItems(items, radioValue, onRadioChange) {
       );
     }
 
+    if (item.href) {
+      return (
+        <DropdownMenuItem key={i} asChild variant={item.variant} disabled={item.disabled}>
+          <a href={item.href}>
+            {item.icon}
+            {item.label}
+            {item.shortcut && (
+              <span className="ml-auto text-xs opacity-60">{item.shortcut}</span>
+            )}
+          </a>
+        </DropdownMenuItem>
+      );
+    }
+
     return (
       <DropdownMenuItem
         key={i}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Bell, Mail, Menu, Search, ShoppingCart, X } from "lucide-react";
 import { useCountMyCart } from "@/services/User/Cart/countMyCart";
+import { useUnreadCount } from "@/services/User/Notifications/notificationActions";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +10,7 @@ import { useAuthContext } from "@/contexts/AuthProvider";
 import { useRouter } from "next/navigation";
 import { CustomDropdown } from "../ui/dropdown-menu";
 import { SellerAccessModal } from "../ui/seller-access-modal";
+import { NotificationDropdown } from "@/container/User/Notifications";
 
 const NavbarUser = () => {
   const { isLoggedIn, user, logout } = useAuthContext();
@@ -28,7 +30,8 @@ const NavbarUser = () => {
 
   const { data: cartCountData, mutate: mutateCartCount } = useCountMyCart();
   const cartItemCount = cartCountData?.count || 0;
-
+  const { data: notifCountData } = useUnreadCount();
+  const notifCount = notifCountData?.count || 0;
   useEffect(() => {
     const handleCartUpdate = () => {
       mutateCartCount();
@@ -103,8 +106,19 @@ const NavbarUser = () => {
                   </span>
                 )}
               </Link>
-              <Bell className="text-gray-500 w-5 h-5 hidden sm:block" />
-              <Mail className="text-gray-500 w-5 h-5 hidden sm:block" />
+              <NotificationDropdown
+                notifCount={notifCount}
+                trigger={
+                  <button className="relative hidden sm:block outline-none">
+                    <Bell className="text-gray-500 w-5 h-5 hover:text-green-600 transition-colors" />
+                    {notifCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white text-white text-[9px] font-bold">
+                        {notifCount > 9 ? "9+" : notifCount}
+                      </span>
+                    )}
+                  </button>
+                }
+              />
             </div>
           )}
 
@@ -148,10 +162,9 @@ const NavbarUser = () => {
                 }
                 contentProps={{ align: "start", sideOffset: 24 }}
                 items={[
-                  { label: "Pembelian" },
-                  { label: "Wishlist" },
-                  { label: "Toko Favorit" },
-                  { label: "Pengaturan" },
+                  { label: "Pesanan Saya", href: "/orders" },
+                  { label: "Wishlist", href: "/wishlist" },
+                  { label: "Pengaturan", href: "/account" },
                   { type: "separator" },
                   {
                     label: "Keluar",
@@ -231,28 +244,34 @@ const NavbarUser = () => {
                 <span className="text-sm font-medium">Akun</span>
                 <div className="flex flex-col gap-2 mt-2 ml-2">
                   <Link
-                    href="#"
+                    href="/orders"
                     onClick={() => setMobileMenuOpen(false)}
                     className="text-sm hover:text-black"
                   >
-                    Pembelian
+                    Pesanan Saya
                   </Link>
                   <Link
-                    href="#"
+                    href="/wishlist"
                     onClick={() => setMobileMenuOpen(false)}
                     className="text-sm hover:text-black"
                   >
                     Wishlist
                   </Link>
+                  <NotificationDropdown
+                    notifCount={notifCount}
+                    trigger={
+                      <button className="text-sm text-left hover:text-black outline-none w-full flex items-center justify-between">
+                        Notifikasi
+                        {notifCount > 0 && (
+                          <span className="bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full inline-flex items-center justify-center">
+                            {notifCount > 9 ? "9+" : notifCount}
+                          </span>
+                        )}
+                      </button>
+                    }
+                  />
                   <Link
-                    href="#"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-sm hover:text-black"
-                  >
-                    Toko Favorit
-                  </Link>
-                  <Link
-                    href="#"
+                    href="/account"
                     onClick={() => setMobileMenuOpen(false)}
                     className="text-sm hover:text-black"
                   >
@@ -274,9 +293,9 @@ const NavbarUser = () => {
         </div>
       )}
 
-      <SellerAccessModal 
-        isOpen={showSellerModal} 
-        onClose={setShowSellerModal} 
+      <SellerAccessModal
+        isOpen={showSellerModal}
+        onClose={setShowSellerModal}
       />
     </nav>
   );

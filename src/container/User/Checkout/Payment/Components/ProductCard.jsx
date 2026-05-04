@@ -13,7 +13,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 
-const ProductCard = ({ products, notes, onNotesChange }) => {
+const ProductCard = ({ products, notes, onNotesChange, cartItemIds = [] }) => {
   const store = {
     name: "Furniture Official Store",
     isOfficial: true,
@@ -82,63 +82,74 @@ const ProductCard = ({ products, notes, onNotesChange }) => {
 
         {/* Products List */}
         <div className="space-y-4">
-          {products.map((product, index) => (
-            <div key={product.id}>
-              <div className="flex gap-3">
-                <div className="relative">
-                  <Image
-                    src={product.image}
-                    width={80}
-                    height={80}
-                    alt={product.name}
-                    className="rounded-lg border"
-                  />
-                  {product.discountPercent > 0 && (
-                    <Badge className="absolute -top-2 -left-2 bg-red-500 text-xs">
-                      {product.discountPercent}%
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm leading-snug line-clamp-2">
-                    {product.name}
-                  </p>
-
-                  <div className="flex items-center gap-2 mt-1.5">
-                    {product.variant && (
-                      <span className="text-xs text-muted-foreground bg-gray-100 px-2 py-0.5 rounded">
-                        {product.variant}
-                      </span>
+          {products.length === 0 ? (
+            <div className="text-sm text-muted-foreground bg-gray-50 rounded-lg p-4 text-center">
+              <p className="font-medium text-gray-700 mb-1">
+                {cartItemIds.length} item dipilih dari keranjang
+              </p>
+              <p className="text-xs">
+                Detail produk dan total harga akan dikonfirmasi saat Anda menekan &quot;Bayar Sekarang&quot; dan halaman pembayaran Midtrans terbuka.
+              </p>
+            </div>
+          ) : (
+            products.map((product, index) => (
+              <div key={product.id}>
+                <div className="flex gap-3">
+                  <div className="relative">
+                    <Image
+                      src={product.image}
+                      width={80}
+                      height={80}
+                      alt={product.name}
+                      className="rounded-lg border"
+                    />
+                    {product.discountPercent > 0 && (
+                      <Badge className="absolute -top-2 -left-2 bg-red-500 text-xs">
+                        {product.discountPercent}%
+                      </Badge>
                     )}
-                    <span className="text-xs text-muted-foreground">
-                      Stok: {product.stock}
-                    </span>
                   </div>
 
-                  <div className="flex items-center justify-between mt-2">
-                    <div>
-                      {product.discountPercent > 0 && (
-                        <span className="line-through text-xs text-muted-foreground">
-                          {formatPrice(product.originalPrice)}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm leading-snug line-clamp-2">
+                      {product.name}
+                    </p>
+
+                    <div className="flex items-center gap-2 mt-1.5">
+                      {product.variant && (
+                        <span className="text-xs text-muted-foreground bg-gray-100 px-2 py-0.5 rounded">
+                          {product.variant}
                         </span>
                       )}
-                      <p className="font-semibold text-green-600">
-                        {formatPrice(product.discountedPrice)}
-                      </p>
+                      <span className="text-xs text-muted-foreground">
+                        Stok: {product.stock}
+                      </span>
                     </div>
 
-                    <div className="flex items-center gap-1 text-sm text-gray-600">
-                      <span className="text-gray-400">x</span>
-                      <span className="font-medium">{product.quantity}</span>
+                    <div className="flex items-center justify-between mt-2">
+                      <div>
+                        {product.discountPercent > 0 && (
+                          <span className="line-through text-xs text-muted-foreground">
+                            {formatPrice(product.originalPrice)}
+                          </span>
+                        )}
+                        <p className="font-semibold text-green-600">
+                          {formatPrice(product.discountedPrice)}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1 text-sm text-gray-600">
+                        <span className="text-gray-400">x</span>
+                        <span className="font-medium">{product.quantity}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {index < products.length - 1 && <Separator className="mt-4" />}
-            </div>
-          ))}
+                {index < products.length - 1 && <Separator className="mt-4" />}
+              </div>
+            ))
+          )}
         </div>
 
         {/* Shipping Protection */}

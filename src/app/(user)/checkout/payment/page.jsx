@@ -1,14 +1,25 @@
-'use client'
+"use client";
 
-import PaymentPage from "@/container/User/Checkout/Payment"
-import AppLayout from "@/layout/UserLayout/AppLayout"
+import { Suspense } from "react";
+import PaymentPage from "@/container/User/Checkout/Payment";
+import AppLayout from "@/layout/UserLayout/AppLayout";
+import { Loader2 } from "lucide-react";
 
-const page = () => {
+const Page = () => {
   return (
     <AppLayout>
-        <PaymentPage/>
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center py-20 text-gray-500">
+            <Loader2 className="w-5 h-5 animate-spin mr-2" />
+            Memuat halaman pembayaran...
+          </div>
+        }
+      >
+        <PaymentPage />
+      </Suspense>
     </AppLayout>
-  )
-}
+  );
+};
 
-export default page
+export default Page;
