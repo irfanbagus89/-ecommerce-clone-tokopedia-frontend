@@ -21,7 +21,7 @@ const FloatingChatButton = () => {
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef(null);
 
-  const { data: conversationsData } = useConversations();
+  const { data: conversationsData, mutate: mutateConversations } = useConversations();
   const conversations = conversationsData || [];
 
   const { data: messagesData, isLoading: isLoadingMessages } = useMessages(activeChatId);
@@ -70,6 +70,19 @@ const FloatingChatButton = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  useEffect(() => {
+    const handleOpenChat = (event) => {
+      setIsOpen(true);
+      if (event.detail?.conversationId) {
+        setActiveChatId(event.detail.conversationId);
+      }
+      mutateConversations();
+    };
+
+    window.addEventListener("chat:open", handleOpenChat);
+    return () => window.removeEventListener("chat:open", handleOpenChat);
+  }, [mutateConversations]);
 
   if (!isLoggedIn) return null;
 

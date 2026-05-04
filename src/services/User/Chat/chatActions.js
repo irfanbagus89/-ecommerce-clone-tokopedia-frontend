@@ -18,8 +18,21 @@ const startConversation = async (url, { arg }) => {
 };
 
 const sendMessage = async (url, { arg }) => {
-  const { conversationId, ...data } = arg;
-  const res = await fetcher.post(`/v1/chat/conversations/${conversationId}/messages`, data);
+  const { conversationId, message, image } = arg;
+  const formData = new FormData();
+
+  if (message) formData.append("message", message);
+  if (image) formData.append("image", image);
+
+  const res = await fetcher.post(
+    `/v1/chat/conversations/${conversationId}/messages`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
   return res.data.Data;
 };
 

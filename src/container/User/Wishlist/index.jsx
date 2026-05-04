@@ -11,7 +11,6 @@ import { Heart, HeartOff, Package, ShoppingCart, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "@/lib/toast";
-import { mutate } from "swr";
 
 const WishlistCard = ({ item, onRemove }) => {
   const { trigger: remove, isMutating } = useRemoveFromWishlist(item.product_id);
@@ -96,7 +95,7 @@ const WishlistCard = ({ item, onRemove }) => {
 const WishlistContainer = () => {
   const { data: wishlists, isLoading, mutate: revalidate } = useWishlists();
 
-  const items = wishlists || [];
+  const items = wishlists?.data || [];
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4">

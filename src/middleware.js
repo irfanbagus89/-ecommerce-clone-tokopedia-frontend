@@ -32,7 +32,7 @@ const userProtectedRoutes = [
   "/account",
   "/orders",
   "/wishlist",
-  "/checkout",
+  "/checkouts",
 ];
 
 const matches = (pathname, routes) =>

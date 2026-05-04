@@ -28,7 +28,7 @@ const updateProductFn = async (url, { arg }) => {
     });
   }
 
-  const res = await fetcher.put(`${url}/${id}`, formData, {
+  const res = await fetcher.patch(`${url}/${id}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 

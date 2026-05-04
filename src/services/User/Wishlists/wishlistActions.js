@@ -23,7 +23,11 @@ export const useAddToWishlist = (productId) =>
 export const useRemoveFromWishlist = (productId) =>
   useSWRMutation(`/v1/wishlists/${productId}`, removeFromWishlist);
 
-export const useCheckWishlist = (productId) =>
-  useSWR(productId ? `/v1/wishlists/check/${productId}` : null, checkWishlist, {
-    revalidateOnFocus: false,
-  });
+export const useCheckWishlist = (productId, enabled = true) =>
+  useSWR(
+    productId && enabled ? `/v1/wishlists/check/${productId}` : null,
+    checkWishlist,
+    {
+      revalidateOnFocus: false,
+    },
+  );

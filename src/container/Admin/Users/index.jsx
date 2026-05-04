@@ -3,12 +3,19 @@
 import { useState } from "react";
 import { useAdminUsers } from "@/services/Admin/adminActions";
 import { Input } from "@/components/ui/input";
+import { CustomSelect } from "@/components/ui/select";
 import { Search } from "lucide-react";
 
 const AdminUsersPage = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const { data, isLoading } = useAdminUsers({ page, limit: 10, search });
+  const [role, setRole] = useState("all");
+  const { data, isLoading } = useAdminUsers({
+    page,
+    limit: 10,
+    search,
+    role: role === "all" ? "" : role,
+  });
 
   return (
     <div className="p-8">
@@ -21,12 +28,30 @@ const AdminUsersPage = () => {
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-100">
-          <div className="max-w-md">
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
             <Input
               placeholder="Cari pengguna..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="sm:max-w-md"
               leftIcon={<Search className="text-gray-400" size={18} />}
+            />
+            <CustomSelect
+              value={role}
+              onValueChange={(value) => {
+                setRole(value);
+                setPage(1);
+              }}
+              options={[
+                { label: "Semua Role", value: "all" },
+                { label: "User", value: "user" },
+                { label: "Seller", value: "seller" },
+                { label: "Admin", value: "admin" },
+              ]}
+              className="w-full sm:w-40"
             />
           </div>
         </div>

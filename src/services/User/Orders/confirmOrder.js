@@ -7,4 +7,4 @@ const confirmOrder = async (url) => {
 };
 
 export const useConfirmOrder = (id) =>
-  useSWRMutation(`/v1/orders/${id}/confirm`, confirmOrder);
+  useSWRMutation(`/v1/orders/my-orders/${id}/confirm`, confirmOrder);

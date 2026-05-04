@@ -7,4 +7,4 @@ const cancelOrder = async (url) => {
 };
 
 export const useCancelOrder = (id) =>
-  useSWRMutation(`/v1/orders/${id}/cancel`, cancelOrder);
+  useSWRMutation(`/v1/orders/my-orders/${id}/cancel`, cancelOrder);

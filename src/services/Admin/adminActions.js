@@ -59,8 +59,8 @@ export const useAdminOrders = ({ page = 1, limit = 10, search = "", status = "" 
   });
 };
 
-export const useAdminUsers = ({ page = 1, limit = 10, search = "" } = {}) => {
-  const params = { page, limit, ...(search && { search }) };
+export const useAdminUsers = ({ page = 1, limit = 10, search = "", role = "" } = {}) => {
+  const params = { page, limit, ...(search && { search }), ...(role && { role }) };
   return useSWR(["/v1/admin/users", params], getAdminUsers, {
     keepPreviousData: true,
     revalidateOnFocus: false,

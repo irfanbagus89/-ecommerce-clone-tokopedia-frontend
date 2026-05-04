@@ -1,17 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { Minus, Plus, Heart, Share2, Pencil } from "lucide-react";
+import { Minus, Plus, Heart, Share2, Pencil, MessageCircle } from "lucide-react";
+import { useSWRConfig } from "swr";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import formatRupiah from "@/lib/currencyHelper";
 import { useCreateCart } from "@/services/User/DetailProduct/createCart";
+import {
+  useSendMessage,
+  useStartConversation,
+} from "@/services/User/Chat/chatActions";
+import {
+  useAddToWishlist,
+  useCheckWishlist,
+  useRemoveFromWishlist,
+} from "@/services/User/Wishlists/wishlistActions";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { LoginModal } from "@/components/ui/login-modal";
+import { toast } from "@/lib/toast";
+
+const getWishlistStatus = (data) => {
+  if (typeof data === "boolean") return data;
+  return Boolean(
+    data?.is_wishlist ||
+      data?.is_wishlisted ||
+      data?.wishlisted ||
+      data?.exists ||
+      data?.in_wishlist,
+  );
+};
 
 const PurchaseCard = ({ product, selectedVariant, data }) => {
   const [qty, setQty] = useState(1);
   const { isLoggedIn } = useAuthContext();
+  const { mutate } = useSWRConfig();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showNote, setShowNote] = useState(false);
   const [note, setNote] = useState("");
@@ -19,6 +42,19 @@ const PurchaseCard = ({ product, selectedVariant, data }) => {
     product?.variants.find((v) => v.id === selectedVariant) ?? 0;
 
   const { trigger, isMutating } = useCreateCart();
+  const { trigger: startConversation, isMutating: isStartingChat } =
+    useStartConversation();
+  const { trigger: sendMessage, isMutating: isSendingProductChat } =
+    useSendMessage();
+  const { data: wishlistStatus, mutate: revalidateWishlistStatus } =
+    useCheckWishlist(data.id, isLoggedIn);
+  const { trigger: addToWishlist, isMutating: isAddingWishlist } =
+    useAddToWishlist(data.id);
+  const { trigger: removeFromWishlist, isMutating: isRemovingWishlist } =
+    useRemoveFromWishlist(data.id);
+
+  const isWishlisted = getWishlistStatus(wishlistStatus);
+  const isUpdatingWishlist = isAddingWishlist || isRemovingWishlist;
 
   const handleQtyChange = (val) => {
     let newQty = parseInt(val);
@@ -50,6 +86,63 @@ const PurchaseCard = ({ product, selectedVariant, data }) => {
       console.error("ADD TO CART ERROR:", error);
     }
   };
+
+  const handleStartChat = async () => {
+    if (!isLoggedIn) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    try {
+      const conversation = await startConversation({
+        seller_id: data.seller.id,
+        product_id: data.id,
+      });
+      const conversationId =
+        conversation?.id || conversation?.conversation_id || conversation?.data?.id;
+
+      if (conversationId) {
+        await sendMessage({
+          conversationId,
+          message: `Halo, saya ingin bertanya tentang produk ini.\nProduk: ${product.title}\nVarian: ${activeVariant.name}`,
+        });
+      }
+
+      window.dispatchEvent(
+        new CustomEvent("chat:open", {
+          detail: {
+            conversationId,
+          },
+        }),
+      );
+    } catch (error) {
+      console.error("START CHAT ERROR:", error);
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    if (!isLoggedIn) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    try {
+      if (isWishlisted) {
+        await removeFromWishlist();
+        toast.success("Produk dihapus dari wishlist");
+      } else {
+        await addToWishlist();
+        toast.success("Produk ditambahkan ke wishlist");
+      }
+
+      revalidateWishlistStatus();
+      mutate("/v1/wishlists");
+    } catch (error) {
+      console.error("WISHLIST ERROR:", error);
+      toast.error("Gagal memperbarui wishlist");
+    }
+  };
+
   return (
     <>
       <Card className="fixed bottom-0 left-0 w-full z-50 rounded-t-2xl lg:rounded-xl border-t bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.1)] lg:shadow-lg lg:border-gray-200 lg:static lg:w-full lg:z-auto overflow-hidden">
@@ -182,14 +275,35 @@ const PurchaseCard = ({ product, selectedVariant, data }) => {
             >
               Beli Langsung
             </Button>
+            <Button
+              variant="outline"
+              className="flex-1 lg:w-full border-green-600 text-green-600 hover:bg-green-50 font-bold h-11 text-md rounded-lg"
+              onClick={handleStartChat}
+              disabled={isStartingChat || isSendingProductChat}
+            >
+              <MessageCircle className="w-4 h-4" />
+              Chat Toko
+            </Button>
           </div>
 
           <div className="flex justify-between mt-3 lg:mt-4 pt-3 lg:pt-4 border-t text-sm font-semibold text-gray-600">
             <button className="flex items-center gap-1.5 hover:text-green-600 transition-colors">
               <Share2 className="w-4 h-4" /> Share
             </button>
-            <button className="flex items-center gap-1.5 hover:text-red-500 transition-colors">
-              <Heart className="w-4 h-4" /> Wishlist
+            <button
+              className={`flex items-center gap-1.5 transition-colors ${
+                isWishlisted
+                  ? "text-red-500 hover:text-red-600"
+                  : "hover:text-red-500"
+              }`}
+              onClick={handleToggleWishlist}
+              disabled={isUpdatingWishlist}
+            >
+              <Heart
+                className="w-4 h-4"
+                fill={isWishlisted ? "currentColor" : "none"}
+              />
+              {isWishlisted ? "Tersimpan" : "Wishlist"}
             </button>
           </div>
         </CardContent>

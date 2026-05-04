@@ -55,8 +55,13 @@ const LoginPage = () => {
       if (res?.Metadata?.code === 200) {
         toast.success("Login berhasil");
         await refetch();
+        const role = res?.data?.Data?.user?.role;
+        const redirectPath =
+          role === "admin"
+            ? "/dashboard-admin"
+              : "/home";
         setTimeout(() => {
-          router.replace("/home");
+          router.replace(redirectPath);
         }, 2000);
       } else {
         toast.error("Email / password salah");
