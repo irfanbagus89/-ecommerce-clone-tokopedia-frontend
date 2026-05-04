@@ -15,22 +15,16 @@ import { Badge } from "@/components/ui/badge";
 import { usePaymentMethods } from "@/services/User/Payments/paymentActions";
 import { CustomSelect } from "@/components/ui/select";
 
-const SummaryRow = ({ label, value, minus, bold, subLabel }) => {
+const SummaryRow = ({ label, value, minus, bold }) => {
   return (
-    <div className="space-y-0.5">
-      <div
-        className={`flex justify-between ${bold ? "font-semibold text-base" : "text-sm"}`}
-      >
-        <span>{label}</span>
-        <span className={minus ? "text-red-500" : ""}>{value}</span>
-      </div>
-      {subLabel && <p className="text-xs text-muted-foreground">{subLabel}</p>}
+    <div className={`flex justify-between ${bold ? "font-semibold text-base" : "text-sm"}`}>
+      <span>{label}</span>
+      <span className={minus ? "text-red-500" : ""}>{value}</span>
     </div>
   );
 };
 
 const PaymentSummary = ({
-  products,
   selectedShipping,
   selectedVoucher,
   selectedPayment,
@@ -39,41 +33,30 @@ const PaymentSummary = ({
   onAgreeTermsChange,
   onPayment,
   isProcessing,
-  calculateSubtotal,
-  calculateOriginalTotal,
+  calculatePrice,
   calculateDiscount,
   calculateVoucherDiscount,
   calculateTotal,
-  cartItemCount,
+  totalItems,
 }) => {
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("id-ID", {
+  const formatPrice = (price) =>
+    new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(price);
-  };
 
-  const { data: methods, isLoading: isLoadingMethods } = usePaymentMethods();
+  const { data: methods } = usePaymentMethods();
 
- 
   const getPaymentBadge = () => {
     const badges = {
       gopay: { text: "Cashback 2%", color: "bg-green-100 text-green-700" },
       ovo: { text: "Diskon 5rb", color: "bg-purple-100 text-purple-700" },
-      dana: null,
-      shopeepay: {
-        text: "Gratis Ongkir",
-        color: "bg-orange-100 text-orange-700",
-      },
+      shopeepay: { text: "Gratis Ongkir", color: "bg-orange-100 text-orange-700" },
     };
     return badges[selectedPayment];
   };
 
-  const totalItems =
-    products.length > 0
-      ? products.reduce((sum, product) => sum + product.quantity, 0)
-      : cartItemCount || 0;
   const savings = calculateDiscount() + Math.abs(calculateVoucherDiscount());
 
   return (
@@ -91,23 +74,13 @@ const PaymentSummary = ({
         <div className="space-y-2">
           <SummaryRow
             label={`Total Item (${totalItems} barang)`}
-            value={
-              products.length > 0
-                ? formatPrice(calculateOriginalTotal())
-                : "Dihitung saat checkout"
-            }
-            subLabel={
-              products.length > 0
-                ? products.map((p) => formatPrice(p.originalPrice)).join(" + ")
-                : "Total akan dikonfirmasi backend"
-            }
+            value={totalItems > 0 ? formatPrice(calculatePrice()) : "Dihitung saat checkout"}
           />
-          {products.length > 0 && (
+          {calculateDiscount() > 0 && (
             <SummaryRow
               label="Diskon Barang"
               value={formatPrice(-calculateDiscount())}
               minus
-              subLabel={`Hemat ${products.map((p) => p.discountPercent + "%").join(" & ")}`}
             />
           )}
           {selectedVoucher && (
@@ -121,18 +94,9 @@ const PaymentSummary = ({
           <SummaryRow
             label="Ongkos Kirim"
             value={formatPrice(selectedShipping?.price || 0)}
-            subLabel={selectedShipping?.name || "-"}
           />
-          <SummaryRow
-            label="Biaya Layanan"
-            value={formatPrice(2000)}
-            subLabel="Biaya penanganan"
-          />
-          <SummaryRow
-            label="Asuransi Pengiriman"
-            value={formatPrice(3200)}
-            subLabel="Proteksi barang"
-          />
+          <SummaryRow label="Biaya Layanan" value={formatPrice(2000)} />
+          <SummaryRow label="Asuransi Pengiriman" value={formatPrice(3200)} />
         </div>
 
         <Separator className="my-3" />
@@ -162,15 +126,11 @@ const PaymentSummary = ({
               </Badge>
             )}
           </div>
-          
           <CustomSelect
             placeholder="Pilih metode pembayaran..."
             value={selectedPayment !== "midtrans" ? selectedPayment : ""}
             onValueChange={onSelectPayment}
-            options={methods?.map((m) => ({
-              value: m.code,
-              label: m.name,
-            })) || []}
+            options={methods?.map((m) => ({ value: m.code, label: m.name })) || []}
             className="w-full bg-gray-50"
           />
         </div>
@@ -235,7 +195,6 @@ const PaymentSummary = ({
           </p>
         </div>
 
-        {/* Help Link */}
         <Button
           variant="ghost"
           className="w-full text-sm text-green-600 hover:text-green-700 hover:bg-green-50"

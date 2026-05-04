@@ -15,7 +15,7 @@ import {
   useDefaultAddress,
 } from "@/services/User/Addresses/addressActions";
 import { useCheckout } from "@/services/User/Checkout/checkoutActions";
-import { useMyCart } from "@/services/User/Cart/getMyCart";
+import { useCheckoutCart } from "@/services/User/Cart/getCheckoutCart";
 import { useValidateVoucher } from "@/services/User/Vouchers/validateVoucher";
 import { toast } from "@/lib/toast";
 
@@ -76,15 +76,12 @@ const PaymentPage = () => {
   const { trigger: triggerCheckout } = useCheckout();
 
   // Fetch Cart Items
-  const { data: cartData, isLoading: loadingCart } = useMyCart();
+  const { data: cartData, isLoading: loadingCart } = useCheckoutCart();
   const { trigger: triggerValidateVoucher } = useValidateVoucher();
 
-  // Memfilter item keranjang yang dipilih
-  const allCartItems =
+  const checkoutItems =
     cartData?.sellers?.flatMap((seller) => seller.items) || [];
-  const checkoutItems = allCartItems.filter((item) =>
-    cartItemIds.includes(String(item.cart_item_id)),
-  );
+
   const addressList = addresses || [];
   const selectedAddress =
     addressList.find((address) => address.id === selectedAddressId) ||
@@ -96,14 +93,14 @@ const PaymentPage = () => {
     name: item.product_name,
     variant: item.variant_name,
     image: item.image_url || "/placeholder.png",
-    originalPrice: item.original_price,
-    discountedPrice: item.price || item.original_price,
+    originalPrice: item.price != null && item.price !== 0 ? item.price : item.original_price,
+    discountedPrice: item.price != null && item.price !== 0 ? item.price : item.original_price,
     discountPercent: item.discount || 0,
     quantity: item.quantity,
     stock: item.stock,
   }));
 
-  const calculateOriginalTotal = useCallback(() => {
+  const calculatePrice = useCallback(() => {
     return products.reduce(
       (acc, curr) => acc + curr.originalPrice * curr.quantity,
       0,
@@ -118,8 +115,8 @@ const PaymentPage = () => {
   }, [products]);
 
   const calculateDiscount = useCallback(() => {
-    return calculateOriginalTotal() - calculateSubtotal();
-  }, [calculateOriginalTotal, calculateSubtotal]);
+    return calculatePrice() - calculateSubtotal();
+  }, [calculatePrice, calculateSubtotal]);
 
   // Hitung total dari subtotal + ongkir - voucher
   const calculateTotal = useCallback(() => {
@@ -286,7 +283,7 @@ const PaymentPage = () => {
 
       {/* Info: jumlah item */}
       <div className="mb-4 text-sm text-muted-foreground">
-        {cartItemIds.length} item dipilih dari keranjang
+        {checkoutItems.length} item dipilih dari keranjang
       </div>
 
       {/* Main Content */}
@@ -313,10 +310,9 @@ const PaymentPage = () => {
             onSelectAddress={(address) => setSelectedAddressId(address.id)}
           />
           <ProductCard
-            products={products}
+            sellers={cartData?.sellers || []}
             notes={notes}
             onNotesChange={setNotes}
-            cartItemIds={cartItemIds}
           />
           <ShippingOptions
             selectedShipping={selectedShipping}
@@ -334,7 +330,6 @@ const PaymentPage = () => {
         <div className="space-y-4 flex flex-col">
           <div className="order-1">
             <PaymentSummary
-              products={products}
               selectedShipping={selectedShipping}
               selectedVoucher={selectedVoucher}
               selectedPayment={selectedPaymentMethod}
@@ -343,12 +338,11 @@ const PaymentPage = () => {
               onAgreeTermsChange={setAgreeTerms}
               onPayment={handlePayment}
               isProcessing={isProcessing}
-              calculateSubtotal={calculateSubtotal}
-              calculateOriginalTotal={calculateOriginalTotal}
+              calculatePrice={calculatePrice}
               calculateDiscount={calculateDiscount}
               calculateVoucherDiscount={() => selectedVoucher?.discount || 0}
               calculateTotal={calculateTotal}
-              cartItemCount={cartItemIds.length}
+              totalItems={checkoutItems.reduce((sum, item) => sum + item.quantity, 0)}
             />
           </div>
         </div>
