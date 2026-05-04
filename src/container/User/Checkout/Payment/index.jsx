@@ -7,9 +7,11 @@ import PaymentSummary from "./Components/PaymentSummary";
 import ProductCard from "./Components/ProductCard";
 import ShippingOptions from "./Components/ShippingOptions";
 import VoucherCard from "./Components/VoucherCard";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Copy, Check, ExternalLink, Clock, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { CustomBreadcrumb } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   useAddresses,
   useDefaultAddress,
@@ -19,44 +21,265 @@ import { useCheckoutCart } from "@/services/User/Cart/getCheckoutCart";
 import { useValidateVoucher } from "@/services/User/Vouchers/validateVoucher";
 import { toast } from "@/lib/toast";
 
-/**
- * Load Midtrans Snap script sekali ke DOM.
- * Sandbox: https://app.sandbox.midtrans.com/snap/snap.js
- * Production: https://app.midtrans.com/snap/snap.js
- */
-function loadSnapScript(clientKey) {
-  return new Promise((resolve, reject) => {
-    if (window.snap) return resolve();
-    const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_ENV === "production";
-    const script = document.createElement("script");
-    script.src = isProduction
-      ? "https://app.midtrans.com/snap/snap.js"
-      : "https://app.sandbox.midtrans.com/snap/snap.js";
-    script.setAttribute("data-client-key", clientKey);
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-}
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
-const MIDTRANS_CLIENT_KEY = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
+const formatDate = (str) => {
+  if (!str) return "-";
+  return new Date(str).toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const bankLabel = (code) => {
+  const map = {
+    bca_va: "BCA",
+    bni_va: "BNI",
+    bri_va: "BRI",
+    permata_va: "Permata",
+    cimb_va: "CIMB Niaga",
+    echannel: "Mandiri",
+  };
+  return map[code] ?? code?.toUpperCase();
+};
+
+// ── CopyButton ────────────────────────────────────────────────────────────────
+
+const CopyButton = ({ value }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Gagal menyalin teks");
+    }
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="ml-2 p-1 rounded hover:bg-gray-100 transition-colors"
+      title="Salin"
+    >
+      {copied ? (
+        <Check className="w-4 h-4 text-green-600" />
+      ) : (
+        <Copy className="w-4 h-4 text-gray-500" />
+      )}
+    </button>
+  );
+};
+
+// ── InfoRow ───────────────────────────────────────────────────────────────────
+
+const InfoRow = ({ label, value, copiable, mono }) => (
+  <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+    <span className="text-sm text-muted-foreground">{label}</span>
+    <div className="flex items-center gap-1">
+      <span className={`text-sm font-medium ${mono ? "font-mono tracking-wider" : ""}`}>
+        {value}
+      </span>
+      {copiable && value && <CopyButton value={String(value)} />}
+    </div>
+  </div>
+);
+
+// ── PaymentInstructions ───────────────────────────────────────────────────────
+
+const PaymentInstructions = ({ result, onDone }) => {
+  const { midtrans_order_id, payment_method, payment_type, instructions } = result;
+  const expired = instructions?.expired_at || result.expired_at;
+
+  const renderDetail = () => {
+    switch (payment_type) {
+      case "bank_transfer":
+        return (
+          <div className="space-y-1">
+            <InfoRow label="Bank" value={bankLabel(payment_method?.code)} />
+            <InfoRow
+              label="Nomor Virtual Account"
+              value={instructions?.va_number}
+              copiable
+              mono
+            />
+          </div>
+        );
+
+      case "echannel":
+        return (
+          <div className="space-y-1">
+            <InfoRow label="Bank" value="Mandiri" />
+            <InfoRow label="Biller Code" value={instructions?.biller_code} copiable mono />
+            <InfoRow label="Bill Key" value={instructions?.bill_key} copiable mono />
+          </div>
+        );
+
+      case "gopay":
+      case "shopeepay": {
+        const label = payment_type === "gopay" ? "GoPay" : "ShopeePay";
+        return (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Selesaikan pembayaran melalui aplikasi {label}.
+            </p>
+            {instructions?.deeplink_url && (
+              <a
+                href={instructions.deeplink_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-2 px-4 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Buka Aplikasi {label}
+              </a>
+            )}
+            {instructions?.qr_string && (
+              <div className="text-center space-y-2">
+                <p className="text-xs text-muted-foreground">Atau scan QR Code</p>
+                {/* qr_string dari Core API GoPay berupa URL gambar dari actions */}
+                <img
+                  src={instructions.qr_string}
+                  alt="QR Code"
+                  className="mx-auto w-48 h-48 object-contain border rounded-lg"
+                  onError={(e) => { e.target.style.display = "none"; }}
+                />
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      case "qris": {
+        const qrImageUrl = instructions?.actions?.find(
+          (a) => a.name === "generate-qr-code" || a.name === "generate-qr-code-v2"
+        )?.url;
+        return (
+          <div className="space-y-3 text-center">
+            <p className="text-sm text-muted-foreground">
+              Scan QR Code menggunakan aplikasi e-wallet atau mobile banking Anda.
+            </p>
+            {qrImageUrl ? (
+              <img
+                src={qrImageUrl}
+                alt="QRIS"
+                className="mx-auto w-52 h-52 object-contain border rounded-lg"
+              />
+            ) : (
+              <div className="bg-gray-50 rounded-lg p-4 text-xs font-mono break-all text-left">
+                {instructions?.qr_string}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      case "cstore": {
+        const codeAction = instructions?.actions?.find((a) => a.name === "generate-qr-code");
+        const paymentCode = codeAction?.url || instructions?.payment_code;
+        const storeName = payment_method?.code === "alfamart" ? "Alfamart" : "Indomaret";
+        return (
+          <div className="space-y-1">
+            <InfoRow label="Minimarket" value={storeName} />
+            {paymentCode && (
+              <InfoRow label="Kode Bayar" value={paymentCode} copiable mono />
+            )}
+          </div>
+        );
+      }
+
+      default:
+        return (
+          <p className="text-sm text-muted-foreground">
+            Ikuti instruksi dari{" "}
+            <span className="font-medium">{payment_method?.name || payment_type}</span> untuk
+            menyelesaikan pembayaran.
+          </p>
+        );
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-lg">
+      {/* Header */}
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 mb-4">
+          <CheckCircle2 className="w-8 h-8 text-green-600" />
+        </div>
+        <h1 className="text-xl font-bold">Pesanan Berhasil Dibuat!</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Selesaikan pembayaran sebelum batas waktu
+        </p>
+      </div>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center justify-between">
+            <span>Instruksi Pembayaran</span>
+            <span className="text-xs font-normal text-muted-foreground bg-gray-100 px-2 py-1 rounded">
+              {payment_method?.name}
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Order ID */}
+          <div className="bg-gray-50 rounded-lg px-3 py-2">
+            <InfoRow
+              label="ID Pesanan"
+              value={midtrans_order_id}
+              copiable
+              mono
+            />
+          </div>
+
+          {/* Payment detail per type */}
+          <div className="bg-gray-50 rounded-lg px-3 py-1">
+            {renderDetail()}
+          </div>
+
+          {/* Expiry */}
+          {expired && (
+            <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
+              <Clock className="w-4 h-4 shrink-0" />
+              <span>
+                Bayar sebelum{" "}
+                <span className="font-semibold">{formatDate(expired)}</span>
+              </span>
+            </div>
+          )}
+
+          {/* CTA */}
+          <Button
+            className="w-full bg-green-600 hover:bg-green-700"
+            onClick={onDone}
+          >
+            Lihat Status Pesanan
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+// ── PaymentPage ───────────────────────────────────────────────────────────────
 
 const PaymentPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Ambil cart_item_ids dari URL query params (?ids=id1,id2,...)
   const cartItemIds = searchParams.get("ids")
     ? searchParams.get("ids").split(",").filter(Boolean)
     : [];
 
-  // Alamat default dari API
-  const { data: defaultAddress, isLoading: loadingAddress } =
-    useDefaultAddress();
+  const { data: defaultAddress, isLoading: loadingAddress } = useDefaultAddress();
   const { data: addresses, isLoading: loadingAddresses } = useAddresses();
 
   const [selectedAddressId, setSelectedAddressId] = useState(null);
-
   const [selectedShipping, setSelectedShipping] = useState({
     courier: "jne_reg",
     name: "JNE Regular",
@@ -64,18 +287,14 @@ const PaymentPage = () => {
     estimated: "2-3 Hari",
     type: "Reguler",
   });
-
   const [selectedVoucher, setSelectedVoucher] = useState(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState("midtrans");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [notes, setNotes] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentResult, setPaymentResult] = useState(null);
 
-  // Hook SWR mutation untuk POST checkout
   const { trigger: triggerCheckout } = useCheckout();
-
-  // Fetch Cart Items
   const { data: cartData, isLoading: loadingCart } = useCheckoutCart();
   const { trigger: triggerValidateVoucher } = useValidateVoucher();
 
@@ -84,7 +303,7 @@ const PaymentPage = () => {
 
   const addressList = addresses || [];
   const selectedAddress =
-    addressList.find((address) => address.id === selectedAddressId) ||
+    addressList.find((a) => a.id === selectedAddressId) ||
     defaultAddress ||
     null;
 
@@ -93,37 +312,34 @@ const PaymentPage = () => {
     name: item.product_name,
     variant: item.variant_name,
     image: item.image_url || "/placeholder.png",
-    originalPrice: item.price != null && item.price !== 0 ? item.price : item.original_price,
-    discountedPrice: item.price != null && item.price !== 0 ? item.price : item.original_price,
+    originalPrice:
+      item.price != null && item.price !== 0 ? item.price : item.original_price,
+    discountedPrice:
+      item.price != null && item.price !== 0 ? item.price : item.original_price,
     discountPercent: item.discount || 0,
     quantity: item.quantity,
     stock: item.stock,
   }));
 
-  const calculatePrice = useCallback(() => {
-    return products.reduce(
-      (acc, curr) => acc + curr.originalPrice * curr.quantity,
-      0,
-    );
-  }, [products]);
+  const calculatePrice = useCallback(
+    () => products.reduce((acc, p) => acc + p.originalPrice * p.quantity, 0),
+    [products]
+  );
 
-  const calculateSubtotal = useCallback(() => {
-    return products.reduce(
-      (acc, curr) => acc + curr.discountedPrice * curr.quantity,
-      0,
-    );
-  }, [products]);
+  const calculateSubtotal = useCallback(
+    () => products.reduce((acc, p) => acc + p.discountedPrice * p.quantity, 0),
+    [products]
+  );
 
-  const calculateDiscount = useCallback(() => {
-    return calculatePrice() - calculateSubtotal();
-  }, [calculatePrice, calculateSubtotal]);
+  const calculateDiscount = useCallback(
+    () => calculatePrice() - calculateSubtotal(),
+    [calculatePrice, calculateSubtotal]
+  );
 
-  // Hitung total dari subtotal + ongkir - voucher
   const calculateTotal = useCallback(() => {
     const subtotal = calculateSubtotal();
     const shipping = selectedShipping?.price || 0;
     const voucher = selectedVoucher?.discount || 0;
-    // Asuransi dan biaya layanan bisa ditambahkan jika dinamis
     return subtotal + shipping + voucher + 2000 + 3200;
   }, [calculateSubtotal, selectedShipping, selectedVoucher]);
 
@@ -132,17 +348,14 @@ const PaymentPage = () => {
   const handleApplyVoucher = async (code) => {
     if (!code) return;
     try {
-      const res = await triggerValidateVoucher({
-        code,
-        total: calculateSubtotal(),
-      });
-      if (res?.data) {
+      const res = await triggerValidateVoucher({ code, total: calculateSubtotal() });
+      if (res?.Data) {
         setSelectedVoucher({
-          code: res.data.code,
-          title: `Diskon ${res.data.discount_amount}`,
-          discount: -res.data.discount_amount, // Asumsikan backend mengembalikan nilai absolut diskon
-          maxDiscount: res.data.max_discount || 0,
-          type: res.data.discount_type,
+          code: res.Data.code,
+          title: `Diskon ${res.Data.discount_amount}`,
+          discount: -res.Data.discount_amount,
+          maxDiscount: res.Data.max_discount || 0,
+          type: res.Data.discount_type,
         });
         toast.success("Voucher berhasil digunakan!");
       }
@@ -151,14 +364,14 @@ const PaymentPage = () => {
       setSelectedVoucher(null);
     }
   };
+
   const handleRemoveVoucher = () => setSelectedVoucher(null);
 
   /**
-   * Alur pembayaran:
-   * 1. Panggil POST /api/v1/orders/checkout → dapat snap_token dari backend
-   * 2. Load Midtrans Snap script jika belum
-   * 3. Buka Snap popup dengan snap_token
-   * 4. Handle callback success/pending/error dari Snap
+   * Alur pembayaran (Midtrans Core API):
+   * 1. POST /v1/orders/checkout → backend charge ke Midtrans Core API
+   * 2. Backend mengembalikan instructions (VA number / QR / deeplink)
+   * 3. Tampilkan instruksi pembayaran kepada user
    */
   const handlePayment = async () => {
     if (!agreeTerms) {
@@ -176,55 +389,30 @@ const PaymentPage = () => {
 
     setIsProcessing(true);
     try {
-      // Step 1: Checkout ke backend → dapat snap_token
       const payload = {
         cart_item_ids: cartItemIds,
         address: selectedAddress.address,
         city: selectedAddress.city_name || selectedAddress.city || "",
         postal_code: selectedAddress.postal_code || "",
       };
-      if (
-        selectedPaymentMethod &&
-        selectedPaymentMethod !== "midtrans"
-      ) {
+      if (selectedPaymentMethod) {
         payload.payment_method_code = selectedPaymentMethod;
       }
       if (selectedVoucher?.code) {
         payload.voucher_code = selectedVoucher.code;
       }
-      const res = await triggerCheckout(payload);
 
-      const snapToken = res?.Data?.data?.token ?? res?.data?.token;
-      if (!snapToken) {
-        throw new Error("Snap token tidak ditemukan dari server.");
+      // res = { Metadata: {...}, Data: { midtrans_order_id, payment_method, payment_type, instructions, expired_at } }
+      const res = await triggerCheckout(payload);
+      const data = res?.Data;
+
+      if (!data?.midtrans_order_id) {
+        throw new Error("Response tidak valid dari server.");
       }
 
-      // Step 2: Load Midtrans Snap script
-      await loadSnapScript(MIDTRANS_CLIENT_KEY);
-
-      // Step 3: Buka Snap popup
-      window.snap.pay(snapToken, {
-        onSuccess: (result) => {
-          console.log("Payment success:", result);
-          toast.success("Pembayaran berhasil! Pesanan sedang diproses.");
-          router.push("/orders");
-        },
-        onPending: (result) => {
-          console.log("Payment pending:", result);
-          toast.info("Pembayaran tertunda. Selesaikan pembayaran Anda.");
-          router.push("/orders");
-        },
-        onError: (result) => {
-          console.error("Payment error:", result);
-          toast.error("Pembayaran gagal. Silakan coba lagi.");
-        },
-        onClose: () => {
-          console.log("Snap popup closed");
-          toast.info("Popup pembayaran ditutup.");
-        },
-      });
+      setPaymentResult(data);
+      toast.success("Pesanan berhasil dibuat!");
     } catch (err) {
-      console.error("Checkout error:", err);
       const message =
         err?.response?.data?.message ||
         err?.message ||
@@ -235,26 +423,36 @@ const PaymentPage = () => {
     }
   };
 
-  // Jika tidak ada item yang dipilih, redirect ke cart
+  // ── Tampilkan instruksi setelah checkout berhasil ──────────────────────────
+
+  if (paymentResult) {
+    return (
+      <PaymentInstructions
+        result={paymentResult}
+        onDone={() => router.push("/orders")}
+      />
+    );
+  }
+
+  // ── Halaman checkout kosong ────────────────────────────────────────────────
+
   if (!cartItemIds.length) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
         <p className="text-muted-foreground mb-4">
           Tidak ada item yang dipilih untuk pembayaran.
         </p>
-        <Link
-          href="/checkout/cart"
-          className="text-green-600 hover:underline font-medium"
-        >
+        <Link href="/checkout/cart" className="text-green-600 hover:underline font-medium">
           ← Kembali ke Keranjang
         </Link>
       </div>
     );
   }
 
+  // ── Form checkout utama ───────────────────────────────────────────────────
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
-      {/* Breadcrumb */}
       <div className="mb-6">
         <CustomBreadcrumb
           items={[
@@ -265,7 +463,6 @@ const PaymentPage = () => {
         />
       </div>
 
-      {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Link href="/checkout/cart">
           <button className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
@@ -276,19 +473,16 @@ const PaymentPage = () => {
         {isProcessing && (
           <div className="flex items-center gap-2 text-green-600 text-sm ml-auto">
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Memproses pembayaran...</span>
+            <span>Memproses pesanan...</span>
           </div>
         )}
       </div>
 
-      {/* Info: jumlah item */}
       <div className="mb-4 text-sm text-muted-foreground">
         {checkoutItems.length} item dipilih dari keranjang
       </div>
 
-      {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Order Details */}
         <div className="lg:col-span-2 space-y-4">
           <AddressCard
             selectedAddress={
@@ -299,8 +493,8 @@ const PaymentPage = () => {
                     : "Belum ada alamat",
                 address:
                   loadingAddress || loadingAddresses
-                  ? ""
-                  : "Silakan tambahkan alamat pengiriman",
+                    ? ""
+                    : "Silakan tambahkan alamat pengiriman",
                 phone: "",
                 isPrimary: false,
               }
@@ -326,7 +520,6 @@ const PaymentPage = () => {
           />
         </div>
 
-        {/* Right Column - Payment Summary */}
         <div className="space-y-4 flex flex-col">
           <div className="order-1">
             <PaymentSummary

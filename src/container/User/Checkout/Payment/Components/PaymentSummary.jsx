@@ -128,7 +128,7 @@ const PaymentSummary = ({
           </div>
           <CustomSelect
             placeholder="Pilih metode pembayaran..."
-            value={selectedPayment !== "midtrans" ? selectedPayment : ""}
+            value={selectedPayment ?? ""}
             onValueChange={onSelectPayment}
             options={methods?.map((m) => ({ value: m.code, label: m.name })) || []}
             className="w-full bg-gray-50"
@@ -170,7 +170,7 @@ const PaymentSummary = ({
               Memproses...
             </>
           ) : (
-            "Bayar Sekarang via Midtrans"
+            "Buat Pesanan"
           )}
         </Button>
 
