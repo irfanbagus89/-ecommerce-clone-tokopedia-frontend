@@ -4,14 +4,9 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Store, Shield } from "lucide-react";
+import formatRupiah from "@/lib/currencyHelper";
 
 const ProductCard = ({ sellers = [], notes, onNotesChange }) => {
-  const formatPrice = (price) =>
-    new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(price);
 
   const getItemPrice = (item) =>
     item.price != null && item.price !== 0 ? item.price : item.original_price;
@@ -74,11 +69,11 @@ const ProductCard = ({ sellers = [], notes, onNotesChange }) => {
                             <div>
                               {item.discount ? (
                                 <span className="line-through text-xs text-muted-foreground">
-                                  {formatPrice(item.original_price)}
+                                  {formatRupiah(item.original_price)}
                                 </span>
                               ) : null}
                               <p className="font-semibold text-green-600">
-                                {formatPrice(itemPrice)}
+                                {formatRupiah(itemPrice)}
                               </p>
                             </div>
                             <div className="flex items-center gap-1 text-sm text-gray-600">

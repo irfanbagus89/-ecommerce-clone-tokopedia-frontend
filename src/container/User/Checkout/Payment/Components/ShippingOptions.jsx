@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Truck, Clock, Shield, Info } from "lucide-react"
+import formatRupiah from "@/lib/currencyHelper"
 
 const ShippingOptions = ({ selectedShipping, onSelectShipping }) => {
   const shippingOptions = [
@@ -52,13 +53,7 @@ const ShippingOptions = ({ selectedShipping, onSelectShipping }) => {
     },
   ];
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    }).format(price);
-  };
+  
 
   return (
     <Card>
@@ -108,7 +103,7 @@ const ShippingOptions = ({ selectedShipping, onSelectShipping }) => {
                         {option.type}
                       </span>
                     </div>
-                    <span className="font-semibold text-sm">{formatPrice(option.price)}</span>
+                    <span className="font-semibold text-sm">{formatRupiah(option.price)}</span>
                   </div>
                   <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
