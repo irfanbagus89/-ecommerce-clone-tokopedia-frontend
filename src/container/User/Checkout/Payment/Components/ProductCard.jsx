@@ -7,9 +7,13 @@ import { Store, Shield } from "lucide-react";
 import formatRupiah from "@/lib/currencyHelper";
 
 const ProductCard = ({ sellers = [], notes, onNotesChange }) => {
-
+  // Gunakan price jika ada dan bukan 0 (harga terbaru), fallback ke original_price
   const getItemPrice = (item) =>
     item.price != null && item.price !== 0 ? item.price : item.original_price;
+
+  // Ada diskon jika price tersedia, lebih kecil dari original_price, dan bukan 0
+  const hasDiscount = (item) =>
+    item.price != null && item.price !== 0 && item.price < item.original_price;
 
   return (
     <Card>
@@ -44,7 +48,7 @@ const ProductCard = ({ sellers = [], notes, onNotesChange }) => {
                             alt={item.product_name}
                             className="rounded-lg border object-cover"
                           />
-                          {item.discount ? (
+                          {hasDiscount(item) ? (
                             <Badge className="absolute -top-2 -left-2 bg-red-500 text-xs">
                               {item.discount}%
                             </Badge>
@@ -67,11 +71,11 @@ const ProductCard = ({ sellers = [], notes, onNotesChange }) => {
                           </div>
                           <div className="flex items-center justify-between mt-2">
                             <div>
-                              {item.discount ? (
+                              {hasDiscount(item) && (
                                 <span className="line-through text-xs text-muted-foreground">
                                   {formatRupiah(item.original_price)}
                                 </span>
-                              ) : null}
+                              )}
                               <p className="font-semibold text-green-600">
                                 {formatRupiah(itemPrice)}
                               </p>

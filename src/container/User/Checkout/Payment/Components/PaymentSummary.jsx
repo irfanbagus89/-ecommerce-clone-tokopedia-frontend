@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Loader2,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { usePaymentMethods } from "@/services/User/Payments/paymentActions";
 import { CustomSelect } from "@/components/ui/select";
 import formatRupiah from "@/lib/currencyHelper";
@@ -39,13 +38,6 @@ const PaymentSummary = ({
 }) => {
   const { data: methods } = usePaymentMethods();
 
-  const getPaymentBadge = () => {
-    const badges = {
-      gopay: { text: "Cashback 2%", color: "bg-green-100 text-green-700" },
-      shopeepay: { text: "Gratis Ongkir", color: "bg-orange-100 text-orange-700" },
-    };
-    return badges[selectedPayment];
-  };
 
   const totalSavings = (summary?.item_discount ?? 0) + (summary?.voucher_discount ?? 0);
 
@@ -63,17 +55,24 @@ const PaymentSummary = ({
         {/* Price Breakdown */}
         <div className="space-y-2">
           <SummaryRow
-            label={`Total Item (${summary?.items_count ?? 0} barang)`}
+            label={`Harga Produk (${summary?.items_count ?? 0} barang)`}
             value={formatRupiah(summary?.original_price ?? 0)}
             loading={isLoadingPreview}
           />
           {(summary?.item_discount ?? 0) > 0 && (
-            <SummaryRow
-              label="Diskon Barang"
-              value={formatRupiah(-(summary.item_discount))}
-              minus
-              loading={isLoadingPreview}
-            />
+            <>
+              <SummaryRow
+                label="Diskon Produk"
+                value={formatRupiah(-(summary.item_discount))}
+                minus
+                loading={isLoadingPreview}
+              />
+              <SummaryRow
+                label="Harga Produk Diskon"
+                value={formatRupiah(summary.subtotal ?? 0)}
+                loading={isLoadingPreview}
+              />
+            </>
           )}
           {(summary?.voucher_discount ?? 0) > 0 && (
             <SummaryRow
@@ -88,16 +87,20 @@ const PaymentSummary = ({
             value={formatRupiah(summary?.shipping_cost ?? 0)}
             loading={isLoadingPreview}
           />
-          <SummaryRow
-            label="Biaya Layanan"
-            value={formatRupiah(summary?.service_fee ?? 2000)}
-            loading={isLoadingPreview}
-          />
-          <SummaryRow
-            label="Asuransi Pengiriman"
-            value={formatRupiah(summary?.insurance_fee ?? 3200)}
-            loading={isLoadingPreview}
-          />
+          {(summary?.service_fee ?? 0) > 0 && (
+            <SummaryRow
+              label="Biaya Layanan"
+              value={formatRupiah(summary.service_fee)}
+              loading={isLoadingPreview}
+            />
+          )}
+          {(summary?.insurance_fee ?? 0) > 0 && (
+            <SummaryRow
+              label="Asuransi Pengiriman"
+              value={formatRupiah(summary.insurance_fee)}
+              loading={isLoadingPreview}
+            />
+          )}
         </div>
 
         <Separator className="my-3" />
@@ -122,11 +125,6 @@ const PaymentSummary = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm font-medium">
             <span>Metode Pembayaran</span>
-            {getPaymentBadge() && (
-              <Badge className={getPaymentBadge().color}>
-                {getPaymentBadge().text}
-              </Badge>
-            )}
           </div>
           <CustomSelect
             placeholder="Pilih metode pembayaran..."

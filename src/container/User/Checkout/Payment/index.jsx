@@ -346,13 +346,7 @@ const PaymentPage = () => {
   const { data: addresses, isLoading: loadingAddresses } = useAddresses();
 
   const [selectedAddressId, setSelectedAddressId] = useState(null);
-  const [selectedShipping, setSelectedShipping] = useState({
-    courier: "jne_reg",
-    name: "JNE Regular",
-    price: 9000,
-    estimated: "2-3 Hari",
-    type: "Reguler",
-  });
+  const [selectedShipping, setSelectedShipping] = useState(null);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [notes, setNotes] = useState("");
@@ -413,6 +407,10 @@ const PaymentPage = () => {
       toast.error("Silakan pilih alamat pengiriman terlebih dahulu.");
       return;
     }
+    if (!selectedShipping) {
+      toast.error("Silakan pilih metode pengiriman terlebih dahulu.");
+      return;
+    }
 
     setIsProcessing(true);
     try {
@@ -421,8 +419,8 @@ const PaymentPage = () => {
         address: selectedAddress.address,
         city: selectedAddress.city_name || selectedAddress.city || "",
         postal_code: selectedAddress.postal_code || "",
-        shipping_cost: selectedShipping?.price ?? 0,
-        shipping_method: selectedShipping?.name ?? "",
+        shipping_cost: selectedShipping.price,
+        shipping_method: selectedShipping.name,
       };
       if (selectedPaymentMethod) {
         payload.payment_method_code = selectedPaymentMethod;
@@ -539,6 +537,8 @@ const PaymentPage = () => {
           <ShippingOptions
             selectedShipping={selectedShipping}
             onSelectShipping={setSelectedShipping}
+            sellerCityId={cartData?.sellers?.[0]?.city_id ?? null}
+            destinationCityId={selectedAddress?.city_id ?? null}
           />
           <VoucherCard
             selectedVoucher={selectedVoucher}
