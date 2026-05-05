@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AddressCard from "./Components/AddressCard";
 import PaymentSummary from "./Components/PaymentSummary";
@@ -18,6 +18,7 @@ import {
 } from "@/services/User/Addresses/addressActions";
 import { useCheckout } from "@/services/User/Checkout/checkoutActions";
 import { useCheckoutCart } from "@/services/User/Cart/getCheckoutCart";
+import { useCheckoutPreview } from "@/services/User/Checkout/useCheckoutPreview";
 import { useValidateVoucher } from "@/services/User/Vouchers/validateVoucher";
 import { toast } from "@/lib/toast";
 import { usePaymentStatus } from "@/services/User/Orders/usePaymentStatus";
@@ -130,12 +131,10 @@ const PaymentInstructions = ({ result, onDone }) => {
   const { midtrans_order_id, payment_method, payment_type, instructions, order_ids } = result;
   const expired = instructions?.expired_at || result.expired_at;
 
-  // ── Polling status pembayaran ──────────────────────────────────────────────
   const primaryOrderId = order_ids?.[0];
   const { data: orderData } = usePaymentStatus(primaryOrderId);
   const paymentStatus = orderData?.payment_status;
 
-  // ── Countdown timer ────────────────────────────────────────────────────────
   const [secondsLeft, setSecondsLeft] = useState(null);
 
   useEffect(() => {
@@ -156,7 +155,6 @@ const PaymentInstructions = ({ result, onDone }) => {
     return `${m}m ${String(sec).padStart(2, "0")}d`;
   };
 
-  // ── Auto-redirect saat paid ────────────────────────────────────────────────
   useEffect(() => {
     if (paymentStatus !== "paid") return;
     toast.success("Pembayaran berhasil dikonfirmasi!");
@@ -164,7 +162,6 @@ const PaymentInstructions = ({ result, onDone }) => {
     return () => clearTimeout(id);
   }, [paymentStatus, onDone]);
 
-  // ── Render instruksi per tipe pembayaran ───────────────────────────────────
   const renderDetail = () => {
     switch (payment_type) {
       case "bank_transfer":
@@ -266,7 +263,6 @@ const PaymentInstructions = ({ result, onDone }) => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-lg">
-      {/* Header */}
       <div className="text-center mb-6">
         <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
           isPaid ? "bg-green-100" : isFailed ? "bg-red-50" : "bg-green-50"
@@ -295,22 +291,18 @@ const PaymentInstructions = ({ result, onDone }) => {
         </CardHeader>
         <CardContent className="space-y-4">
 
-          {/* Status realtime */}
           <StatusBadge paymentStatus={paymentStatus} />
 
-          {/* Order ID */}
           <div className="bg-gray-50 rounded-lg px-3 py-2">
             <InfoRow label="ID Pesanan" value={midtrans_order_id} copiable mono />
           </div>
 
-          {/* Payment detail per type — sembunyikan jika sudah selesai */}
           {!isPaid && !isFailed && (
             <div className="bg-gray-50 rounded-lg px-3 py-1">
               {renderDetail()}
             </div>
           )}
 
-          {/* Countdown + Expiry */}
           {expired && !isPaid && !isFailed && (
             <div className="flex items-center justify-between text-sm bg-amber-50 rounded-lg px-3 py-2">
               <div className="flex items-center gap-2 text-amber-700">
@@ -325,7 +317,6 @@ const PaymentInstructions = ({ result, onDone }) => {
             </div>
           )}
 
-          {/* CTA */}
           <Button
             className={`w-full ${isPaid ? "bg-green-600 hover:bg-green-700" : "bg-gray-700 hover:bg-gray-800"}`}
             onClick={onDone}
@@ -345,9 +336,11 @@ const PaymentPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const cartItemIds = searchParams.get("ids")
-    ? searchParams.get("ids").split(",").filter(Boolean)
-    : [];
+  // useMemo agar referensi array stabil — SWR key tidak berubah tiap render
+  const cartItemIds = useMemo(
+    () => (searchParams.get("ids") ? searchParams.get("ids").split(",").filter(Boolean) : []),
+    [searchParams],
+  );
 
   const { data: defaultAddress, isLoading: loadingAddress } = useDefaultAddress();
   const { data: addresses, isLoading: loadingAddresses } = useAddresses();
@@ -371,8 +364,12 @@ const PaymentPage = () => {
   const { data: cartData, isLoading: loadingCart } = useCheckoutCart();
   const { trigger: triggerValidateVoucher } = useValidateVoucher();
 
-  const checkoutItems =
-    cartData?.sellers?.flatMap((seller) => seller.items) || [];
+  // Preview harga dari backend — otomatis refetch saat shipping/voucher berubah
+  const { data: previewData, isLoading: isLoadingPreview } = useCheckoutPreview({
+    cartItemIds,
+    shippingCost: selectedShipping?.price ?? 0,
+    voucherCode: selectedVoucher?.code ?? null,
+  });
 
   const addressList = addresses || [];
   const selectedAddress =
@@ -380,55 +377,18 @@ const PaymentPage = () => {
     defaultAddress ||
     null;
 
-  const products = checkoutItems.map((item) => ({
-    id: item.cart_item_id,
-    name: item.product_name,
-    variant: item.variant_name,
-    image: item.image_url || "/placeholder.png",
-    originalPrice:
-      item.price != null && item.price !== 0 ? item.price : item.original_price,
-    discountedPrice:
-      item.price != null && item.price !== 0 ? item.price : item.original_price,
-    discountPercent: item.discount || 0,
-    quantity: item.quantity,
-    stock: item.stock,
-  }));
-
-  const calculatePrice = useCallback(
-    () => products.reduce((acc, p) => acc + p.originalPrice * p.quantity, 0),
-    [products]
-  );
-
-  const calculateSubtotal = useCallback(
-    () => products.reduce((acc, p) => acc + p.discountedPrice * p.quantity, 0),
-    [products]
-  );
-
-  const calculateDiscount = useCallback(
-    () => calculatePrice() - calculateSubtotal(),
-    [calculatePrice, calculateSubtotal]
-  );
-
-  const calculateTotal = useCallback(() => {
-    const subtotal = calculateSubtotal();
-    const shipping = selectedShipping?.price || 0;
-    const voucher = selectedVoucher?.discount || 0;
-    return subtotal + shipping + voucher + 2000 + 3200;
-  }, [calculateSubtotal, selectedShipping, selectedVoucher]);
-
-  const handleSelectVoucher = (voucher) => setSelectedVoucher(voucher);
-
   const handleApplyVoucher = async (code) => {
     if (!code) return;
     try {
-      const res = await triggerValidateVoucher({ code, total: calculateSubtotal() });
-      if (res?.Data) {
+      const res = await triggerValidateVoucher({ code, total: previewData?.subtotal ?? 0 });
+      // Backend returns { voucher_id, code, type, discount } via TransformInterceptor → res.Data
+      const data = res?.Data;
+      if (data) {
         setSelectedVoucher({
-          code: res.Data.code,
-          title: `Diskon ${res.Data.discount_amount}`,
-          discount: -res.Data.discount_amount,
-          maxDiscount: res.Data.max_discount || 0,
-          type: res.Data.discount_type,
+          code: data.code,
+          title: `Diskon voucher`,
+          discount_amount: data.discount,
+          type: data.type,
         });
         toast.success("Voucher berhasil digunakan!");
       }
@@ -440,12 +400,6 @@ const PaymentPage = () => {
 
   const handleRemoveVoucher = () => setSelectedVoucher(null);
 
-  /**
-   * Alur pembayaran (Midtrans Core API):
-   * 1. POST /v1/orders/checkout → backend charge ke Midtrans Core API
-   * 2. Backend mengembalikan instructions (VA number / QR / deeplink)
-   * 3. Tampilkan instruksi pembayaran kepada user
-   */
   const handlePayment = async () => {
     if (!agreeTerms) {
       toast.error("Mohon setujui syarat & ketentuan terlebih dahulu.");
@@ -467,6 +421,8 @@ const PaymentPage = () => {
         address: selectedAddress.address,
         city: selectedAddress.city_name || selectedAddress.city || "",
         postal_code: selectedAddress.postal_code || "",
+        shipping_cost: selectedShipping?.price ?? 0,
+        shipping_method: selectedShipping?.name ?? "",
       };
       if (selectedPaymentMethod) {
         payload.payment_method_code = selectedPaymentMethod;
@@ -475,7 +431,6 @@ const PaymentPage = () => {
         payload.voucher_code = selectedVoucher.code;
       }
 
-      // res = { Metadata: {...}, Data: { midtrans_order_id, payment_method, payment_type, instructions, expired_at } }
       const res = await triggerCheckout(payload);
       const data = res?.Data;
 
@@ -552,7 +507,7 @@ const PaymentPage = () => {
       </div>
 
       <div className="mb-4 text-sm text-muted-foreground">
-        {checkoutItems.length} item dipilih dari keranjang
+        {previewData?.items_count ?? 0} item dipilih dari keranjang
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -587,28 +542,23 @@ const PaymentPage = () => {
           />
           <VoucherCard
             selectedVoucher={selectedVoucher}
-            onSelectVoucher={handleSelectVoucher}
             onApplyVoucher={handleApplyVoucher}
             onRemoveVoucher={handleRemoveVoucher}
+            subtotal={previewData?.subtotal ?? 0}
           />
         </div>
 
         <div className="space-y-4 flex flex-col">
           <div className="order-1">
             <PaymentSummary
-              selectedShipping={selectedShipping}
-              selectedVoucher={selectedVoucher}
+              summary={previewData}
+              isLoadingPreview={isLoadingPreview || loadingCart}
               selectedPayment={selectedPaymentMethod}
               onSelectPayment={setSelectedPaymentMethod}
               agreeTerms={agreeTerms}
               onAgreeTermsChange={setAgreeTerms}
               onPayment={handlePayment}
               isProcessing={isProcessing}
-              calculatePrice={calculatePrice}
-              calculateDiscount={calculateDiscount}
-              calculateVoucherDiscount={() => selectedVoucher?.discount || 0}
-              calculateTotal={calculateTotal}
-              totalItems={checkoutItems.reduce((sum, item) => sum + item.quantity, 0)}
             />
           </div>
         </div>

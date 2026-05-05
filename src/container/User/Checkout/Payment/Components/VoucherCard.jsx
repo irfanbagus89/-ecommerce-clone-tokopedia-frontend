@@ -1,73 +1,54 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Ticket, Gift, Percent, Calendar, ChevronRight, Check } from "lucide-react"
-import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Ticket, Gift, Percent, Calendar, ChevronRight, Check, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useAvailableVouchers } from "@/services/User/Vouchers/getAvailableVouchers";
+import formatRupiah from "@/lib/currencyHelper";
 
-const VoucherCard = ({ selectedVoucher, onSelectVoucher, onApplyVoucher, onRemoveVoucher }) => {
-  const [voucherCode, setVoucherCode] = useState("")
+const typeIcon = (type) => {
+  if (type === "percentage") return Percent;
+  if (type === "free_shipping") return Gift;
+  return Ticket;
+};
 
-  const availableVouchers = [
-    {
-      id: 1,
-      code: "HEMAT10",
-      title: "Diskon 10%",
-      description: "Minimal belanja Rp50.000",
-      discount: -10000,
-      maxDiscount: "Rp20.000",
-      expiry: "28 Feb 2026",
-      type: "percentage",
-      color: "green"
-    },
-    {
-      id: 2,
-      code: "GRATISONGKIR",
-      title: "Gratis Ongkir",
-      description: "Maksimal potongan Rp10.000",
-      discount: -10000,
-      maxDiscount: "Rp10.000",
-      expiry: "15 Feb 2026",
-      type: "shipping",
-      color: "blue"
-    },
-    {
-      id: 3,
-      code: "CASHBACK5",
-      title: "Cashback 5%",
-      description: "Maksimal cashback Rp15.000",
-      discount: -5000,
-      maxDiscount: "Rp15.000",
-      expiry: "10 Mar 2026",
-      type: "cashback",
-      color: "orange"
-    }
-  ]
+const VoucherCard = ({ selectedVoucher, onApplyVoucher, onRemoveVoucher, subtotal }) => {
+  const [voucherCode, setVoucherCode] = useState("");
+  const [isApplying, setIsApplying] = useState(null); // kode yang sedang diproses
 
-  const handleApplyVoucherClick = () => {
-    if (voucherCode.trim()) {
-      onApplyVoucher(voucherCode)
-      setVoucherCode("")
-    }
-  }
+  const { data: availableVouchers = [], isLoading } = useAvailableVouchers(subtotal);
 
-  const handleSelectVoucher = (voucher) => {
-    onSelectVoucher(voucher)
-  }
+  const handleApplyInput = async () => {
+    const code = voucherCode.trim();
+    if (!code) return;
+    setIsApplying(code);
+    await onApplyVoucher(code);
+    setVoucherCode("");
+    setIsApplying(null);
+  };
+
+  const handleApplyFromList = async (code) => {
+    setIsApplying(code);
+    await onApplyVoucher(code);
+    setIsApplying(null);
+  };
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <div className="flex items-center gap-2">
           <CardTitle className="text-base">Voucher & Promo</CardTitle>
-          <Badge variant="secondary" className="text-xs">
-            {availableVouchers.length} Tersedia
-          </Badge>
+          {availableVouchers.length > 0 && (
+            <Badge variant="secondary" className="text-xs">
+              {availableVouchers.length} Tersedia
+            </Badge>
+          )}
         </div>
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {/* Input Voucher */}
+        {/* Input kode manual */}
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -75,25 +56,31 @@ const VoucherCard = ({ selectedVoucher, onSelectVoucher, onApplyVoucher, onRemov
               placeholder="Masukkan kode voucher"
               value={voucherCode}
               onChange={(e) => setVoucherCode(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleApplyInput()}
               className="pl-10"
             />
           </div>
           <Button
-            onClick={handleApplyVoucherClick}
+            onClick={handleApplyInput}
+            disabled={!voucherCode.trim() || isApplying !== null}
             className="bg-green-600 hover:bg-green-700"
           >
-            Pakai
+            {isApplying === voucherCode.trim() ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              "Pakai"
+            )}
           </Button>
         </div>
 
-        {/* Applied Voucher */}
+        {/* Voucher aktif */}
         {selectedVoucher && (
           <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3">
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-green-600" />
               <div>
                 <p className="font-medium text-sm text-green-800">{selectedVoucher.code}</p>
-                <p className="text-xs text-green-600">Berhasil digunakan</p>
+                <p className="text-xs text-green-600">Voucher berhasil digunakan</p>
               </div>
             </div>
             <Button
@@ -107,81 +94,94 @@ const VoucherCard = ({ selectedVoucher, onSelectVoucher, onApplyVoucher, onRemov
           </div>
         )}
 
-        {/* Available Vouchers */}
-        <div className="space-y-2">
-          <p className="text-sm font-medium">Voucher Tersedia</p>
-          {availableVouchers.map((voucher) => (
-            <div
-              key={voucher.id}
-              className={`border rounded-lg p-3 hover:border-green-500 transition-colors cursor-pointer ${
-                selectedVoucher?.code === voucher.code ? 'border-green-500 bg-green-50' : ''
-              }`}
-              onClick={() => handleSelectVoucher(voucher)}
-            >
-              <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-                  voucher.color === 'green' ? 'bg-green-100' :
-                  voucher.color === 'blue' ? 'bg-blue-100' :
-                  'bg-orange-100'
-                }`}>
-                  {voucher.type === 'percentage' ? (
-                    <Percent className={`w-5 h-5 ${
-                      voucher.color === 'green' ? 'text-green-600' :
-                      voucher.color === 'blue' ? 'text-blue-600' :
-                      'text-orange-600'
-                    }`} />
-                  ) : voucher.type === 'shipping' ? (
-                    <Gift className={`w-5 h-5 ${
-                      voucher.color === 'green' ? 'text-green-600' :
-                      voucher.color === 'blue' ? 'text-blue-600' :
-                      'text-orange-600'
-                    }`} />
-                  ) : (
-                    <Ticket className={`w-5 h-5 ${
-                      voucher.color === 'green' ? 'text-green-600' :
-                      voucher.color === 'blue' ? 'text-blue-600' :
-                      'text-orange-600'
-                    }`} />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium text-sm">{voucher.title}</p>
-                    <span className="font-semibold text-sm text-green-600">
-                      {new Intl.NumberFormat('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR',
-                        minimumFractionDigits: 0
-                      }).format(Math.abs(voucher.discount))}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">{voucher.description}</p>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Calendar className="w-3 h-3" />
-                      <span>Berakhir {voucher.expiry}</span>
+        {/* Daftar voucher dari backend */}
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Memuat voucher...</span>
+          </div>
+        ) : availableVouchers.length > 0 ? (
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Voucher Tersedia</p>
+            {availableVouchers.map((voucher) => {
+              const Icon = typeIcon(voucher.type);
+              const isSelected = selectedVoucher?.code === voucher.code;
+              const isThisApplying = isApplying === voucher.code;
+
+              return (
+                <div
+                  key={voucher.id}
+                  className={`border rounded-lg p-3 transition-colors ${
+                    !voucher.eligible
+                      ? "opacity-50 cursor-not-allowed"
+                      : isSelected
+                      ? "border-green-500 bg-green-50"
+                      : "hover:border-green-400 cursor-pointer"
+                  }`}
+                  onClick={() => voucher.eligible && !isSelected && handleApplyFromList(voucher.code)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+                      <Icon className="w-5 h-5 text-green-600" />
                     </div>
-                    {selectedVoucher?.code === voucher.code && (
-                      <Badge className="bg-green-600 text-xs">
-                        <Check className="w-3 h-3 mr-1" />
-                        Dipakai
-                      </Badge>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-sm">{voucher.code}</p>
+                        {voucher.estimated_discount > 0 && (
+                          <span className="font-semibold text-sm text-green-600">
+                            -{formatRupiah(voucher.estimated_discount)}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {voucher.type === "percentage"
+                          ? `Diskon ${voucher.value}%${voucher.max_discount ? `, maks. ${formatRupiah(voucher.max_discount)}` : ""}`
+                          : voucher.type === "free_shipping"
+                          ? `Gratis ongkir hingga ${formatRupiah(voucher.value)}`
+                          : `Potongan ${formatRupiah(voucher.value)}`}
+                        {voucher.min_purchase > 0 && ` · Min. ${formatRupiah(voucher.min_purchase)}`}
+                      </p>
+                      <div className="flex items-center gap-3 mt-1.5">
+                        {voucher.valid_until && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Calendar className="w-3 h-3" />
+                            <span>
+                              Berakhir{" "}
+                              {new Date(voucher.valid_until).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </span>
+                          </div>
+                        )}
+                        {!voucher.eligible && (
+                          <span className="text-xs text-red-500">
+                            Min. belanja {formatRupiah(voucher.min_purchase)}
+                          </span>
+                        )}
+                        {isSelected && (
+                          <Badge className="bg-green-600 text-xs">
+                            <Check className="w-3 h-3 mr-1" />
+                            Dipakai
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    {isThisApplying ? (
+                      <Loader2 className="w-4 h-4 text-muted-foreground shrink-0 mt-1 animate-spin" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
                     )}
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <Button variant="outline" className="w-full text-sm">
-          Lihat Semua Voucher
-          <ChevronRight className="w-4 h-4 ml-1" />
-        </Button>
+              );
+            })}
+          </div>
+        ) : null}
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default VoucherCard
+export default VoucherCard;

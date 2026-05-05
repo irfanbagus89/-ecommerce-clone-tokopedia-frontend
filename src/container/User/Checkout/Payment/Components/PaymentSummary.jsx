@@ -16,43 +16,38 @@ import { usePaymentMethods } from "@/services/User/Payments/paymentActions";
 import { CustomSelect } from "@/components/ui/select";
 import formatRupiah from "@/lib/currencyHelper";
 
-const SummaryRow = ({ label, value, minus, bold }) => {
-  return (
-    <div className={`flex justify-between ${bold ? "font-semibold text-base" : "text-sm"}`}>
-      <span>{label}</span>
+const SummaryRow = ({ label, value, minus, bold, loading }) => (
+  <div className={`flex justify-between ${bold ? "font-semibold text-base" : "text-sm"}`}>
+    <span>{label}</span>
+    {loading ? (
+      <span className="w-16 h-4 bg-gray-200 animate-pulse rounded" />
+    ) : (
       <span className={minus ? "text-red-500" : ""}>{value}</span>
-    </div>
-  );
-};
+    )}
+  </div>
+);
 
 const PaymentSummary = ({
-  selectedShipping,
-  selectedVoucher,
+  summary,
+  isLoadingPreview,
   selectedPayment,
   onSelectPayment,
   agreeTerms,
   onAgreeTermsChange,
   onPayment,
   isProcessing,
-  calculatePrice,
-  calculateDiscount,
-  calculateVoucherDiscount,
-  calculateTotal,
-  totalItems,
 }) => {
-
   const { data: methods } = usePaymentMethods();
 
   const getPaymentBadge = () => {
     const badges = {
       gopay: { text: "Cashback 2%", color: "bg-green-100 text-green-700" },
-      ovo: { text: "Diskon 5rb", color: "bg-purple-100 text-purple-700" },
       shopeepay: { text: "Gratis Ongkir", color: "bg-orange-100 text-orange-700" },
     };
     return badges[selectedPayment];
   };
 
-  const savings = calculateDiscount() + Math.abs(calculateVoucherDiscount());
+  const totalSavings = (summary?.item_discount ?? 0) + (summary?.voucher_discount ?? 0);
 
   return (
     <Card className="lg:sticky lg:top-6">
@@ -68,30 +63,41 @@ const PaymentSummary = ({
         {/* Price Breakdown */}
         <div className="space-y-2">
           <SummaryRow
-            label={`Total Item (${totalItems} barang)`}
-            value={totalItems > 0 ? formatRupiah(calculatePrice()) : "Dihitung saat checkout"}
+            label={`Total Item (${summary?.items_count ?? 0} barang)`}
+            value={formatRupiah(summary?.original_price ?? 0)}
+            loading={isLoadingPreview}
           />
-          {calculateDiscount() > 0 && (
+          {(summary?.item_discount ?? 0) > 0 && (
             <SummaryRow
               label="Diskon Barang"
-              value={formatRupiah(-calculateDiscount())}
+              value={formatRupiah(-(summary.item_discount))}
               minus
+              loading={isLoadingPreview}
             />
           )}
-          {selectedVoucher && (
+          {(summary?.voucher_discount ?? 0) > 0 && (
             <SummaryRow
-              label="Voucher"
-              value={formatRupiah(calculateVoucherDiscount())}
+              label="Diskon Voucher"
+              value={formatRupiah(-(summary.voucher_discount))}
               minus
-              subLabel={selectedVoucher.code}
+              loading={isLoadingPreview}
             />
           )}
           <SummaryRow
             label="Ongkos Kirim"
-            value={formatRupiah(selectedShipping?.price || 0)}
+            value={formatRupiah(summary?.shipping_cost ?? 0)}
+            loading={isLoadingPreview}
           />
-          <SummaryRow label="Biaya Layanan" value={formatRupiah(2000)} />
-          <SummaryRow label="Asuransi Pengiriman" value={formatRupiah(3200)} />
+          <SummaryRow
+            label="Biaya Layanan"
+            value={formatRupiah(summary?.service_fee ?? 2000)}
+            loading={isLoadingPreview}
+          />
+          <SummaryRow
+            label="Asuransi Pengiriman"
+            value={formatRupiah(summary?.insurance_fee ?? 3200)}
+            loading={isLoadingPreview}
+          />
         </div>
 
         <Separator className="my-3" />
@@ -100,13 +106,14 @@ const PaymentSummary = ({
         <div className="bg-green-50 rounded-lg p-3 space-y-2">
           <SummaryRow
             label="Total Tagihan"
-            value={formatRupiah(calculateTotal())}
+            value={formatRupiah(summary?.total ?? 0)}
             bold
+            loading={isLoadingPreview}
           />
-          {savings > 0 && (
+          {totalSavings > 0 && (
             <div className="flex items-center gap-2 text-xs text-green-700">
               <CheckCircle className="w-3.5 h-3.5" />
-              <span>Hemat {formatRupiah(savings)} dari pembelian ini</span>
+              <span>Hemat {formatRupiah(totalSavings)} dari pembelian ini</span>
             </div>
           )}
         </div>
@@ -156,7 +163,7 @@ const PaymentSummary = ({
         <Button
           size="lg"
           className="w-full mt-2 bg-green-600 hover:bg-green-700 font-semibold"
-          disabled={!agreeTerms || isProcessing}
+          disabled={!agreeTerms || isProcessing || isLoadingPreview}
           onClick={onPayment}
         >
           {isProcessing ? (
@@ -181,7 +188,6 @@ const PaymentSummary = ({
           </div>
         </div>
 
-        {/* Additional Info */}
         <div className="flex items-start gap-2 text-xs text-muted-foreground bg-blue-50 p-2 rounded-lg">
           <Info className="w-3.5 h-3.5 shrink-0 mt-0.5 text-blue-600" />
           <p>
