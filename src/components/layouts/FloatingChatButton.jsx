@@ -40,7 +40,7 @@ const FloatingChatButton = () => {
       avatar: isMeBuyer ? null : c.buyer_avatar,
       lastMessage: c.last_message,
       unread: c.unread_count,
-      online: false, // Optional: Implement online status later if available
+      online: false,
     };
   });
 
@@ -64,7 +64,6 @@ const FloatingChatButton = () => {
     }
   };
 
-  // Auto scroll to bottom when messages change
   useEffect(() => {
     if (messages.length > 0) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -88,10 +87,8 @@ const FloatingChatButton = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      {/* Chat Panel */}
       {isOpen && (
         <div className="absolute bottom-20 right-0 w-[500px] h-[600px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col animate-in slide-in-from-bottom-5 duration-300">
-          {/* Header */}
           <div className="bg-linear-to-r from-[#03AC0E] to-[#028a0b] p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -115,10 +112,7 @@ const FloatingChatButton = () => {
               </button>
             </div>
           </div>
-
-          {/* Chat Content */}
           <div className="flex-1 flex overflow-hidden">
-            {/* Chat List */}
             <div className="w-40 border-r border-gray-100 flex flex-col bg-gray-50">
               <div className="p-2">
                 <div className="relative">
@@ -196,12 +190,9 @@ const FloatingChatButton = () => {
                 ))}
               </div>
             </div>
-
-            {/* Chat Messages */}
             <div className="flex-1 flex flex-col bg-white">
               {activeChatId ? (
                 <>
-                  {/* Active Chat Header */}
                   <div className="p-3 border-b border-gray-100 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Avatar className="w-8 h-8">
@@ -227,8 +218,6 @@ const FloatingChatButton = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* Messages */}
                   <div className="flex-1 p-3 overflow-auto space-y-2 bg-gray-50">
                     {isLoadingMessages ? (
                       <div className="h-full flex items-center justify-center">
@@ -268,8 +257,6 @@ const FloatingChatButton = () => {
                     )}
                     <div ref={messagesEndRef} />
                   </div>
-
-                  {/* Input */}
                   <div className="p-3 border-t border-gray-100">
                     <div className="flex gap-2">
                       <Input
@@ -303,8 +290,6 @@ const FloatingChatButton = () => {
           </div>
         </div>
       )}
-
-      {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`group relative flex items-center justify-center w-14 h-14 rounded-full shadow-2xl transition-all duration-300 ${
@@ -313,10 +298,7 @@ const FloatingChatButton = () => {
             : "bg-linear-to-br from-[#03AC0E] to-[#028a0b] hover:shadow-green-300/50"
         }`}
       >
-        {/* Ripple Effect */}
         <span className="absolute inset-0 rounded-full animate-ping opacity-20 bg-[#03AC0E]"></span>
-
-        {/* Badge */}
         {!isOpen && totalUnread > 0 && (
           <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center border-2 border-white animate-bounce">
             <span className="text-white text-xs font-bold">{totalUnread}</span>
@@ -328,8 +310,6 @@ const FloatingChatButton = () => {
         ) : (
           <MessageCircle className="text-white" size={24} />
         )}
-
-        {/* Tooltip */}
         {!isOpen && (
           <div className="absolute right-full mr-3 px-3 py-2 bg-gray-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
             Chat

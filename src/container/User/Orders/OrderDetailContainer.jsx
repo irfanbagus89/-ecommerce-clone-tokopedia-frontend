@@ -129,7 +129,6 @@ const OrderDetailContainer = ({ orderId }) => {
 
   return (
     <div className="max-w-2xl mx-auto py-6 px-4 space-y-4">
-      {/* Back */}
       <button
         onClick={() => router.back()}
         className="flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors text-sm"
@@ -137,8 +136,6 @@ const OrderDetailContainer = ({ orderId }) => {
         <ArrowLeft size={16} />
         Kembali
       </button>
-
-      {/* Header Card */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -167,8 +164,6 @@ const OrderDetailContainer = ({ orderId }) => {
           <StepIndicator steps={steps} currentStatus={order.status} />
         )}
       </div>
-
-      {/* Shipping Address */}
       {order.shipping && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div className="flex items-center gap-2 mb-3">
@@ -193,8 +188,6 @@ const OrderDetailContainer = ({ orderId }) => {
           )}
         </div>
       )}
-
-      {/* Products */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
         <h3 className="text-sm font-bold text-gray-900 mb-4">Produk Dipesan</h3>
         <div className="space-y-3">
@@ -231,8 +224,6 @@ const OrderDetailContainer = ({ orderId }) => {
           ))}
         </div>
       </div>
-
-      {/* Payment Summary */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
         <h3 className="text-sm font-bold text-gray-900 mb-4">Rincian Pembayaran</h3>
         <div className="space-y-2 text-sm">
@@ -278,8 +269,6 @@ const OrderDetailContainer = ({ orderId }) => {
           </div>
         )}
       </div>
-
-      {/* Actions */}
       {(order.status === "pending" || order.status === "delivered") && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex gap-3">
           {order.status === "pending" && (

@@ -70,7 +70,6 @@ const ProfileTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* Avatar */}
       <div className="flex items-center gap-6">
         <div className="relative">
           <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-200">
@@ -110,8 +109,6 @@ const ProfileTab = () => {
           </p>
         </div>
       </div>
-
-      {/* Form */}
       <div className="space-y-4">
         <div>
           <label className="text-sm font-medium text-gray-700 block mb-1.5">
@@ -144,8 +141,6 @@ const ProfileTab = () => {
     </div>
   );
 };
-
-// ✅ Dipindahkan ke luar PasswordTab agar tidak dibuat ulang setiap render
 const PasswordInput = ({
   label,
   value,

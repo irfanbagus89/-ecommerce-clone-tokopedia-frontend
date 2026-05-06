@@ -3,7 +3,6 @@ import Image from "next/image";
 import React from "react";
 
 const FooterUser = () => {
-  // Data untuk mempermudah rendering kolom
   const footerLinks = [
     {
       title: "Tokopedia",
@@ -28,8 +27,6 @@ const FooterUser = () => {
       ],
     },
   ];
-
-  // Placeholder untuk ikon sosial (gunakan React Icons atau SVG asli di produksi)
   const SocialIcon = ({ children }) => (
     <a
       href="#"

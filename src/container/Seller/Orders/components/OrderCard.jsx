@@ -8,7 +8,6 @@ const OrderCard = ({ order }) => {
   return (
     <Card className='border-0 border-b border-gray-100 rounded-none shadow-none last:rounded-b-2xl first:rounded-t-2xl hover:bg-gray-50/50 transition-colors'>
       <CardContent className="p-5">
-        {/* Order Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
@@ -26,8 +25,6 @@ const OrderCard = ({ order }) => {
           </div>
           <OrderStatusBadge status={order.status} />
         </div>
-
-        {/* Order Items */}
         <div className="bg-gray-50 rounded-xl p-4 mb-4">
           <div className="flex items-start gap-2">
             <Package className="text-gray-400 mt-0.5" size={16} />
@@ -41,16 +38,12 @@ const OrderCard = ({ order }) => {
             </div>
           </div>
         </div>
-
-        {/* Address */}
         {order.address && (
           <div className="flex items-start gap-2 mb-4">
             <MapPin className="text-gray-400 mt-0.5" size={16} />
             <p className="text-sm text-gray-600">{order.address}</p>
           </div>
         )}
-
-        {/* Order Footer */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-gray-100">
           <div>
             <p className="text-xs text-gray-500 mb-1">Total Pembayaran</p>

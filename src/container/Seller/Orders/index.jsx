@@ -62,7 +62,6 @@ const OrderCard = ({ order, onShip, onHistory }) => {
   return (
     <div className="p-4 hover:bg-gray-50 transition-colors">
       <div className="flex items-start justify-between gap-4">
-        {/* Order Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-bold text-gray-700">
@@ -72,13 +71,9 @@ const OrderCard = ({ order, onShip, onHistory }) => {
               {cfg.label}
             </span>
           </div>
-
-          {/* Buyer */}
           <p className="text-xs text-gray-500 mb-2">
             Pembeli: <span className="font-medium text-gray-700">{order.buyer_name}</span>
           </p>
-
-          {/* Items */}
           <div className="space-y-1">
             {order.items?.slice(0, 2).map((item, i) => (
               <div key={i} className="flex items-center gap-2">
@@ -109,8 +104,6 @@ const OrderCard = ({ order, onShip, onHistory }) => {
             )}
           </div>
         </div>
-
-        {/* Total & Actions */}
         <div className="flex flex-col items-end gap-2 flex-shrink-0">
           <p className="text-sm font-bold text-[#03AC0E]">
             {formatRupiah(order.total_price)}
@@ -179,7 +172,6 @@ const SellerOrdersContainer = () => {
 
   return (
     <div className="p-6">
-      {/* Header */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -206,8 +198,6 @@ const SellerOrdersContainer = () => {
           />
         </div>
       </div>
-
-      {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="bg-white border border-gray-200 rounded-xl p-1 h-auto w-full flex flex-wrap gap-1 mb-4">
           {tabs.map((tab) => {

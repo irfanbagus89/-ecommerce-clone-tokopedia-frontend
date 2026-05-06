@@ -46,7 +46,6 @@ const NotifItem = ({ notif, onRefresh }) => {
       await markRead({ id: notif.id });
       onRefresh();
     } catch {
-      /* silently fail */
     }
   };
 
@@ -152,7 +151,6 @@ export const NotificationDropdown = ({ trigger, notifCount }) => {
         sideOffset={8}
         className="w-[360px] p-0 rounded-xl shadow-lg border border-gray-100"
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           <div>
             <h3 className="font-bold text-gray-900">Notifikasi</h3>
@@ -183,8 +181,6 @@ export const NotificationDropdown = ({ trigger, notifCount }) => {
             </button>
           </div>
         </div>
-
-        {/* List */}
         <div className="max-h-[380px] overflow-y-auto overscroll-contain">
           {isLoading ? (
             <div className="p-4 space-y-4">

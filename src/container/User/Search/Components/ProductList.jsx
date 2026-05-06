@@ -35,7 +35,6 @@ const ProductList = ({
             </div>
           ) : (
             <>
-              {/* Sort Dropdown */}
               <div className="flex items-center justify-end">
                 <CustomSelect
                   value={sort}
@@ -50,8 +49,6 @@ const ProductList = ({
                   className="w-full sm:w-[180px] h-9 text-sm"
                 />
               </div>
-
-              {/* Product Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
                 {data.map((prod) => (
                   <Link
@@ -62,8 +59,6 @@ const ProductList = ({
                   </Link>
                 ))}
               </div>
-
-              {/* Loading Skeleton */}
               {isValidating && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 mt-4">
                   {Array.from({ length: 5 }).map((_, i) => (

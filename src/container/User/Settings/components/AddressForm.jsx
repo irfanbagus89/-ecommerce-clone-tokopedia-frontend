@@ -115,7 +115,6 @@ const AddressForm = ({ initial, onCancel, onSubmit, isSubmitting }) => {
   const handleChange = (k, v) =>
     setForm((prev) => {
       const next = { ...prev, [k]: v };
-      // Reset child selects when parent changes
       if (k === "province_id") {
         next.city_id = "";
         next.kecamatan_id = "";

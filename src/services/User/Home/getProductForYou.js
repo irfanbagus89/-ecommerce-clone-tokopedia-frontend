@@ -11,7 +11,6 @@ export const useProductForYou = (
   enabled = true
 ) => {
   const getKey = (pageIndex, previousPageData) => {
-    // stop kalau data kosong
     if (previousPageData && previousPageData?.Data?.products?.length === 0) {
       return null;
     }

@@ -75,7 +75,6 @@ const PurchaseCard = ({ product, selectedVariant, data }) => {
       productId: data.id,
       variantId: activeVariant.id,
       quantity: Number(qty),
-      // note: note,
       type: "insert",
     };
 

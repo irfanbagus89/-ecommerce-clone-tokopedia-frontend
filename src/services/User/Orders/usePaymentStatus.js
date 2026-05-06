@@ -8,10 +8,6 @@ const fetchOrder = async (url) => {
   return res.data.Data;
 };
 
-/**
- * Poll status pembayaran order setiap 3 detik.
- * Polling berhenti otomatis saat status sudah final (paid/expired/cancelled/failed).
- */
 export const usePaymentStatus = (orderId) => {
   return useSWR(
     orderId ? `/v1/orders/my-orders/${orderId}` : null,

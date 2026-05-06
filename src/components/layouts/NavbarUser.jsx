@@ -51,11 +51,8 @@ const NavbarUser = () => {
 
   return (
     <nav className="w-full flex flex-col border-b border-gray-200 bg-white transition-all fixed top-0 left-0 shadow-md z-50">
-      {/* Main Navbar */}
       <div className="flex items-center py-2 sm:py-4 px-3 sm:px-6 gap-2 sm:gap-4 w-full justify-between">
-        {/* Logo and Mobile Menu Toggle */}
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Mobile Menu Button */}
           <button
             className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -73,8 +70,6 @@ const NavbarUser = () => {
             />
           </Link>
         </div>
-
-        {/* Search Bar - Hidden on very small screens, flexible on larger */}
         <div className="hidden sm:flex flex-1 max-w-[200px] sm:max-w-[400px] md:max-w-[600px] lg:max-w-[1500px]">
           <Input
             leftIcon={<Search className="text-gray-500 w-4 h-4" />}
@@ -85,8 +80,6 @@ const NavbarUser = () => {
             onKeyDown={handleSearch}
           />
         </div>
-
-        {/* Icons and Auth Section */}
         <div className="flex items-center gap-2 sm:gap-4">
           {!isLoggedIn ? (
             <span className="hidden sm:flex pl-2 sm:pl-4">
@@ -177,8 +170,6 @@ const NavbarUser = () => {
           )}
         </div>
       </div>
-
-      {/* Mobile Search Bar - Only visible on small screens */}
       <div className="sm:hidden px-3 pb-2">
         <Input
           leftIcon={<Search className="text-gray-500 w-4 h-4" />}
@@ -189,8 +180,6 @@ const NavbarUser = () => {
           onKeyDown={handleSearch}
         />
       </div>
-
-      {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-gray-200 bg-white px-3 py-2">
           {!isLoggedIn ? (

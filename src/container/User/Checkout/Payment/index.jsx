@@ -25,8 +25,6 @@ import { usePaymentStatus } from "@/services/User/Orders/usePaymentStatus";
 import { formatCountdown, formatDateTime } from "@/lib/utils/formatters";
 import { bankLabel } from "@/lib/utils/payment";
 
-// ── CopyButton ────────────────────────────────────────────────────────────────
-
 const CopyButton = ({ value }) => {
   const [copied, setCopied] = useState(false);
 
@@ -55,8 +53,6 @@ const CopyButton = ({ value }) => {
   );
 };
 
-// ── InfoRow ───────────────────────────────────────────────────────────────────
-
 const InfoRow = ({ label, value, copiable, mono }) => (
   <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
     <span className="text-sm text-muted-foreground">{label}</span>
@@ -68,8 +64,6 @@ const InfoRow = ({ label, value, copiable, mono }) => (
     </div>
   </div>
 );
-
-// ── PaymentInstructions ───────────────────────────────────────────────────────
 
 const StatusBadge = ({ paymentStatus }) => {
   if (!paymentStatus || paymentStatus === "unpaid" || paymentStatus === "pending") {
@@ -298,13 +292,10 @@ const PaymentInstructions = ({ result, onDone }) => {
   );
 };
 
-// ── PaymentPage ───────────────────────────────────────────────────────────────
-
 const PaymentPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // useMemo agar referensi array stabil — SWR key tidak berubah tiap render
   const cartItemIds = useMemo(
     () => (searchParams.get("ids") ? searchParams.get("ids").split(",").filter(Boolean) : []),
     [searchParams],
@@ -326,7 +317,6 @@ const PaymentPage = () => {
   const { data: cartData, isLoading: loadingCart } = useCheckoutCart();
   const { trigger: triggerValidateVoucher } = useValidateVoucher();
 
-  // Preview harga dari backend — otomatis refetch saat shipping/voucher berubah
   const { data: previewData, isLoading: isLoadingPreview } = useCheckoutPreview({
     cartItemIds,
     shippingCost: selectedShipping?.price ?? 0,
@@ -343,7 +333,6 @@ const PaymentPage = () => {
     if (!code) return;
     try {
       const res = await triggerValidateVoucher({ code, total: previewData?.subtotal ?? 0 });
-      // Backend returns { voucher_id, code, type, discount } via TransformInterceptor → res.Data
       const data = res?.Data;
       if (data) {
         setSelectedVoucher({
@@ -417,8 +406,6 @@ const PaymentPage = () => {
     }
   };
 
-  // ── Tampilkan instruksi setelah checkout berhasil ──────────────────────────
-
   if (paymentResult) {
     return (
       <PaymentInstructions
@@ -427,8 +414,6 @@ const PaymentPage = () => {
       />
     );
   }
-
-  // ── Halaman checkout kosong ────────────────────────────────────────────────
 
   if (!cartItemIds.length) {
     return (
@@ -442,8 +427,6 @@ const PaymentPage = () => {
       </div>
     );
   }
-
-  // ── Form checkout utama ───────────────────────────────────────────────────
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">

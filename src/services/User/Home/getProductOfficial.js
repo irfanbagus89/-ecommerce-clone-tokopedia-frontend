@@ -11,7 +11,6 @@ export const useOfficialProducts = (
   enabled = true
 ) => {
   const getKey = (pageIndex, previousPageData) => {
-    // stop kalau data habis
     if (
       previousPageData &&
       previousPageData.page >= previousPageData.totalPages

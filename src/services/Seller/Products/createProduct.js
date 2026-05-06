@@ -10,17 +10,15 @@ export const createProduct = async (url, { arg }) => {
   formData.append("price", arg.price); 
 
 
-  // IMAGES (image_url sampai image_url_5)
   if (arg.images?.[0]) formData.append("image", arg.images[0]);
   if (arg.images?.[1]) formData.append("image2", arg.images[1]);
   if (arg.images?.[2]) formData.append("image3", arg.images[2]);
   if (arg.images?.[3]) formData.append("image4", arg.images[3]);
   if (arg.images?.[4]) formData.append("image5", arg.images[4]);
 
-  // VARIANTS
   arg.variants.forEach((v, i) => {
     formData.append(`variants[${i}][name]`, v.name);
-    formData.append(`variants[${i}][price]`, v.price); // additional_price
+    formData.append(`variants[${i}][price]`, v.price);
     formData.append(`variants[${i}][stock]`, v.stock);
   });
 

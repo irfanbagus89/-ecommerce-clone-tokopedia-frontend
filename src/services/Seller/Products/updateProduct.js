@@ -2,7 +2,6 @@ import useSWRMutation from "swr/mutation";
 import { fetcher } from "@/lib/fetcher/fetcherApi";
 
 const updateProductFn = async (url, { arg }) => {
-  // arg: { id, data }
   const { id, data } = arg;
   const formData = new FormData();
 

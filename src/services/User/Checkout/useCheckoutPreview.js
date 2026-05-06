@@ -7,10 +7,6 @@ const postPreview = async (url, payload) => {
   return res.data?.Data ?? null;
 };
 
-/**
- * Memanggil POST /v1/orders/checkout-preview untuk menghitung ringkasan harga
- * sepenuhnya di backend. Key SWR berubah otomatis saat cart/shipping/voucher berubah.
- */
 export const useCheckoutPreview = ({ cartItemIds, shippingCost, voucherCode }) => {
   const key =
     cartItemIds?.length

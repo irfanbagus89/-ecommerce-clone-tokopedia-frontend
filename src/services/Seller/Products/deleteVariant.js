@@ -2,7 +2,6 @@ import useSWRMutation from "swr/mutation";
 import { fetcher } from "@/lib/fetcher/fetcherApi";
 
 const deleteVariantFn = async (url, { arg }) => {
-  // arg: { id }
   const { id } = arg || {};
   const res = await fetcher.delete(`${url}/${id}`);
   return res.data;

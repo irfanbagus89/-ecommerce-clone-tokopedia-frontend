@@ -47,7 +47,7 @@ export const useCreateProductStore = create(
       partialize: (state) => ({
         form: {
           ...state.form,
-          images: [], // ⬅️ sengaja tidak disimpan
+          images: [],
         },
       }),
     }

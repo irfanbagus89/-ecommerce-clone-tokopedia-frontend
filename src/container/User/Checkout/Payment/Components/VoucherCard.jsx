@@ -15,7 +15,7 @@ const typeIcon = (type) => {
 
 const VoucherCard = ({ selectedVoucher, onApplyVoucher, onRemoveVoucher, subtotal }) => {
   const [voucherCode, setVoucherCode] = useState("");
-  const [isApplying, setIsApplying] = useState(null); // kode yang sedang diproses
+  const [isApplying, setIsApplying] = useState(null);
 
   const { data: availableVouchers = [], isLoading } = useAvailableVouchers(subtotal);
 
@@ -48,7 +48,6 @@ const VoucherCard = ({ selectedVoucher, onApplyVoucher, onRemoveVoucher, subtota
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {/* Input kode manual */}
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -72,8 +71,6 @@ const VoucherCard = ({ selectedVoucher, onApplyVoucher, onRemoveVoucher, subtota
             )}
           </Button>
         </div>
-
-        {/* Voucher aktif */}
         {selectedVoucher && (
           <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3">
             <div className="flex items-center gap-2">
@@ -93,8 +90,6 @@ const VoucherCard = ({ selectedVoucher, onApplyVoucher, onRemoveVoucher, subtota
             </Button>
           </div>
         )}
-
-        {/* Daftar voucher dari backend */}
         {isLoading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
             <Loader2 className="w-4 h-4 animate-spin" />

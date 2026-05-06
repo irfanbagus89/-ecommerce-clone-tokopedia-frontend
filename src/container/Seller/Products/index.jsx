@@ -22,7 +22,7 @@ const ProductPage = () => {
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(1);
-  const [viewMode, setViewMode] = useState("table"); // 'table' or 'grid'
+  const [viewMode, setViewMode] = useState("table");
 
   const [sort, setSort] = useState("name");
   const [order, setOrder] = useState("asc");
@@ -168,7 +168,6 @@ const ProductPage = () => {
 
   return (
     <div className="p-6">
-      {/* Header Section */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -186,8 +185,6 @@ const ProductPage = () => {
             Tambah Produk
           </Button>
         </div>
-
-        {/* Search and Filter Bar */}
         <div className="mt-6 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -204,8 +201,6 @@ const ProductPage = () => {
           </div>
         
         </div>
-
-        {/* Selected Products Actions */}
         {selected.length > 0 && (
           <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -236,8 +231,6 @@ const ProductPage = () => {
             setPage(1);
           }}
         />
-
-        {/* Pagination */}
         <div className="p-4 border-t border-gray-100">
           <CustomPagination
             page={page}

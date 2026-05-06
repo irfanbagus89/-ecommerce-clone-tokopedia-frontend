@@ -60,7 +60,6 @@ const ProfileTab = () => {
         <CardTitle>Profil Toko</CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
-        {/* Logo Upload */}
         <div>
           <label className="text-sm font-medium text-gray-700 block mb-2">
             Logo Toko
@@ -101,8 +100,6 @@ const ProfileTab = () => {
             </p>
           </div>
         </div>
-
-        {/* Form Fields */}
         <div className="grid grid-cols-2 gap-4">
           {fields.map((f) => (
             <div key={f.key}>

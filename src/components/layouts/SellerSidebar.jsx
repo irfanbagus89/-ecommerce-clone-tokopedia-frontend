@@ -28,7 +28,6 @@ const SellerSidebar = ({ collapsed = false }) => {
         collapsed ? "w-20" : "w-64"
       }`}
     >
-      {/* Logo Section */}
       <div
         className={`p-5 border-b border-gray-100 ${collapsed ? "flex justify-center" : ""}`}
       >
@@ -51,8 +50,6 @@ const SellerSidebar = ({ collapsed = false }) => {
           </div>
         )}
       </div>
-
-      {/* Navigation */}
       <nav className={`flex-1 py-4 ${collapsed ? "px-2" : "px-3"}`}>
         <div className="space-y-1">
           {menus.map((menu, i) => {
@@ -87,8 +84,6 @@ const SellerSidebar = ({ collapsed = false }) => {
           })}
         </div>
       </nav>
-
-      {/* Bottom Section */}
       <div
         className={`p-4 border-t border-gray-100 ${collapsed ? "flex justify-center" : ""}`}
       >

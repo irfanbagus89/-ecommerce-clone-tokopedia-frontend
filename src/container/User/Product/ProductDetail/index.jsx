@@ -1,4 +1,3 @@
-// ProductDetailPage.jsx (SERVER)
 import { CustomBreadcrumb } from "@/components/ui/breadcrumb";
 import ProductRekomendasiSection from "./Components/ProductRekomendasiSection";
 import ProductReviews from "./Components/ProductReview";

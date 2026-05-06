@@ -34,7 +34,6 @@ const ProductSearchPage = () => {
 
   const loadMoreRef = useRef(null);
 
-  // Infinite Scroll Observer
   useEffect(() => {
     if (!loadMoreRef.current) return;
 
@@ -51,7 +50,6 @@ const ProductSearchPage = () => {
     return () => observer.disconnect();
   }, [isLoading, isValidating, setSize]);
 
-  // Debounce price filter
   useEffect(() => {
     const timer = setTimeout(() => {
       setSize(1);
@@ -67,7 +65,6 @@ const ProductSearchPage = () => {
 
   return (
     <div className="container mx-auto px-3 sm:px-4 py-4">
-      {/* Mobile Filter Toggle */}
       <button
         onClick={() => setShowFilter(!showFilter)}
         className="lg:hidden w-full flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg mb-4"
@@ -91,7 +88,6 @@ const ProductSearchPage = () => {
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 lg:gap-6">
-        {/* Filter Sidebar */}
         <div className={`${showFilter ? "block" : "hidden"} lg:block`}>
           <ProductFilter
             filters={filters}
@@ -104,8 +100,6 @@ const ProductSearchPage = () => {
             setSize={setSize}
           />
         </div>
-
-        {/* Product List */}
         <div>
           <ProductList
             sort={sort}

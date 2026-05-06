@@ -52,7 +52,6 @@ const PaymentSummary = ({
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {/* Price Breakdown */}
         <div className="space-y-2">
           <SummaryRow
             label={`Harga Produk (${summary?.items_count ?? 0} barang)`}
@@ -104,8 +103,6 @@ const PaymentSummary = ({
         </div>
 
         <Separator className="my-3" />
-
-        {/* Total */}
         <div className="bg-green-50 rounded-lg p-3 space-y-2">
           <SummaryRow
             label="Total Tagihan"
@@ -120,8 +117,6 @@ const PaymentSummary = ({
             </div>
           )}
         </div>
-
-        {/* Payment Method Selector */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm font-medium">
             <span>Metode Pembayaran</span>
@@ -134,8 +129,6 @@ const PaymentSummary = ({
             className="w-full bg-gray-50"
           />
         </div>
-
-        {/* Terms Checkbox */}
         <div className="flex items-start gap-3 space-x-0">
           <Checkbox
             id="terms"
@@ -156,8 +149,6 @@ const PaymentSummary = ({
             </div>
           </div>
         </div>
-
-        {/* Pay Button */}
         <Button
           size="lg"
           className="w-full mt-2 bg-green-600 hover:bg-green-700 font-semibold"
@@ -173,8 +164,6 @@ const PaymentSummary = ({
             "Buat Pesanan"
           )}
         </Button>
-
-        {/* Secure Payment Info */}
         <div className="flex items-center justify-center gap-4 pt-2">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Shield className="w-3.5 h-3.5 text-green-600" />

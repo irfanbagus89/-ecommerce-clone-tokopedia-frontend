@@ -98,7 +98,6 @@ const OrderCard = ({ order, onReview }) => {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-      {/* Header */}
       <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <Icon size={15} className="text-gray-500" />
@@ -112,8 +111,6 @@ const OrderCard = ({ order, onReview }) => {
           {cfg.label}
         </span>
       </div>
-
-      {/* Items */}
       <div className="p-5">
         <div className="flex items-center gap-2 mb-3">
           <ShoppingBag size={14} className="text-[#03AC0E]" />
@@ -156,8 +153,6 @@ const OrderCard = ({ order, onReview }) => {
           </p>
         )}
       </div>
-
-      {/* Footer */}
       <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50/50">
         <div>
           <p className="text-xs text-gray-500">Total Pembayaran</p>

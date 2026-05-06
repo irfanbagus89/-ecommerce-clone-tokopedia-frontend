@@ -16,7 +16,6 @@ const SellerTopbar = ({ collapsed = false, setCollapsed = () => {} }) => {
   const router = useRouter();
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-30">
-      {/* Left Section */}
       <div className="flex items-center gap-4">
         <button
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -34,8 +33,6 @@ const SellerTopbar = ({ collapsed = false, setCollapsed = () => {} }) => {
           <p className="text-xs text-gray-500">Kelola bisnis online Anda</p>
         </div>
       </div>
-
-      {/* Center Section - Search */}
       <div className="hidden lg:flex flex-1 max-w-xl mx-8">
         <div className="relative w-full">
           <Input
@@ -45,25 +42,16 @@ const SellerTopbar = ({ collapsed = false, setCollapsed = () => {} }) => {
           />
         </div>
       </div>
-
-      {/* Right Section */}
       <div className="flex items-center gap-3">
-        {/* Notification */}
         <button className="relative w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
           <Bell className="text-gray-600" size={20} />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
         </button>
-
-        {/* Help */}
         <button className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
           <HelpCircle className="text-gray-600" size={18} />
           <span className="text-sm font-medium text-gray-700">Bantuan</span>
         </button>
-
-        {/* Divider */}
         <div className="hidden md:block w-px h-8 bg-gray-200 mx-1"></div>
-
-        {/* User Profile */}
         <div className="flex items-center gap-3">
           <div className="hidden sm:block text-right">
             <p className="text-sm font-semibold text-gray-900">
@@ -77,8 +65,6 @@ const SellerTopbar = ({ collapsed = false, setCollapsed = () => {} }) => {
             </AvatarFallback>
           </Avatar>
         </div>
-
-        {/* Logout */}
         <button
           className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-gray-600"
           onClick={() => router.replace("/")}

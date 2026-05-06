@@ -15,9 +15,6 @@ import {
   Bar,
 } from "recharts";
 
-/* =========================
-   DUMMY DATA
-========================= */
 const sales7Days = [
   { date: "Mon", sales: 120000 },
   { date: "Tue", sales: 180000 },
@@ -49,9 +46,6 @@ const dummyData = [
   { title: "Conversion Rate", value: "3.4%" },
 ];
 
-/* =========================
-   StatisticsPAGE
-========================= */
 const StatisticsPage = () => {
   const [period, setPeriod] = useState("7days");
 

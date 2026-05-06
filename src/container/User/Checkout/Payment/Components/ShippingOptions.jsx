@@ -16,7 +16,6 @@ const ShippingOptions = ({ selectedShipping, onSelectShipping, sellerCityId, des
     courier: selectedCourier,
   });
 
-  // Reset selected shipping when courier changes
   useEffect(() => {
     onSelectShipping(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -49,15 +48,12 @@ const ShippingOptions = ({ selectedShipping, onSelectShipping, sellerCityId, des
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {/* Info jika alamat belum dipilih */}
         {!canFetchCost && (
           <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
             <MapPin className="w-4 h-4 shrink-0" />
             <span>Pilih alamat pengiriman terlebih dahulu untuk melihat opsi ongkos kirim.</span>
           </div>
         )}
-
-        {/* Pilih kurir */}
         {canFetchCost && (
           <div className="space-y-2">
             <p className="text-sm font-medium text-gray-700">Kurir</p>
@@ -87,8 +83,6 @@ const ShippingOptions = ({ selectedShipping, onSelectShipping, sellerCityId, des
             )}
           </div>
         )}
-
-        {/* Layanan dari kurir terpilih */}
         {canFetchCost && selectedCourier && (
           <div className="space-y-2">
             <p className="text-sm font-medium text-gray-700">Layanan</p>

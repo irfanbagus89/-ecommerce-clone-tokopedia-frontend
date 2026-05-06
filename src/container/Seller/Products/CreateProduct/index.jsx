@@ -48,7 +48,6 @@ const CreateProductPage = () => {
   const { form, setField, setVariants, setImages, resetForm } =
     useCreateProductStore();
 
-  // When entering the Create page, ensure stored form is reset (start fresh)
   useEffect(() => {
     resetForm();
   }, [resetForm]);
@@ -122,7 +121,6 @@ const CreateProductPage = () => {
     setVariants(newVariants);
   };
 
-  /** PREVIEW */
   const previewImages = useMemo(() => {
     if (!images || images.length === 0) return ["https://picsum.photos/seed/1/600/600"];
     return images.map((file) =>

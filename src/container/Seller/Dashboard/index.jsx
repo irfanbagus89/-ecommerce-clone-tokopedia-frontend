@@ -219,7 +219,6 @@ const SellerDashboardContainer = () => {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Dashboard Toko</h1>
@@ -233,8 +232,6 @@ const SellerDashboardContainer = () => {
           Tarik Saldo
         </Button>
       </div>
-
-      {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           icon={Wallet}
@@ -267,8 +264,6 @@ const SellerDashboardContainer = () => {
           sub={`${stats.total_reviews || 0} ulasan`}
         />
       </div>
-
-      {/* Sales Chart */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-base font-bold text-gray-900">
@@ -324,10 +319,7 @@ const SellerDashboardContainer = () => {
           </ResponsiveContainer>
         )}
       </div>
-
-      {/* Recent Orders + Withdrawals */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Orders */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <h2 className="text-base font-bold text-gray-900 mb-4">
             Pesanan Terbaru
@@ -373,8 +365,6 @@ const SellerDashboardContainer = () => {
             </div>
           )}
         </div>
-
-        {/* Withdrawals */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold text-gray-900">

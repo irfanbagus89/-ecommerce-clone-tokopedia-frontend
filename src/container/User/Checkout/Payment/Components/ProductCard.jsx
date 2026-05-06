@@ -18,15 +18,12 @@ const ProductCard = ({ sellers = [], notes, onNotesChange }) => {
         ) : (
           sellers.map((seller, sellerIndex) => (
             <div key={seller.seller_id} className="space-y-4">
-              {/* Seller Info */}
               <div className="flex items-center gap-2 pb-2 border-b">
                 <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center shrink-0">
                   <Store className="w-4 h-4 text-white" />
                 </div>
                 <p className="font-semibold text-sm">{seller.seller_name}</p>
               </div>
-
-              {/* Items */}
               <div className="space-y-4">
                 {seller.items.map((item, index) => {
                   const itemPrice = getItemPrice(item);
@@ -90,8 +87,6 @@ const ProductCard = ({ sellers = [], notes, onNotesChange }) => {
             </div>
           ))
         )}
-
-        {/* Shipping Protection */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <div className="flex items-start gap-2">
             <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
@@ -103,8 +98,6 @@ const ProductCard = ({ sellers = [], notes, onNotesChange }) => {
             </div>
           </div>
         </div>
-
-        {/* Notes */}
         <div>
           <label className="text-sm font-medium mb-2 block">
             Catatan untuk Penjual

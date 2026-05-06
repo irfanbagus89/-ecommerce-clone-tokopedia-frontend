@@ -74,7 +74,6 @@ const EditProductPage = () => {
   const { trigger: updateTrigger, isMutating: isUpdating } = useUpdateProduct();
   const { trigger: deleteTrigger, isMutating: isDeleting } = useDeleteVariant();
 
-  // use SWR hook to fetch product data
   const {
     data: res,
     error: fetchError,
@@ -84,7 +83,6 @@ const EditProductPage = () => {
   useEffect(() => {
     const apply = () => {
       if (!res) return;
-      // map backend Data to form shape
       const mapped = {
         name: res.name || "",
         description: res.description || "",
@@ -101,7 +99,6 @@ const EditProductPage = () => {
       };
 
       reset(mapped);
-      // sync store
       setField("name", mapped.name);
       setField("description", mapped.description);
       setField("price", mapped.price);
@@ -158,11 +155,9 @@ const EditProductPage = () => {
 
     const v = variants[index];
     if (v?.id) {
-      // Tandai variant ID ini untuk dihapus saat di-submit
       setDeletedVariants((prev) => [...prev, v.id]);
     }
 
-    // Hapus dari UI (form state)
     const newVariants = variants.filter((_, i) => i !== index);
     setValue("variants", newVariants);
     setVariants(newVariants);
@@ -176,7 +171,6 @@ const EditProductPage = () => {
   const onSubmit = async (data) => {
     if (!id) return;
     try {
-      // Jika ada varian yang dihapus, lakukan proses penghapusan di backend sekarang
       if (deletedVariants.length > 0) {
         for (const variantId of deletedVariants) {
           try {
