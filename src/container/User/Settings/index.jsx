@@ -425,7 +425,7 @@ const ProfileSettingsContainer = () => {
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
         <Tabs defaultValue="profile">
           <TabsList className="bg-gray-100 rounded-xl p-1 mb-6">
             <TabsTrigger

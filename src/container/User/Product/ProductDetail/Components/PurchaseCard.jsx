@@ -5,7 +5,7 @@ import { Minus, Plus, Heart, Share2, Pencil, MessageCircle } from "lucide-react"
 import { useSWRConfig } from "swr";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 import { useCreateCart } from "@/services/User/DetailProduct/createCart";
 import {
   useSendMessage,

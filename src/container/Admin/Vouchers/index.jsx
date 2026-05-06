@@ -8,7 +8,7 @@ import {
 } from "@/services/Admin/vouchersActions";
 import { toast } from "@/lib/toast";
 import { Plus, Ticket, Calendar, Percent, DollarSign } from "lucide-react";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 import { CustomPagination } from "@/components/ui/pagination";
 
 const initialForm = {

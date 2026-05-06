@@ -20,7 +20,7 @@ import {
   useShipOrder,
 } from "@/services/Seller/Orders/sellerOrderActions";
 import { CustomPagination } from "@/components/ui/pagination";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 import { toast } from "@/lib/toast";
 import { mutate } from "swr";
 import ShipModal from "./components/ShipModal";

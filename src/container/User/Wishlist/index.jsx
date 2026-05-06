@@ -6,7 +6,7 @@ import {
 } from "@/services/User/Wishlists/getWishlists";
 import { useRemoveFromWishlist } from "@/services/User/Wishlists/wishlistActions";
 import { Button } from "@/components/ui/button";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 import { Heart, HeartOff, Package, ShoppingCart, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";

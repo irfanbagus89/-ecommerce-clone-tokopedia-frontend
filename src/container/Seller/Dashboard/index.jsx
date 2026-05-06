@@ -8,7 +8,7 @@ import {
   useRequestWithdrawal,
 } from "@/services/Seller/Dashboard/dashboardActions";
 import { Button } from "@/components/ui/button";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 import { toast } from "@/lib/toast";
 import { mutate as swrMutate } from "swr";
 import {

@@ -5,7 +5,7 @@ import { Star, ThumbsUp, MoreVertical } from "lucide-react";
 import { CustomSelect } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CustomPagination } from "@/components/ui/pagination";
-import formatDate from "@/lib/dateFormat";
+import { formatDate } from "@/lib/utils/formatters";
 import { useMarkReviewHelpful } from "@/services/User/Reviews/createReview";
 import { toast } from "@/lib/toast";
 import { useState } from "react";
@@ -58,7 +58,7 @@ const ReviewList = ({
 }) => {
   return (
     <div className="w-full">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
         <div className="text-sm">
           <span className="font-bold text-gray-900">ULASAN PILIHAN</span>
           <p className="text-gray-500 mt-1">
@@ -66,8 +66,8 @@ const ReviewList = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-gray-700">Urutkan</span>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <span className="text-sm font-bold text-gray-700 shrink-0">Urutkan</span>
           <CustomSelect
             value={sort}
             onValueChange={(val) => {
@@ -80,7 +80,7 @@ const ReviewList = ({
               { label: "Rating Tertinggi", value: "highest" },
               { label: "Rating Terendah", value: "lowest" },
             ]}
-            className="w-[180px] h-9 text-sm"
+            className="w-full sm:w-[180px] h-9 text-sm"
           />
         </div>
       </div>

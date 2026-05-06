@@ -5,7 +5,7 @@ import { useConfirmOrder } from "@/services/User/Orders/confirmOrder";
 import { useCancelOrder } from "@/services/User/Orders/cancelOrder";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 import { toast } from "@/lib/toast";
 import { mutate } from "swr";
 import {

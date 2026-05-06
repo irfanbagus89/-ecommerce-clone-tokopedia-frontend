@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { usePaymentMethods } from "@/services/User/Payments/paymentActions";
 import { CustomSelect } from "@/components/ui/select";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 
 const SummaryRow = ({ label, value, minus, bold, loading }) => (
   <div className={`flex justify-between ${bold ? "font-semibold text-base" : "text-sm"}`}>

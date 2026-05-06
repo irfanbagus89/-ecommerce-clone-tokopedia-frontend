@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Ticket, Gift, Percent, Calendar, ChevronRight, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useAvailableVouchers } from "@/services/User/Vouchers/getAvailableVouchers";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 
 const typeIcon = (type) => {
   if (type === "percentage") return Percent;

@@ -19,6 +19,7 @@ import ProductImages from "../CreateProduct/components/ProductImages";
 import ProductVariants from "../CreateProduct/components/ProductVariants";
 import ProductStatus from "../CreateProduct/components/ProductStatus";
 import ProductPreview from "../CreateProduct/components/ProductPreview";
+import { onlyInteger, onlyNumberDecimal } from "@/lib/utils/inputSanitizers";
 
 const createProductSchema = z.object({
   name: z.string().min(1, "Nama produk wajib diisi"),
@@ -38,9 +39,6 @@ const createProductSchema = z.object({
     .min(1, "Minimal 1 foto produk")
     .max(5, "Maksimal 5 foto"),
 });
-
-const onlyNumberDecimal = (value) =>
-  value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
 
 const EditProductPage = () => {
   const router = useRouter();
@@ -257,10 +255,8 @@ const EditProductPage = () => {
             addVariant={addVariant}
             updateVariant={updateVariant}
             removeVariant={removeVariant}
-            onlyInteger={(v) => v.replace(/[^0-9]/g, "")}
-            onlyNumberDecimal={(v) =>
-              v.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1")
-            }
+            onlyInteger={onlyInteger}
+            onlyNumberDecimal={onlyNumberDecimal}
           />
 
           <ProductStatus

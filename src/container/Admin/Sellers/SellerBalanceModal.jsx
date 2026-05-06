@@ -1,7 +1,7 @@
 "use client";
 
 import { useAdminSellerBalance } from "@/services/Admin/adminActions";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 import { Wallet, X, TrendingDown, TrendingUp } from "lucide-react";
 
 const SellerBalanceModal = ({ seller, onClose }) => {

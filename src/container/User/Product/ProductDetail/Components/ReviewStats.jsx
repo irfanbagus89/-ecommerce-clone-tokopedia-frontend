@@ -3,7 +3,7 @@ import { Progress } from "@/components/ui/progress";
 
 const ReviewStats = ({ stats }) => {
   return (
-    <div className="rounded-lg border border-gray-200 p-6 shadow-sm mb-8">
+    <div className="rounded-lg border border-gray-200 p-4 sm:p-6 shadow-sm mb-8">
       <div className="flex flex-col md:flex-row gap-8 items-center">
         <div className="flex flex-col items-center min-w-[150px]">
           <div className="flex items-end gap-1">

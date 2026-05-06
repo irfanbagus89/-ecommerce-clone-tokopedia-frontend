@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Truck, Clock, Shield, Info, Loader2, MapPin } from "lucide-react";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 import { useShippingCouriers, useShippingCost } from "@/services/User/Shipping/shippingActions";
 
 const ShippingOptions = ({ selectedShipping, onSelectShipping, sellerCityId, destinationCityId }) => {

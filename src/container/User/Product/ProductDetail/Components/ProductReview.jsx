@@ -11,6 +11,7 @@ const ProductReviews = ({ productId }) => {
   const [sort, setSort] = useState("helpful");
   const [rating, setRating] = useState([]);
   const [withMedia, setWithMedia] = useState(false);
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
   const { data, isLoading } = useProductReviews(productId, {
     page,
     limit: 10,
@@ -28,7 +29,34 @@ const ProductReviews = ({ productId }) => {
             Ulasan Pembeli
           </h2>
           <ReviewStats stats={data.ratingStats} />
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+          <button
+            onClick={() => setShowMobileFilter(!showMobileFilter)}
+            className="lg:hidden w-full flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg mb-4"
+          >
+            <span className="font-medium text-sm">Filter Ulasan</span>
+            <svg
+              className={`w-5 h-5 transition-transform ${showMobileFilter ? "rotate-180" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {showMobileFilter && (
+            <div className="lg:hidden bg-white border border-gray-200 rounded-lg p-4 mb-4">
+              <ReviewFilter
+                rating={rating}
+                setRating={setRating}
+                withMedia={withMedia}
+                setWithMedia={setWithMedia}
+              />
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
             <div className="lg:col-span-3 hidden lg:block">
               <ReviewFilter
                 rating={rating}

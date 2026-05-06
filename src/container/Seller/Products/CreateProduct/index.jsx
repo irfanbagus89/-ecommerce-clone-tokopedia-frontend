@@ -19,11 +19,7 @@ import { useCreateProductStore } from "@/store/Seller/Products/createProductStor
 
 import { toast } from "@/lib/toast";
 import { z } from "zod";
-
-/** allow number + single dot */
-const onlyNumberDecimal = (value) =>
-  value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
-const onlyInteger = (value) => value.replace(/[^0-9]/g, "");
+import { onlyInteger, onlyNumberDecimal } from "@/lib/utils/inputSanitizers";
 
 const createProductSchema = z.object({
   name: z.string().min(1, "Nama produk wajib diisi"),
@@ -202,10 +198,8 @@ const CreateProductPage = () => {
             addVariant={addVariant}
             updateVariant={updateVariant}
             removeVariant={removeVariant}
-            onlyInteger={(v) => v.replace(/[^0-9]/g, "")}
-            onlyNumberDecimal={(v) =>
-              v.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1")
-            }
+            onlyInteger={onlyInteger}
+            onlyNumberDecimal={onlyNumberDecimal}
           />
 
           <ProductStatus

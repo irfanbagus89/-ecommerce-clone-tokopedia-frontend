@@ -80,7 +80,7 @@ const LoginPage = () => {
           "url('https://p16-images-comn-sg.tokopedia-static.net/tos-alisg-i-zr7vqa5nfb-sg/img/oauth/background/login-bg.png~tplv-zr7vqa5nfb-image.image')",
       }}
     >
-      <Card className="w-[420px] shadow-lg">
+      <Card className="w-full max-w-[420px] mx-4 sm:mx-0 shadow-lg">
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-semibold">Masuk ke Tokopedia</h1>

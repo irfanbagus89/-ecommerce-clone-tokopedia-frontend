@@ -22,31 +22,8 @@ import { useCheckoutPreview } from "@/services/User/Checkout/useCheckoutPreview"
 import { useValidateVoucher } from "@/services/User/Vouchers/validateVoucher";
 import { toast } from "@/lib/toast";
 import { usePaymentStatus } from "@/services/User/Orders/usePaymentStatus";
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-const formatDate = (str) => {
-  if (!str) return "-";
-  return new Date(str).toLocaleString("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-const bankLabel = (code) => {
-  const map = {
-    bca_va: "BCA",
-    bni_va: "BNI",
-    bri_va: "BRI",
-    permata_va: "Permata",
-    cimb_va: "CIMB Niaga",
-    echannel: "Mandiri",
-  };
-  return map[code] ?? code?.toUpperCase();
-};
+import { formatCountdown, formatDateTime } from "@/lib/utils/formatters";
+import { bankLabel } from "@/lib/utils/payment";
 
 // ── CopyButton ────────────────────────────────────────────────────────────────
 
@@ -145,15 +122,6 @@ const PaymentInstructions = ({ result, onDone }) => {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [expired]);
-
-  const formatCountdown = (s) => {
-    if (s === null) return null;
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    const sec = s % 60;
-    if (h > 0) return `${h}j ${m}m ${String(sec).padStart(2, "0")}d`;
-    return `${m}m ${String(sec).padStart(2, "0")}d`;
-  };
 
   useEffect(() => {
     if (paymentStatus !== "paid") return;
@@ -307,7 +275,7 @@ const PaymentInstructions = ({ result, onDone }) => {
             <div className="flex items-center justify-between text-sm bg-amber-50 rounded-lg px-3 py-2">
               <div className="flex items-center gap-2 text-amber-700">
                 <Clock className="w-4 h-4 shrink-0" />
-                <span>Bayar sebelum <span className="font-semibold">{formatDate(expired)}</span></span>
+                <span>Bayar sebelum <span className="font-semibold">{formatDateTime(expired)}</span></span>
               </div>
               {secondsLeft !== null && secondsLeft > 0 && (
                 <span className="font-mono text-amber-800 font-semibold text-xs tabular-nums">

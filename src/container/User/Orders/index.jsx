@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CustomPagination } from "@/components/ui/pagination";
 import { toast } from "@/lib/toast";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 import {
   Package,
   Clock,

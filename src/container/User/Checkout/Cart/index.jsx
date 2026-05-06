@@ -6,7 +6,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
+import { getItemPrice, getOriginalPrice, hasDiscount } from "@/lib/utils/productPricing";
 import { useMyCart } from "@/services/User/Cart/getMyCart";
 import { useCreateCart } from "@/services/User/DetailProduct/createCart";
 import { useUpdateCheckCart } from "@/services/User/Cart/updateCheckCart";
@@ -66,15 +67,6 @@ const CartPage = () => {
     } catch (error) {
       console.error(error);
     }
-  };
-
-  const getItemPrice = (item) => {
-    return item.price !== null ? item.price : item.original_price;
-  };
-
-  const getOriginalPrice = (item) => {
-    if (!item.discount) return null;
-    return item.original_price;
   };
 
   const totalQty = sellers.reduce((sum, seller) => {
@@ -178,116 +170,114 @@ const CartPage = () => {
                       {seller.items.map((item) => (
                         <div
                           key={item.cart_item_id}
-                          className="flex items-center gap-4"
+                          className="flex items-start gap-3"
                         >
                           <Checkbox
-                            className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                            className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 mt-1 shrink-0"
                             checked={isChecked(item)}
                             onCheckedChange={() =>
                               toggleItem(item)
                             }
                           />
-                          <Link
-                            href={`/product/${item.category_id}/${item.product_id}`}
-                          >
-                            <Image
-                              src={item.image_url}
-                              alt={item.product_name}
-                              width={64}
-                              height={64}
-                              className="rounded"
-                            />
-                          </Link>
-
-                          <div className="flex-1">
-                            <Link
-                              href={`/product/${item.category_id}/${item.product_id}`}
-                            >
-                              <p className="text-sm font-medium">
-                                {item.product_name}
-                              </p>
-                            </Link>
-                            <p className="text-xs text-muted-foreground">
-                              {item.variant_name}
-                            </p>
-
-                            <p className="font-bold mt-1">
-                              {formatRupiah(getItemPrice(item))}
-                            </p>
-
-                            {item.discount && (
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="bg-red-100 text-red-600 text-xs font-bold px-1.5 rounded-sm">
-                                  {item.discount}%
-                                </span>
-                                <span className="text-xs text-gray-400 line-through">
-                                  {formatRupiah(getOriginalPrice(item))}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            {item.quantity > 1 ? (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="rounded-none text-green-600 hover:text-green-700"
-                                onClick={() =>
-                                  handleActionCart(
-                                    seller.seller_id,
-                                    item.product_id,
-                                    item.variant_id,
-                                    0,
-                                  )
-                                }
+                          <div className="flex-1 min-w-0">
+                            <div className="flex gap-3">
+                              <Link
+                                href={`/product/${item.category_id}/${item.product_id}`}
                               >
-                                <Trash2 className="w-5 h-5 text-muted-foreground" />
-                              </Button>
-                            ) : (
-                              <></>
-                            )}
-                            <div className="flex items-center border rounded-md">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="rounded-none text-green-600 hover:text-green-700"
-                                onClick={() =>
-                                  handleActionCart(
-                                    seller.seller_id,
-                                    item.product_id,
-                                    item.variant_id,
-                                    item.quantity - 1,
-                                  )
-                                }
-                              >
-                                {item.quantity > 1 ? (
-                                  <Minus className="h-4 w-4" />
-                                ) : (
-                                  <Trash2 className="w-5 h-5 text-muted-foreground" />
+                                <Image
+                                  src={item.image_url}
+                                  alt={item.product_name}
+                                  width={64}
+                                  height={64}
+                                  className="rounded shrink-0"
+                                />
+                              </Link>
+                              <div className="flex-1 min-w-0">
+                                <Link
+                                  href={`/product/${item.category_id}/${item.product_id}`}
+                                >
+                                  <p className="text-sm font-medium line-clamp-2">
+                                    {item.product_name}
+                                  </p>
+                                </Link>
+                                <p className="text-xs text-muted-foreground">
+                                  {item.variant_name}
+                                </p>
+                                <p className="font-bold mt-1">
+                                  {formatRupiah(getItemPrice(item))}
+                                </p>
+                                {hasDiscount(item) && (
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span className="bg-red-100 text-red-600 text-xs font-bold px-1.5 rounded-sm">
+                                      {item.discount}%
+                                    </span>
+                                    <span className="text-xs text-gray-400 line-through">
+                                      {formatRupiah(getOriginalPrice(item))}
+                                    </span>
+                                  </div>
                                 )}
-                              </Button>
-
-                              <span className="w-10 text-center font-bold">
-                                {item.quantity}
-                              </span>
-
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                disabled={item.quantity >= item.stock}
-                                className="rounded-none text-green-600 hover:text-green-700"
-                                onClick={() =>
-                                  handleActionCart(
-                                    seller.seller_id,
-                                    item.product_id,
-                                    item.variant_id,
-                                    item.quantity + 1,
-                                  )
-                                }
-                              >
-                                <Plus className="h-4 w-4" />
-                              </Button>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-end gap-2 mt-2">
+                              {item.quantity > 1 ? (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="rounded-none text-green-600 hover:text-green-700"
+                                  onClick={() =>
+                                    handleActionCart(
+                                      seller.seller_id,
+                                      item.product_id,
+                                      item.variant_id,
+                                      0,
+                                    )
+                                  }
+                                >
+                                  <Trash2 className="w-5 h-5 text-muted-foreground" />
+                                </Button>
+                              ) : (
+                                <></>
+                              )}
+                              <div className="flex items-center border rounded-md">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="rounded-none text-green-600 hover:text-green-700"
+                                  onClick={() =>
+                                    handleActionCart(
+                                      seller.seller_id,
+                                      item.product_id,
+                                      item.variant_id,
+                                      item.quantity - 1,
+                                    )
+                                  }
+                                >
+                                  {item.quantity > 1 ? (
+                                    <Minus className="h-4 w-4" />
+                                  ) : (
+                                    <Trash2 className="w-5 h-5 text-muted-foreground" />
+                                  )}
+                                </Button>
+                                <span className="w-10 text-center font-bold">
+                                  {item.quantity}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  disabled={item.quantity >= item.stock}
+                                  className="rounded-none text-green-600 hover:text-green-700"
+                                  onClick={() =>
+                                    handleActionCart(
+                                      seller.seller_id,
+                                      item.product_id,
+                                      item.variant_id,
+                                      item.quantity + 1,
+                                    )
+                                  }
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>

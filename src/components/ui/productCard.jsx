@@ -4,7 +4,7 @@ import React from "react";
 import { MapPin, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
 import Image from "next/image";
 
 function ProductCard({ className, data, ...props }) {

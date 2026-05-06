@@ -4,17 +4,10 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Store, Shield } from "lucide-react";
-import formatRupiah from "@/lib/currencyHelper";
+import formatRupiah from "@/lib/utils/formatters";
+import { getItemPrice, hasDiscount } from "@/lib/utils/productPricing";
 
 const ProductCard = ({ sellers = [], notes, onNotesChange }) => {
-  // Gunakan price jika ada dan bukan 0 (harga terbaru), fallback ke original_price
-  const getItemPrice = (item) =>
-    item.price != null && item.price !== 0 ? item.price : item.original_price;
-
-  // Ada diskon jika price tersedia, lebih kecil dari original_price, dan bukan 0
-  const hasDiscount = (item) =>
-    item.price != null && item.price !== 0 && item.price < item.original_price;
-
   return (
     <Card>
       <CardContent className="p-4 space-y-4">
