@@ -6,7 +6,8 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate-icons": "node scripts/generate-icons.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
